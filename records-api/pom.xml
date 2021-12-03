@@ -9,7 +9,38 @@
     </parent>
 
     <artifactId>records-api</artifactId>
+    <properties>
+        <jdbc.user>UNITTEST</jdbc.user>
+        <jdbc.password>unittest</jdbc.password>
+        <jdbc.url.db>jdbc:hsqldb:file:${project.build.directory}/test-db/db;user=${jdbc.user};password=${jdbc.password};shutdown=true</jdbc.url.db>
+        <jdbc.url.server>jdbc:hsqldb:file:${project.build.directory}/test-db/db;shutdown=true</jdbc.url.server>
+        <jooq.version>3.13.3</jooq.version>
+        <hsqldb.version>2.6.1</hsqldb.version>
+    </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.21.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hsqldb</groupId>
+                <artifactId>hsqldb</artifactId>
+                <version>${hsqldb.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-parent</artifactId>
+                <version>${jooq.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>com.github.mizool</groupId>
@@ -27,5 +58,119 @@
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <jdbcUrl>${jdbc.url.db}</jdbcUrl>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>sql-maven-plugin</artifactId>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <driver>org.hsqldb.jdbcDriver</driver>
+                        <skip>${maven.test.skip}</skip>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.hsqldb</groupId>
+                            <artifactId>hsqldb</artifactId>
+                            <version>${hsqldb.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>create-user</id>
+                            <phase>process-test-resources</phase>
+                            <goals>
+                                <goal>execute</goal>
+                            </goals>
+                            <configuration>
+                                <url>${jdbc.url.server}</url>
+                                <sqlCommand>create user "${jdbc.user}" password '${jdbc.password}'; GRANT DBA TO ${jdbc.user};</sqlCommand>
+                            </configuration>
+                        </execution>
+                        <!--  Create integration test data before running the tests -->
+                        <execution>
+                            <id>create-integration-test-data</id>
+                            <goals>
+                                <goal>execute</goal>
+                            </goals>
+                            <phase>process-test-resources</phase>
+                            <inherited>true</inherited>
+                            <configuration>
+                                <url>${jdbc.url.db}</url>
+                                <autocommit>true</autocommit>
+                                <srcFiles>
+                                    <srcFiles>${basedir}/src/main/db/schema.sql</srcFiles>
+                                </srcFiles>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.jooq</groupId>
+                    <artifactId>jooq-codegen-maven</artifactId>
+                    <version>${jooq.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.jooq</groupId>
+                            <artifactId>jooq-meta-extensions</artifactId>
+                            <version>${jooq.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>jooq-codegen</id>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                            <phase>generate-sources</phase>
+                            <configuration>
+                                <generator>
+                                    <database>
+                                        <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
+                                        <properties>
+                                            <property>
+                                                <key>scripts</key>
+                                                <value>${project.basedir}/src/main/db/schema.sql</value>
+                                            </property>
+                                        </properties>
+                                    </database>
+                                </generator>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

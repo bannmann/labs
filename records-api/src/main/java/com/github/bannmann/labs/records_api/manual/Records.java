@@ -1,4 +1,4 @@
-package com.github.bannmann.labs.records_api;
+package com.github.bannmann.labs.records_api.manual;
 
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.not;
@@ -18,7 +18,6 @@ import java.util.function.UnaryOperator;
 
 import javax.inject.Inject;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -40,7 +39,10 @@ import org.jooq.Update;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.exception.DataAccessException;
+import org.jooq.impl.DSL;
 
+import com.github.bannmann.labs.records_api.StoreClock;
+import com.github.bannmann.labs.records_api.StringWrapper;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.CodeInconsistencyException;
@@ -56,7 +58,7 @@ import com.github.mizool.core.validation.Nullable;
  * Unless noted otherwise, all methods throw {@link NullPointerException} if any argument is {@code null}.
  */
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class Records implements RecordsApi.EntryPoints
 {
     private static <R extends UpdatableRecord<R>> TableField<R, String> obtainPrimaryKeyForIdentifiable(Table<R> table)
@@ -213,7 +215,7 @@ public class Records implements RecordsApi.EntryPoints
         {
             Field<String> violationType = inline(check.getReason()
                 .toString()).as("violation_type");
-            Field<String> label = inline(check.getLabel()).as("label");
+            Field<String> label = DSL.inline(check.getLabel()).as("label");
             return context.select(violationType, label)
                 .from(table)
                 .where(primaryKeyCondition.and(not(check.getCondition())));

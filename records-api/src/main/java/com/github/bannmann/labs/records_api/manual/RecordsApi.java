@@ -1,4 +1,4 @@
-package com.github.bannmann.labs.records_api;
+package com.github.bannmann.labs.records_api.manual;
 
 import java.time.OffsetDateTime;
 import java.util.function.Function;
