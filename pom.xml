@@ -20,6 +20,7 @@
     <properties>
         <jooq.version>3.13.3</jooq.version>
         <mizool.version>0.47</mizool.version>
+        <lombok.core.version>1.18.22</lombok.core.version>
     </properties>
 
     <dependencyManagement>

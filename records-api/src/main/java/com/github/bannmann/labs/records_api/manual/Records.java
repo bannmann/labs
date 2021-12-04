@@ -41,6 +41,9 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import com.github.bannmann.labs.records_api.GeneratedFieldOverrideException;
+import com.github.bannmann.labs.records_api.InvalidPrimaryKeyException;
+import com.github.bannmann.labs.records_api.ReadonlyFieldException;
 import com.github.bannmann.labs.records_api.StoreClock;
 import com.github.bannmann.labs.records_api.StringWrapper;
 import com.github.mizool.core.Identifiable;
@@ -49,7 +52,6 @@ import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.StoreLayerException;
-import com.github.mizool.core.exception.UnprocessableEntityException;
 import com.github.mizool.core.validation.Nullable;
 
 /**
@@ -57,6 +59,7 @@ import com.github.mizool.core.validation.Nullable;
  * <br>
  * Unless noted otherwise, all methods throw {@link NullPointerException} if any argument is {@code null}.
  */
+@SuppressWarnings({ "rawtypes", "java:S6213" })
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class Records implements RecordsApi.EntryPoints
@@ -123,10 +126,9 @@ public class Records implements RecordsApi.EntryPoints
         protected final Condition primaryKeyCondition;
 
         /**
-         * Non-PK conditions which must hold for the update to pass. <br>
-         * Each condition is added as-is to the {@code WHERE} clause. If the update does not affect any rows, the
-         * negated version of each condition is used in a {@code SELECT} to distinguish different
-         * {@link CheckReason} types.
+         * Non-PK conditions which must hold for the update to pass. <br> Each condition is added as-is to the {@code
+         * WHERE} clause. If the update does not affect any rows, the negated version of each condition is used in a
+         * {@code SELECT} to distinguish different {@link CheckReason} types.
          */
         protected final List<Check> checks = new ArrayList<>();
 
@@ -138,7 +140,8 @@ public class Records implements RecordsApi.EntryPoints
 
         /**
          * For details, see the article "Emulating self types using Java generics"
-         * <a href="https://web.archive.org/web/20130721224442/http:/passion.forco.de/content/emulating-self-types-using-java-generics-simplify-fluent-api-implementation">archived here</a>.
+         * <a href="https://web.archive.org/web/20130721224442/http:/passion.forco.de/content/emulating-self-types-using-java-generics-simplify-fluent-api-implementation">archived
+         * here</a>.
          */
         @SuppressWarnings("unchecked")
         protected S self()
@@ -197,7 +200,7 @@ public class Records implements RecordsApi.EntryPoints
 
         private RuntimeException createException()
         {
-            Function<RecordKey, RuntimeException> exceptionBuilder = checks.stream()
+            @SuppressWarnings("java:S3864") Function<RecordKey, RuntimeException> exceptionBuilder = checks.stream()
                 .map(this::toViolationDetectionSelect)
                 .reduce(Select::unionAll)
                 .stream()
@@ -215,7 +218,8 @@ public class Records implements RecordsApi.EntryPoints
         {
             Field<String> violationType = inline(check.getReason()
                 .toString()).as("violation_type");
-            Field<String> label = DSL.inline(check.getLabel()).as("label");
+            Field<String> label = DSL.inline(check.getLabel())
+                .as("label");
             return context.select(violationType, label)
                 .from(table)
                 .where(primaryKeyCondition.and(not(check.getCondition())));
@@ -286,13 +290,12 @@ public class Records implements RecordsApi.EntryPoints
     @Getter
     private enum CheckReason
     {
-        COLLISION_DETECTION((recordKey, checkLabel) -> {
-            return new ConflictingEntityException(String.format("%s is in a conflicting state (%s)",
-                recordKey,
-                checkLabel));
-        }),
+        COLLISION_DETECTION((recordKey, checkLabel) -> new ConflictingEntityException(String.format(
+            "%s is in a conflicting state (%s)",
+            recordKey,
+            checkLabel))),
         VERIFY_UNCHANGED((recordKey, checkLabel) -> {
-            return new UnprocessableEntityException(String.format("Attempt to update readonly field '%s' of %s",
+            return new ReadonlyFieldException(String.format("Attempt to update readonly field '%s' of %s",
                 checkLabel,
                 recordKey));
         });
@@ -416,7 +419,7 @@ public class Records implements RecordsApi.EntryPoints
     private static Condition buildPrimaryKeyCondition(UpdatableRecord<?> record)
     {
         return Arrays.stream(record.key()
-            .fields())
+                .fields())
             .map(field -> toCondition(field, record))
             .reduce(Condition::and)
             .orElseThrow(() -> new CodeInconsistencyException("No primary key fields"));
@@ -427,7 +430,7 @@ public class Records implements RecordsApi.EntryPoints
         V fieldValue = field.getValue(record);
         if (fieldValue == null)
         {
-            throw new UnprocessableEntityException("Primary key field " + field + " is null");
+            throw new InvalidPrimaryKeyException("Primary key field " + field + " is null");
         }
         return field.eq(fieldValue);
     }
@@ -547,7 +550,7 @@ public class Records implements RecordsApi.EntryPoints
             if (!newRecord.key()
                 .equals(existingRecord.key()))
             {
-                throw new UnprocessableEntityException("Primary key mismatch");
+                throw new InvalidPrimaryKeyException("Primary key mismatch");
             }
 
             return new ComparingUpdate<>(table, primaryKeyCondition, convertFromPojo, newRecord, existingRecord);
@@ -604,7 +607,7 @@ public class Records implements RecordsApi.EntryPoints
         {
             if (isFieldValueChanged(field))
             {
-                throw new UnprocessableEntityException(String.format("Attempt to update readonly field '%s' of %s",
+                throw new ReadonlyFieldException(String.format("Attempt to update readonly field '%s' of %s",
                     field.getUnqualifiedName(),
                     getRecordKey()));
             }
@@ -645,9 +648,9 @@ public class Records implements RecordsApi.EntryPoints
 
         private <P extends Identifiable<P>> R checkAndConvertIdentifiable(P pojo, Function<P, R> convertFromPojo)
         {
-            if (pojo.getIdentifier() != null)
+            if (pojo.getId() != null)
             {
-                throw new UnprocessableEntityException("Identifier must not be specified for new entities");
+                throw new GeneratedFieldOverrideException("Identifier must not be specified for new entities");
             }
 
             R record = convertFromPojo.apply(pojo);
@@ -704,7 +707,7 @@ public class Records implements RecordsApi.EntryPoints
         {
             if (record.get(field) != null)
             {
-                throw new UnprocessableEntityException(String.format(
+                throw new GeneratedFieldOverrideException(String.format(
                     "Generated field %s must not be specified for new entities",
                     field.getName()));
             }

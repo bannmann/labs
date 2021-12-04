@@ -29,6 +29,7 @@ class AccountRecordConverter
         return result;
     }
 
+    @SuppressWarnings("java:S6213")
     public Account toPojo(AccountRecord record)
     {
         Account result = null;

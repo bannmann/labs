@@ -12,6 +12,7 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
 
+import com.github.bannmann.labs.records_api.ReadonlyFieldException;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 
@@ -134,8 +135,8 @@ public class RecordsApi
          * addition, if an existing pojo has been given, it is used for an additional comparison before contacting the
          * database.<br>
          * <br>
-         * Updates which attempt to change the field value will result in an
-         * {@link com.github.mizool.core.exception.UnprocessableEntityException} stating that the field is readonly.
+         * Updates which attempt to change the field value will result in an {@link ReadonlyFieldException} stating that
+         * the field is readonly.
          *
          * @param field the field to check
          */
