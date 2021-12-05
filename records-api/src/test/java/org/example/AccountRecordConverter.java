@@ -1,11 +1,11 @@
-package com.github.bannmann.labs.records_api.example;
+package org.example;
 
 import javax.inject.Inject;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import org.jooq.generated.tables.records.AccountRecord;
+import org.example.tables.records.AccountRecord;
 
 import com.github.mizool.core.converter.IdentifierConverter;
 

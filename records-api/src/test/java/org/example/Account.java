@@ -1,4 +1,4 @@
-package com.github.bannmann.labs.records_api.example;
+package org.example;
 
 import java.time.OffsetDateTime;
 

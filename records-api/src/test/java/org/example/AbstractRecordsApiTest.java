@@ -1,6 +1,6 @@
-package com.github.bannmann.labs.records_api.example;
+package org.example;
 
-import static org.jooq.generated.Tables.ACCOUNT;
+import static org.example.Tables.ACCOUNT;
 
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -8,11 +8,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 import com.github.bannmann.labs.records_api.StoreClock;
-import com.github.bannmann.labs.records_api.manual.Records;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.converter.IdentifierConverter;
 
-public class AbstractRecordsApiTest
+abstract class AbstractRecordsApiTest
 {
     protected final IdentifierConverter identifierConverter = new IdentifierConverter();
     protected final AccountRecordConverter accountRecordConverter = new AccountRecordConverter(identifierConverter);

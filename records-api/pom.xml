@@ -10,12 +10,14 @@
 
     <artifactId>records-api</artifactId>
     <properties>
-        <jdbc.user>UNITTEST</jdbc.user>
+        <hsqldb.version>2.6.1</hsqldb.version>
         <jdbc.password>unittest</jdbc.password>
         <jdbc.url.db>jdbc:hsqldb:file:${project.build.directory}/test-db/db;user=${jdbc.user};password=${jdbc.password};shutdown=true</jdbc.url.db>
         <jdbc.url.server>jdbc:hsqldb:file:${project.build.directory}/test-db/db;shutdown=true</jdbc.url.server>
+        <jdbc.user>UNITTEST</jdbc.user>
+        <jooq-codegen-maven.directory>${project.build.directory}/generated-test-sources/jooq</jooq-codegen-maven.directory>
         <jooq.version>3.13.3</jooq.version>
-        <hsqldb.version>2.6.1</hsqldb.version>
+        <test.schema.file>${project.basedir}/src/test/db/schema.sql</test.schema.file>
     </properties>
 
     <dependencyManagement>
@@ -83,6 +85,11 @@
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
                     <artifactId>sql-maven-plugin</artifactId>
                     <configuration>
                         <encoding>UTF-8</encoding>
@@ -99,10 +106,10 @@
                     <executions>
                         <execution>
                             <id>create-user</id>
-                            <phase>process-test-resources</phase>
                             <goals>
                                 <goal>execute</goal>
                             </goals>
+                            <phase>process-test-resources</phase>
                             <configuration>
                                 <url>${jdbc.url.server}</url>
                                 <sqlCommand>create user "${jdbc.user}" password '${jdbc.password}'; GRANT DBA TO ${jdbc.user};</sqlCommand>
@@ -120,7 +127,7 @@
                                 <url>${jdbc.url.db}</url>
                                 <autocommit>true</autocommit>
                                 <srcFiles>
-                                    <srcFiles>${basedir}/src/main/db/schema.sql</srcFiles>
+                                    <srcFiles>${test.schema.file}</srcFiles>
                                 </srcFiles>
                             </configuration>
                         </execution>
@@ -143,7 +150,7 @@
                             <goals>
                                 <goal>generate</goal>
                             </goals>
-                            <phase>generate-sources</phase>
+                            <phase>generate-test-sources</phase>
                             <configuration>
                                 <generator>
                                     <database>
@@ -151,11 +158,16 @@
                                         <properties>
                                             <property>
                                                 <key>scripts</key>
-                                                <value>${project.basedir}/src/main/db/schema.sql</value>
+                                                <value>${test.schema.file}</value>
                                             </property>
                                         </properties>
                                     </database>
+                                    <target>
+                                        <packageName>org.example</packageName>
+                                        <directory>${jooq-codegen-maven.directory}</directory>
+                                    </target>
                                 </generator>
+                                <skip>${maven.test.skip}</skip>
                             </configuration>
                         </execution>
                     </executions>
@@ -163,6 +175,25 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-test-source</id>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <phase>generate-test-sources</phase>
+                        <configuration>
+                            <sources>
+                                <!-- jOOQ cannot add its output dir to the *test* sources, so we do that here -->
+                                <source>${jooq-codegen-maven.directory}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
