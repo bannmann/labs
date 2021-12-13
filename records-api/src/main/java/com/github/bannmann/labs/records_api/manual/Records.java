@@ -479,7 +479,6 @@ public class Records implements RecordsApi.EntryPoints
 
         protected void performCollisionDetection(TableField<R, ?> field)
         {
-            // TODO should we implement the behavior "allow PUT if timestamp=null", as well? [1 of 2]
             addCheckForValueOfNewRecord(field, CheckReason.COLLISION_DETECTION);
         }
 
@@ -582,7 +581,6 @@ public class Records implements RecordsApi.EntryPoints
         @Override
         public <V> ComparingUpdate<R, P> predetectCollisionOn(@NonNull TableField<R, V> field)
         {
-            // TODO should we implement the behavior "allow PUT if timestamp=null", as well? [2 of 3]
             if (isFieldValueChanged(field))
             {
                 throw new ConflictingEntityException(String.format("%s is in a conflicting state (%s)",
@@ -591,7 +589,6 @@ public class Records implements RecordsApi.EntryPoints
             }
 
             // As the database row could change in the meantime, we also need to add a postdetect condition
-            // TODO should we implement the behavior "allow PUT if timestamp=null", as well? [2 of 3]
             addCheckForValueOfNewRecord(field, CheckReason.COLLISION_DETECTION);
 
             return this;
