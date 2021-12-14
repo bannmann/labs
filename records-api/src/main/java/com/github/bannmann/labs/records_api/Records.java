@@ -1,4 +1,4 @@
-package com.github.bannmann.labs.records_api.manual;
+package com.github.bannmann.labs.records_api;
 
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.not;
@@ -41,11 +41,6 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
-import com.github.bannmann.labs.records_api.GeneratedFieldOverrideException;
-import com.github.bannmann.labs.records_api.InvalidPrimaryKeyException;
-import com.github.bannmann.labs.records_api.ReadonlyFieldException;
-import com.github.bannmann.labs.records_api.StoreClock;
-import com.github.bannmann.labs.records_api.StringWrapper;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.CodeInconsistencyException;

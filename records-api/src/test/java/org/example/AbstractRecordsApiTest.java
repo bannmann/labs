@@ -9,6 +9,7 @@ import org.jooq.impl.DSL;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
+import com.github.bannmann.labs.records_api.Records;
 import com.github.bannmann.labs.records_api.StoreClock;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.converter.IdentifierConverter;
@@ -19,13 +20,14 @@ abstract class AbstractRecordsApiTest
     protected final AccountRecordConverter accountRecordConverter = new AccountRecordConverter(identifierConverter);
 
     protected DSLContext context;
-    protected StoreClock storeClock;
+    protected Records records;
 
     @BeforeClass
     public void setUp()
     {
         context = DSL.using(System.getProperty("jdbcUrl"));
-        storeClock = new StoreClock();
+        StoreClock storeClock = new StoreClock();
+        records = new Records(context, storeClock);
     }
 
     @AfterClass

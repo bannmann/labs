@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 
 import org.example.business.Account;
 
-import com.github.bannmann.labs.records_api.manual.Records;
+import com.github.bannmann.labs.records_api.Records;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class ManualRecordsApiVersionOfAccountCreateStore
+public class AccountCreateStore
 {
     private final AccountRecordConverter converter;
     private final Records records;

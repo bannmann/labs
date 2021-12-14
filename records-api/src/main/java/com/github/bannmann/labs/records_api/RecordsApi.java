@@ -1,4 +1,4 @@
-package com.github.bannmann.labs.records_api.manual;
+package com.github.bannmann.labs.records_api;
 
 import java.time.OffsetDateTime;
 import java.util.function.Function;
@@ -12,7 +12,6 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
 
-import com.github.bannmann.labs.records_api.ReadonlyFieldException;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 
@@ -98,9 +97,9 @@ public class RecordsApi
     public interface PostDetect<R extends UpdatableRecord<R>, C>
     {
         /**
-         * Enables collision detection based on the given condition. The negated version of the condition is used in
-         * the {@code WHERE} clause together with the primary key. If no rows are updated, another database roundtrip
-         * is made to distinguish the 'collision' from 'invalid PK' case.
+         * Enables collision detection based on the given condition. The negated version of the condition is used in the
+         * {@code WHERE} clause together with the primary key. If no rows are updated, another database roundtrip is
+         * made to distinguish the 'collision' from 'invalid PK' case.
          *
          * @param condition the condition which evaluates to true if a collision occurred
          * @param name a string to include in the exception message on failure. For simple one-field conditions, use
@@ -109,9 +108,9 @@ public class RecordsApi
         C postdetectCollisionIf(Condition condition, String name);
 
         /**
-         * Enables collision detection based on the given condition. The negated version of the condition is used in
-         * the {@code WHERE} clause together with the primary key. If no rows are updated, another database roundtrip
-         * is made to distinguish the 'collision' from 'invalid PK' case.
+         * Enables collision detection based on the given condition. The negated version of the condition is used in the
+         * {@code WHERE} clause together with the primary key. If no rows are updated, another database roundtrip is
+         * made to distinguish the 'collision' from 'invalid PK' case.
          *
          * @param condition the condition which evaluates to true if a collision occurred
          * @param field the field checked by the condition (included in the exception message on failure). For
@@ -130,10 +129,9 @@ public class RecordsApi
         /**
          * Verifies that the update will not change the value of the given field. <br>
          * <br>
-         * By default, adds a {@code WHERE} condition similar to
-         * {@linkplain UpdatesRegistered#postdetectCollisionIf(Condition, TableField) postdetect collision checks}. In
-         * addition, if an existing pojo has been given, it is used for an additional comparison before contacting the
-         * database.<br>
+         * By default, adds a {@code WHERE} condition similar to {@linkplain UpdatesRegistered#postdetectCollisionIf(Condition,
+         * TableField) postdetect collision checks}. In addition, if an existing pojo has been given, it is used for an
+         * additional comparison before contacting the database.<br>
          * <br>
          * Updates which attempt to change the field value will result in an {@link ReadonlyFieldException} stating that
          * the field is readonly.
@@ -146,11 +144,10 @@ public class RecordsApi
          * Enables collision detection for the given field (based on the pojo's value), then refreshes it. <br>
          * <br>
          * Triggers a {@linkplain UpdatesRegistered#postdetectCollisionIf(Condition, TableField) postdetect} collision
-         * check by default. If an existing pojo has been given, also makes an additional
-         * {@linkplain FullUpdateWithExisting#predetectCollisionOn(TableField) predetect} collision check.<br>
+         * check by default. If an existing pojo has been given, also makes an additional {@linkplain
+         * FullUpdateWithExisting#predetectCollisionOn(TableField) predetect} collision check.<br>
          * <br>
-         * Updates without a matching value will result in a
-         * {@link com.github.mizool.core.exception.ConflictingEntityException}.
+         * Updates without a matching value will result in a {@link com.github.mizool.core.exception.ConflictingEntityException}.
          *
          * @param field the field to use for collision detection and to refresh
          */
@@ -160,11 +157,10 @@ public class RecordsApi
          * Enables collision detection for the given field (based on the pojo's value), then increases it. <br>
          * <br>
          * Triggers a {@linkplain UpdatesRegistered#postdetectCollisionIf(Condition, TableField) postdetect} collision
-         * check by default. If an existing pojo has been given, also makes an additional
-         * {@linkplain FullUpdateWithExisting#predetectCollisionOn(TableField) predetect} collision check.<br>
+         * check by default. If an existing pojo has been given, also makes an additional {@linkplain
+         * FullUpdateWithExisting#predetectCollisionOn(TableField) predetect} collision check.<br>
          * <br>
-         * Updates without a matching value will result in a
-         * {@link com.github.mizool.core.exception.ConflictingEntityException}.
+         * Updates without a matching value will result in a {@link com.github.mizool.core.exception.ConflictingEntityException}.
          *
          * @param field the field to use for collision detection and to increase
          */
@@ -174,11 +170,10 @@ public class RecordsApi
          * Enables collision detection for the given field (based on the pojo's value), then randomizes it. <br>
          * <br>
          * Triggers a {@linkplain UpdatesRegistered#postdetectCollisionIf(Condition, TableField) postdetect} collision
-         * check by default. If an existing pojo has been given, also makes an additional
-         * {@linkplain FullUpdateWithExisting#predetectCollisionOn(TableField) predetect} collision check.<br>
+         * check by default. If an existing pojo has been given, also makes an additional {@linkplain
+         * FullUpdateWithExisting#predetectCollisionOn(TableField) predetect} collision check.<br>
          * <br>
-         * Updates without a matching value will result in a
-         * {@link com.github.mizool.core.exception.ConflictingEntityException}.
+         * Updates without a matching value will result in a {@link com.github.mizool.core.exception.ConflictingEntityException}.
          *
          * @param field the field to use for collision detection and to randomize
          * @param randomSupplier the supplier for the new random value to set
@@ -209,9 +204,8 @@ public class RecordsApi
     {
         /**
          * Enables collision detection by comparing the values of the given field in the given new and existing records
-         * before contacting the database. Also enables
-         * {@linkplain UpdatesRegistered#postdetectCollisionIf(Condition, TableField) late collision detection
-         * (postdetect)}.
+         * before contacting the database. Also enables {@linkplain UpdatesRegistered#postdetectCollisionIf(Condition,
+         * TableField) late collision detection (postdetect)}.
          */
         <V> FullUpdateWithExisting<R, P> predetectCollisionOn(TableField<R, V> field);
     }
