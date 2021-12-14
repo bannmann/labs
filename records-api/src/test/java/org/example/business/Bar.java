@@ -1,9 +1,8 @@
-package org.example;
+package org.example.business;
 
 import java.time.OffsetDateTime;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 
 import com.github.mizool.core.Identifiable;
@@ -11,11 +10,13 @@ import com.github.mizool.core.Identifier;
 
 @Value
 @Builder
-public class Account implements Identifiable<Account>
+public class Bar implements Identifiable<Bar>
 {
-    Identifier<Account> id;
+    Identifier<Bar> id;
 
-    @NonNull String email;
+    String textData;
+
+    boolean booleanData;
 
     OffsetDateTime timestamp;
 }

@@ -2,6 +2,8 @@ package org.example;
 
 import static org.example.Tables.ACCOUNT;
 
+import org.example.business.Account;
+import org.example.store.AccountRecordConverter;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.testng.annotations.AfterClass;

@@ -1,15 +1,18 @@
-package org.example;
+package org.example.store;
 
 import static org.example.Tables.ACCOUNT;
 
 import javax.inject.Inject;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import com.github.bannmann.labs.records_api.manual.Records;
+import org.example.business.Account;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+import com.github.bannmann.labs.records_api.manual.Records;
+import com.google.common.annotations.VisibleForTesting;
+
+@VisibleForTesting
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class ManualRecordsApiVersionOfAccountCreateStore
 {
     private final AccountRecordConverter converter;

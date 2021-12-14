@@ -1,16 +1,19 @@
-package org.example;
+package org.example.store;
 
 import javax.inject.Inject;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import org.example.business.Account;
 import org.example.tables.records.AccountRecord;
 
 import com.github.mizool.core.converter.IdentifierConverter;
+import com.google.common.annotations.VisibleForTesting;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
-class AccountRecordConverter
+@VisibleForTesting
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
+public class AccountRecordConverter
 {
     private final IdentifierConverter identifierConverter;
 
