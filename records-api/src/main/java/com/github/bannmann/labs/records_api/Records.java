@@ -45,7 +45,10 @@ import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.github.mizool.core.exception.ConflictingEntityException;
+import com.github.mizool.core.exception.GeneratedFieldOverrideException;
+import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
+import com.github.mizool.core.exception.ReadonlyFieldException;
 import com.github.mizool.core.exception.StoreLayerException;
 import com.github.mizool.core.validation.Nullable;
 
@@ -289,11 +292,8 @@ public class Records implements RecordsApi.EntryPoints
             "%s is in a conflicting state (%s)",
             recordKey,
             checkLabel))),
-        VERIFY_UNCHANGED((recordKey, checkLabel) -> {
-            return new ReadonlyFieldException(String.format("Attempt to update readonly field '%s' of %s",
-                checkLabel,
-                recordKey));
-        });
+        VERIFY_UNCHANGED((recordKey, checkLabel) -> new ReadonlyFieldException(checkLabel.toString(),
+            recordKey.toString()));
 
         @NonNull
         private final BiFunction<RecordKey, CheckLabel, RuntimeException> exceptionBuilder;
@@ -599,9 +599,8 @@ public class Records implements RecordsApi.EntryPoints
         {
             if (isFieldValueChanged(field))
             {
-                throw new ReadonlyFieldException(String.format("Attempt to update readonly field '%s' of %s",
-                    field.getUnqualifiedName(),
-                    getRecordKey()));
+                throw new ReadonlyFieldException(field.getUnqualifiedName()
+                    .toString(), getRecordKey().toString());
             }
 
             // As the database row could change in the meantime, we also need to add a postdetect condition
@@ -642,7 +641,7 @@ public class Records implements RecordsApi.EntryPoints
         {
             if (pojo.getId() != null)
             {
-                throw new GeneratedFieldOverrideException("Identifier must not be specified for new entities");
+                throw new GeneratedFieldOverrideException("id");
             }
 
             R record = convertFromPojo.apply(pojo);
@@ -699,9 +698,7 @@ public class Records implements RecordsApi.EntryPoints
         {
             if (record.get(field) != null)
             {
-                throw new GeneratedFieldOverrideException(String.format(
-                    "Generated field %s must not be specified for new entities",
-                    field.getName()));
+                throw new GeneratedFieldOverrideException(field.getName());
             }
 
             record.set(field, storeClock.now());
