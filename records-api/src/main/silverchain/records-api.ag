@@ -1,0 +1,117 @@
+import java.time.OffsetDateTime;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
+
+import org.jooq.Condition;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.UpdatableRecord;
+
+import com.github.bannmann.labs.records_api.Insert;
+import com.github.bannmann.labs.records_api.Update;
+import com.github.mizool.core.Identifiable;
+import com.github.mizool.core.Identifier;
+
+$ADJUSTMENTS =
+    adjusting<F>(TableField<R, F> field, UnaryOperator<F> adjuster)
+    | normalizingEmail(TableField<R, String> field);
+
+$CHECKS =
+    verifyUnchanged<V>(TableField<R, V> field)
+    | checkAndRefresh(TableField<R, OffsetDateTime> field)
+    | checkAndIncrease(TableField<R, Integer> field)
+    | checkAndRandomize<U>(TableField<R, U> field, Supplier<U> randomSupplier);
+
+$POST_IF =
+    postdetectCollisionIf(Condition condition, String name)
+    | postdetectCollisionIf(Condition condition, TableField<R, ?> field);
+
+Insert<; P, R extends UpdatableRecord<R>>
+{
+    P
+    insertInto(Table<R> table)
+    (
+        /*
+         * FIXME add the "P extends Identifiable<P>" constraint without affecting the rest of the chain
+         *
+         * When one changes 'Account' to *not* implement Identifiable<Account>, the manually written fluent API
+         * causes a compile-time error for the account create store's fromPojo() call. The Silverchain version compiles,
+         * but of course fails at runtime.
+         *
+         * For Insert1, Silverchain generates this method:
+         *      <P> Insert2<R, P> withIdentifiableConvertedVia(Function<P, R> fromPojo);
+         *
+         * Editing Insert1.java manually, we can add the constraint to the method's type parameter as follows:
+         *     <P extends Identifiable<P>> Insert2<R, P> withIdentifiableConvertedVia(Function<P, R> fromPojo);
+         *
+         * Result: P is unaffected further down the chain and would work for both with*ConvertedVia() methods
+         *
+         * Could we add AG syntax that tells Silverchain to do this? Maybe as simple as
+         *     Foo<; P, R extends UpdatableRecord<R>>
+         *     {       // ^--- As before, this defines a "global" constraint for R
+         *
+         *         // ...
+         *
+         *         <P extends Identifiable<P>> withIdentifiableConvertedVia(Function<P, R> fromPojo)
+         *         // ^--- Repeating a type variable from Foo, but adding a "method-local" constraint.
+         *
+         *         |
+         *         withAnonymousConvertedVia(Function<P, R> fromPojo)
+         *         // As before, this method implicitly gets a <P> type parameter because it introduces P to the chain.
+         *     }
+         *
+         */
+        withIdentifiableConvertedVia(Function<P, R> fromPojo)
+        |
+        withAnonymousConvertedVia(Function<P, R> fromPojo)
+    )
+    fromPojo(P pojo)
+    (
+        generating(TableField<R, OffsetDateTime> field)
+        |
+        $ADJUSTMENTS
+    )*
+    executeAndConvert(Function<R, P> convertToPojo);
+}
+
+Update<; P, R extends UpdatableRecord<R>>
+{
+    P
+    update(Table<R> table)
+    withRecordConvertedVia(Function<P, R> fromPojo)
+    fromNewPojo(P newPojo)
+    (
+        $CHECKS*
+        |
+        (
+            andExistingPojo(P existingPojo)
+            (
+                predetectCollisionOn(TableField<R, ?> field)
+                |
+                $CHECKS
+            )*
+        )
+    )
+    (
+        $ADJUSTMENTS
+        |
+        $POST_IF
+    )*
+    executeAndConvert(Function<R, P> convertToPojo);
+
+
+    void
+    update(Table<R> table)
+    withPrimaryKey<I>(Identifier<I> id, Class<I> identifiableClass)
+    (
+        set<F>(TableField<R, F> field, F value)
+        |
+        increase(TableField<R, ?> field)
+        |
+        refresh(TableField<R, OffsetDateTime> timestampField)
+    )
+    *
+    $POST_IF*
+    execute();
+}

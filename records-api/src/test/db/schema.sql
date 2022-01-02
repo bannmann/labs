@@ -2,6 +2,8 @@ create table if not exists account
 (
     id varchar(32) primary key,
     email varchar(128) not null unique,
+    display_name varchar(128) not null,
+    sso_id varchar(128) null,
     timestamp timestamp with time zone not null
 );
 
