@@ -14,6 +14,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>annotations</module>
         <module>records-api</module>
     </modules>
 
@@ -25,6 +26,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.github.bannmann.labs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.bannmann.labs</groupId>
+                <artifactId>records-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-parent</artifactId>

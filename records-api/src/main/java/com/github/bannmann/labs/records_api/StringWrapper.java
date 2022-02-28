@@ -4,6 +4,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
+import com.github.bannmann.labs.annotations.UpstreamCandidate;
+
 /**
  * Simplifies implementing wrapper classes to avoid "stringly typed" APIs. <br>
  * <br>
@@ -19,6 +21,7 @@ import lombok.experimental.Delegate;
  *     }
  * }</pre>
  */
+@UpstreamCandidate("Mizool")
 @RequiredArgsConstructor
 public abstract class StringWrapper implements CharSequence
 {

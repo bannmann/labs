@@ -41,6 +41,7 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import com.github.bannmann.labs.annotations.UpstreamCandidate;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.CodeInconsistencyException;
@@ -57,6 +58,7 @@ import com.github.mizool.core.validation.Nullable;
  * <br>
  * Unless noted otherwise, all methods throw {@link NullPointerException} if any argument is {@code null}.
  */
+@UpstreamCandidate("Mizool")
 @SuppressWarnings({ "rawtypes", "java:S6213" })
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))

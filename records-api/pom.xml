@@ -45,6 +45,10 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
+            <groupId>com.github.bannmann.labs</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.mizool</groupId>
             <artifactId>mizool-core</artifactId>
         </dependency>
