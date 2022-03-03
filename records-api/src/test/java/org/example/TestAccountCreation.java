@@ -9,6 +9,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.github.mizool.core.Identifier;
+import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.GeneratedFieldOverrideException;
 
 @Test(groups = "AccountCreation")
@@ -51,5 +52,22 @@ public class TestAccountCreation extends AbstractRecordsApiTest
             .build();
 
         assertThatThrownBy(() -> accountCreateStore.create(pojo)).isInstanceOf(GeneratedFieldOverrideException.class);
+    }
+
+    @Test
+    public void testUniqueConstraintViolation()
+    {
+        Account firstAccount = Account.builder()
+            .email("smith@example.org")
+            .displayName("Jane Smith")
+            .build();
+        accountCreateStore.create(firstAccount);
+
+        Account secondAccount = Account.builder()
+            .email("smith@example.org")
+            .displayName("John Smith")
+            .build();
+        assertThatThrownBy(() -> accountCreateStore.create(secondAccount)).isInstanceOf(ConflictingEntityException.class)
+            .hasMessage("Conflict with existing entity due to EMAIL");
     }
 }

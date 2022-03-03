@@ -7,6 +7,7 @@ import static org.example.Tables.ACCOUNT;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
+import org.assertj.core.api.Assertions;
 import org.example.business.Account;
 import org.example.business.SingleSignOnPrincipal;
 import org.example.store.AccountCreateStore;
@@ -25,7 +26,8 @@ import com.github.mizool.core.exception.ReadonlyFieldException;
 public class TestAccountUpdating extends AbstractRecordsApiTest
 {
     private AccountUpdateStore accountUpdateStore;
-    private Account existingPojo;
+    private Account existingAccount;
+    private Account anotherAccount;
 
     @BeforeMethod
     public void setUp()
@@ -35,9 +37,14 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
         accountUpdateStore = new AccountUpdateStore(accountRecordConverter, records);
 
         AccountCreateStore accountCreateStore = new AccountCreateStore(accountRecordConverter, records);
-        existingPojo = accountCreateStore.create(Account.builder()
+        existingAccount = accountCreateStore.create(Account.builder()
             .email("someone@example.org")
             .displayName("Someone")
+            .ssoId(null)
+            .build());
+        anotherAccount = accountCreateStore.create(Account.builder()
+            .email("ceo@example.com")
+            .displayName("John J. Ferguson")
             .ssoId(null)
             .build());
     }
@@ -46,8 +53,6 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     public void tearDown()
     {
         context.deleteFrom(ACCOUNT)
-            .where(ACCOUNT.ID.eq(existingPojo.getId()
-                .getValue()))
             .execute();
 
         super.tearDown();
@@ -56,7 +61,7 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     @Test
     public void testUpdateWithNewPojo()
     {
-        Account newPojo = existingPojo.toBuilder()
+        Account newPojo = existingAccount.toBuilder()
             .displayName("Someone Important")
             .build();
 
@@ -86,19 +91,19 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     @Test
     public void testUnchangedUpdateWithNewPojo()
     {
-        Account result = accountUpdateStore.update(existingPojo);
+        Account result = accountUpdateStore.update(existingAccount);
 
-        assertResultPojoHasFreshTimestamp(result, existingPojo);
+        assertResultPojoHasFreshTimestamp(result, existingAccount);
     }
 
     @Test
     public void testUpdateWithNewAndExistingPojo()
     {
-        Account newPojo = existingPojo.toBuilder()
+        Account newPojo = existingAccount.toBuilder()
             .displayName("Someone Important")
             .build();
 
-        Account result = accountUpdateStore.update(newPojo, existingPojo);
+        Account result = accountUpdateStore.update(newPojo, existingAccount);
 
         assertResultPojoHasFreshTimestamp(result, newPojo);
     }
@@ -106,10 +111,10 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     @Test
     public void testUnchangedUpdateWithNewAndExistingPojo()
     {
-        Account newPojo = existingPojo.toBuilder()
+        Account newPojo = existingAccount.toBuilder()
             .build();
 
-        Account result = accountUpdateStore.update(newPojo, existingPojo);
+        Account result = accountUpdateStore.update(newPojo, existingAccount);
 
         assertResultPojoHasFreshTimestamp(result, newPojo);
     }
@@ -117,41 +122,41 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     @Test
     public void testMissingId()
     {
-        Account newPojo = existingPojo.toBuilder()
+        Account newPojo = existingAccount.toBuilder()
             .id(null)
             .displayName("Someone Important")
             .build();
 
         assertThatThrownBy(() -> accountUpdateStore.update(newPojo)).isInstanceOf(InvalidPrimaryKeyException.class);
 
-        assertPersistedEntityMatches(existingPojo);
+        assertPersistedEntityMatches(existingAccount);
     }
 
     @Test
     public void testMissingTimestamp()
     {
-        Account newPojo = existingPojo.toBuilder()
+        Account newPojo = existingAccount.toBuilder()
             .displayName("Someone Important")
             .timestamp(null)
             .build();
 
         assertThatThrownBy(() -> accountUpdateStore.update(newPojo)).isInstanceOf(ConflictingEntityException.class);
 
-        assertPersistedEntityMatches(existingPojo);
+        assertPersistedEntityMatches(existingAccount);
     }
 
     @Test
     public void testPostdetectTimestampCollision()
     {
-        Account newPojo = existingPojo.toBuilder()
+        Account newPojo = existingAccount.toBuilder()
             .displayName("Someone Important")
-            .timestamp(existingPojo.getTimestamp()
+            .timestamp(existingAccount.getTimestamp()
                 .plus(3, ChronoUnit.MILLIS))
             .build();
 
         assertThatThrownBy(() -> accountUpdateStore.update(newPojo)).isInstanceOf(ConflictingEntityException.class);
 
-        assertPersistedEntityMatches(existingPojo);
+        assertPersistedEntityMatches(existingAccount);
     }
 
     @Test(enabled = false) // TODO
@@ -169,26 +174,26 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     @Test
     public void testRejectionOfChangingReadonlyFieldFromNull()
     {
-        Account newPojo = existingPojo.toBuilder()
+        Account newPojo = existingAccount.toBuilder()
             .ssoId(randomSsoId())
             .build();
 
         assertThatThrownBy(() -> accountUpdateStore.update(newPojo)).isInstanceOf(ReadonlyFieldException.class);
 
-        assertPersistedEntityMatches(existingPojo);
+        assertPersistedEntityMatches(existingAccount);
     }
 
     @Test
     public void testRejectionOfChangingReadonlyField()
     {
         runWithExistingAccountHavingSsoId(() -> {
-            Account newPojo = existingPojo.toBuilder()
+            Account newPojo = existingAccount.toBuilder()
                 .ssoId(randomSsoId())
                 .build();
 
             assertThatThrownBy(() -> accountUpdateStore.update(newPojo)).isInstanceOf(ReadonlyFieldException.class);
 
-            assertPersistedEntityMatches(existingPojo);
+            assertPersistedEntityMatches(existingAccount);
         });
     }
 
@@ -207,7 +212,7 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
 
     private void setAndPersistSsoId(Identifier<SingleSignOnPrincipal> ssoId)
     {
-        existingPojo = existingPojo.toBuilder()
+        existingAccount = existingAccount.toBuilder()
             .ssoId(ssoId)
             .build();
 
@@ -217,7 +222,7 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
 
         context.update(ACCOUNT)
             .set(ACCOUNT.SSO_ID, ssoIdString)
-            .where(ACCOUNT.ID.eq(existingPojo.getId()
+            .where(ACCOUNT.ID.eq(existingAccount.getId()
                 .getValue()))
             .execute();
     }
@@ -232,13 +237,24 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     public void testRejectionOfChangingReadonlyFieldToNull()
     {
         runWithExistingAccountHavingSsoId(() -> {
-            Account newPojo = existingPojo.toBuilder()
+            Account newPojo = existingAccount.toBuilder()
                 .ssoId(null)
                 .build();
 
             assertThatThrownBy(() -> accountUpdateStore.update(newPojo)).isInstanceOf(ReadonlyFieldException.class);
 
-            assertPersistedEntityMatches(existingPojo);
+            assertPersistedEntityMatches(existingAccount);
         });
+    }
+
+    @Test
+    public void testUniqueConstraintViolation()
+    {
+        Account newPojo = existingAccount.toBuilder()
+            .displayName(anotherAccount.getDisplayName())
+            .build();
+
+        assertThatThrownBy(() -> accountUpdateStore.update(newPojo)).isInstanceOf(ConflictingEntityException.class)
+            .hasMessage("Conflict with existing entity due to DISPLAY_NAME");
     }
 }

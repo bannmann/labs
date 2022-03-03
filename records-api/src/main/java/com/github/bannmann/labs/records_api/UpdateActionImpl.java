@@ -237,6 +237,16 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         }
         catch (DataAccessException e)
         {
+            Constraints.findFieldOfViolatedForeignKey(e, table).ifPresent(referencingField -> {
+                throw new EntityReferenceException(referencingField);
+            });
+
+            Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
+                .ifPresent(field -> {
+                    throw new ConflictingEntityException("Conflict with existing entity due to " + field);
+                });
+
+            // If we get here, violated constraints don't have deterministic names, or it's an unrelated problem.
             throw new StoreLayerException("Error updating " + table.getName(), e);
         }
     }

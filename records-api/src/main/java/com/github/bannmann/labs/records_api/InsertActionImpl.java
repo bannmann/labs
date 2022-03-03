@@ -17,6 +17,7 @@ import org.jooq.exception.DataAccessException;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
+import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.GeneratedFieldOverrideException;
 import com.github.mizool.core.exception.StoreLayerException;
 
@@ -57,21 +58,25 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     {
         try
         {
-            int insertedRows = context.executeInsert(record);
-            if (insertedRows != 1)
-            {
-                throw new StoreLayerException("No row was inserted into " +
-                    record.getTable()
-                        .getName());
-            }
-
+            context.executeInsert(record);
             return convertToPojo.apply(record);
         }
         catch (DataAccessException e)
         {
-            throw new StoreLayerException("Error inserting into " +
-                record.getTable()
-                    .getName(), e);
+            Table<R> table = record.getTable();
+
+            Constraints.findFieldOfViolatedForeignKey(e, table)
+                .ifPresent(referencingField -> {
+                    throw new EntityReferenceException(referencingField);
+                });
+
+            Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
+                .ifPresent(field -> {
+                    throw new ConflictingEntityException("Conflict with existing entity due to " + field);
+                });
+
+            // If we get here, violated constraints don't have deterministic names, or it's an unrelated problem.
+            throw new StoreLayerException("Error inserting into " + table.getName(), e);
         }
     }
 
