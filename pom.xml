@@ -15,6 +15,7 @@
 
     <modules>
         <module>annotations</module>
+        <module>core</module>
         <module>records-api</module>
     </modules>
 
