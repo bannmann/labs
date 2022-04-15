@@ -24,6 +24,7 @@
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jooq.version>3.13.3</jooq.version>
         <lombok.core.version>1.18.22</lombok.core.version>
+        <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
         <mizool.version>0.48</mizool.version>
     </properties>
 
