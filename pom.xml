@@ -152,6 +152,7 @@
                             <artifactId>lombok-maven-plugin</artifactId>
                             <executions>
                                 <execution>
+                                    <id>prepare-javadoc-main</id>
                                     <goals>
                                         <goal>delombok</goal>
                                     </goals>

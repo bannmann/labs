@@ -211,7 +211,6 @@
                 <version>0.2</version>
                 <configuration>
                     <inputFile>src/main/silverchain/records-api.ag</inputFile>
-                    <outputDirectory>${silverchain-maven-plugin.outputDirectory}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -254,4 +253,42 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-profile</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>prepare-javadoc-silverchain</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>prepare-package</phase>
+                                    <configuration>
+                                        <outputDirectory>${javadoc.sources.directory}</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${project.build.directory}/generated-sources/silverchain</directory>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>
