@@ -3,10 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.bannmann.labs</groupId>
-        <artifactId>labs</artifactId>
+        <groupId>com.github.bannmann.labs.carriers</groupId>
+        <artifactId>carriers</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>annotations</artifactId>
+    <artifactId>carriers-api</artifactId>
+    <packaging>jar</packaging>
 </project>

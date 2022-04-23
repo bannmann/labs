@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.bannmann.labs.carriers</groupId>
+        <artifactId>carriers</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>carriers-processor</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <temp.jar.portable.full>${project.build.directory}/${temp.jar.portable.relative}</temp.jar.portable.full>
+        <temp.jar.portable.relative>${project.build.finalName}-portable.jar</temp.jar.portable.relative>
+        <temp.jar.shaded.full>${project.build.directory}/${temp.jar.shaded.relative}</temp.jar.shaded.full>
+        <temp.jar.shaded.relative>${project.build.finalName}-temp-shaded.jar</temp.jar.shaded.relative>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.bannmann.labs.carriers</groupId>
+            <artifactId>carriers-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.mizool</groupId>
+            <artifactId>mizool-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>ST4</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>javax.ws.rs-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.toolisticon.aptk</groupId>
+            <artifactId>aptk-annotationwrapper-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.toolisticon.aptk</groupId>
+            <artifactId>aptk-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.toolisticon.cute</groupId>
+            <artifactId>cute</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.toolisticon.spiap</groupId>
+            <artifactId>spiap-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <?SORTPOM IGNORE?>
+            <!-- shade must run before proguard -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <outputFile>${temp.jar.shaded.full}</outputFile>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.github.mizool</pattern>
+                                    <shadedPattern>com.github.bannmann.labs._shaded_.mizool</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>com.github.bannmann.labs._shaded_.guava</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.squareup.javapoet</pattern>
+                                    <shadedPattern>com.github.bannmann.labs._shaded_.javapoet</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.toolisticon.aptk</pattern>
+                                    <shadedPattern>com.github.bannmann.labs._shaded_.aptk</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>com.github.bannmann.labs._shaded_.slf4j</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <?SORTPOM RESUME?>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <configuration>
+                    <obfuscate>false</obfuscate>
+
+                    <injar>${temp.jar.shaded.relative}</injar>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <outjar>${temp.jar.portable.relative}</outjar>
+
+                    <includeDependency>true</includeDependency>
+
+                    <options>
+                        <option>-printconfiguration target/generated-proguard-config.txt</option>
+
+                        <option>-keep class * extends javax.annotation.processing.AbstractProcessor { *; }</option>
+
+                        <option>-dontnote com.github.bannmann.labs._shaded_.guava.**</option>
+                        <option>-dontnote com.github.bannmann.labs._shaded_.slf4j.**</option>
+                        <option>-dontnote jdk.**</option>
+                        <option>-dontnote lombok.**</option>
+                        <option>-dontnote module-info</option>
+
+                        <option>-dontwarn com.github.bannmann.labs._shaded_.mizool.core.NonDefault</option>
+                        <option>-dontwarn com.github.bannmann.labs._shaded_.mizool.core.password.**</option>
+                        <option>-dontwarn com.github.bannmann.labs._shaded_.mizool.core.rest.**</option>
+                        <option>-dontwarn com.github.bannmann.labs._shaded_.mizool.core.st4.**</option>
+                        <option>-dontwarn com.github.bannmann.labs._shaded_.aptk.**</option>
+                        <option>-dontwarn com.github.bannmann.labs._shaded_.slf4j.**</option>
+                        <option>-dontwarn javax.validation.**</option>
+                        <option>-dontwarn lombok.**</option>
+                    </options>
+
+                    <libs>
+                        <lib>${java.home}/jmods/java.base.jmod</lib>
+                        <lib>${java.home}/jmods/java.compiler.jmod</lib>
+                        <lib>${java.home}/jmods/java.logging.jmod</lib>
+                        <lib>${java.home}/jmods/jdk.unsupported.jmod</lib>
+                    </libs>
+
+                    <!-- avoid "duplicate library class" by excluding jars that become part of our shaded jar -->
+                    <exclusions>
+                        <exclusion>
+                            <groupId>com.github.mizool</groupId>
+                            <artifactId>mizool-core</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_annotations</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.guava</groupId>
+                            <artifactId>failureaccess</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.guava</groupId>
+                            <artifactId>guava</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.guava</groupId>
+                            <artifactId>listenablefuture</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.google.j2objc</groupId>
+                            <artifactId>j2objc-annotations</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.squareup</groupId>
+                            <artifactId>javapoet</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>io.toolisticon.aptk</groupId>
+                            <artifactId>aptk-annotationwrapper-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>io.toolisticon.aptk</groupId>
+                            <artifactId>aptk-common</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>io.toolisticon.aptk</groupId>
+                            <artifactId>aptk-templating</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>io.toolisticon.aptk</groupId>
+                            <artifactId>aptk-tools</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.checkerframework</groupId>
+                            <artifactId>checker-qual</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration combine.self="append">
+                    <verbose>true</verbose>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>io.toolisticon.spiap</groupId>
+                            <artifactId>spiap-processor</artifactId>
+                            <version>${spiap.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.toolisticon.aptk</groupId>
+                            <artifactId>aptk-annotationwrapper-processor</artifactId>
+                            <version>${aptk.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.toolisticon.aptk</groupId>
+                            <artifactId>aptk-annotationwrapper-api</artifactId>
+                            <version>${aptk.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.toolisticon.aptk</groupId>
+                            <artifactId>aptk-annotationwrapper-api</artifactId>
+                            <version>${aptk.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.22</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.13.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy</artifactId>
+                        <version>3.0.10</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>replace-main-artifact</id>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <properties>
+                                <mainJar>${temp.jar.portable.full}</mainJar>
+                            </properties>
+                            <scripts>
+                                <script>project.artifact.file = new File(mainJar)</script>
+                            </scripts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

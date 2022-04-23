@@ -15,6 +15,7 @@
 
     <modules>
         <module>annotations</module>
+        <module>carriers</module>
         <module>core</module>
         <module>kumuluzee-errorhandling</module>
         <module>records-api</module>
