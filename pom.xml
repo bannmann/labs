@@ -10,11 +10,12 @@
 
     <groupId>com.github.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>annotations</module>
+        <module>carriers</module>
         <module>core</module>
         <module>kumuluzee-errorhandling</module>
         <module>records-api</module>
