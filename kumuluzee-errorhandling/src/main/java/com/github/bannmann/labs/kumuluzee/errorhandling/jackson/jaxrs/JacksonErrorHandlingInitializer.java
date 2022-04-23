@@ -41,7 +41,12 @@ public class JacksonErrorHandlingInitializer implements ErrorHandlingInitializer
         if (ClassExtras.tryResolve(className)
             .isPresent())
         {
-            context.register(mapperClass, Priorities.ENTITY_CODER);
+            /*
+             * Note: Originally, we used the register() overload with a priority value. However, it turned out that
+             * Jersey's ExceptionMapperFactory#createLazyExceptionMappers() does not care about that value and only
+             * uses the @Priority annotation value.
+             */
+            context.register(mapperClass);
         }
     }
 }
