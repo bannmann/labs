@@ -21,13 +21,14 @@ abstract class AbstractRecordsApiTest
     protected final AccountRecordConverter accountRecordConverter = new AccountRecordConverter(identifierConverter);
 
     protected DSLContext context;
+    protected StoreClock storeClock;
     protected Records records;
 
     @BeforeClass
     public void setUp()
     {
         context = DSL.using(System.getProperty("jdbcUrl"));
-        StoreClock storeClock = new StoreClock();
+        storeClock = new StoreClock();
         records = new Records(context, storeClock);
     }
 

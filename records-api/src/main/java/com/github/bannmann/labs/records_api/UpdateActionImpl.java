@@ -129,26 +129,31 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private void performCollisionDetection(TableField<R, ?> field)
     {
-        // comparing update only
-        // FIXME also invoke predetectCollisionOn() if this is a comparing update
-
-        // basic & comparing update
-        addCollisionCheck(field);
+        if (existingRecord != null)
+        {
+            // comparing update: add predetect AND postdetect check
+            predetectCollisionOn(field);
+        }
+        else
+        {
+            // basic update: only add postdetect check
+            addCollisionCheck(field);
+        }
     }
 
     private <V> void addCollisionCheck(TableField<R, V> field)
     {
-        // Represents the old state the client started with. The new state that we're gonna write is generated later.
-        V valueFromNewRecord = newRecord.get(field);
+        // Represents the old state the client started with; the new one that we are going to write is generated later.
+        V valueGivenByClient = newRecord.get(field);
 
-        if (valueFromNewRecord == null)
+        if (valueGivenByClient == null)
         {
             // TODO we didn't detect a conflict yet. should we add another UnprocessableEntityException subclass?
             throw new ConflictingEntityException(String.format(
                 "Field %s of given entity must be non-null to perform collision detection",
                 field.getUnqualifiedName()));
         }
-        Condition hasCollision = field.notEqual(valueFromNewRecord);
+        Condition hasCollision = field.notEqual(valueGivenByClient);
         internalAddCheck(new Check(hasCollision, CheckReason.COLLISION_DETECTION, field));
     }
 

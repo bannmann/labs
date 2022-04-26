@@ -3,6 +3,7 @@ package org.example;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.example.Tables.ACCOUNT;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -12,29 +13,40 @@ import org.example.business.Account;
 import org.example.business.SingleSignOnPrincipal;
 import org.example.store.AccountCreateStore;
 import org.example.store.AccountUpdateStore;
+import org.jooq.DSLContext;
+import org.mockito.Mockito;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.github.bannmann.labs.records_api.Records;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.InvalidPrimaryKeyException;
-import com.github.mizool.core.exception.NotYetImplementedException;
 import com.github.mizool.core.exception.ReadonlyFieldException;
 
-@Test(dependsOnGroups = "AccountCreation")
+@Test
 public class TestAccountUpdating extends AbstractRecordsApiTest
 {
     private AccountUpdateStore accountUpdateStore;
     private Account existingAccount;
     private Account anotherAccount;
+    private DSLContext contextUnderTest;
+    private Records recordsUnderTest;
 
     @BeforeMethod
     public void setUp()
     {
         super.setUp();
 
-        accountUpdateStore = new AccountUpdateStore(accountRecordConverter, records);
+        contextUnderTest = Mockito.spy(context);
+        recordsUnderTest = new Records(contextUnderTest, storeClock);
+        accountUpdateStore = new AccountUpdateStore(accountRecordConverter, recordsUnderTest);
+
+        Assertions.setMaxStackTraceElementsDisplayed(999);
+
+        context.deleteFrom(ACCOUNT)
+            .execute();
 
         AccountCreateStore accountCreateStore = new AccountCreateStore(accountRecordConverter, records);
         existingAccount = accountCreateStore.create(Account.builder()
@@ -159,16 +171,54 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
         assertPersistedEntityMatches(existingAccount);
     }
 
-    @Test(enabled = false) // TODO
+    @Test
     public void testPredetectTimestampCollision()
     {
-        throw new NotYetImplementedException();
+        Account newPojo = existingAccount.toBuilder()
+            .displayName("Someone Important")
+            .timestamp(existingAccount.getTimestamp()
+                .plus(3, ChronoUnit.MILLIS))
+            .build();
+
+        assertThatThrownBy(() -> accountUpdateStore.update(newPojo, existingAccount)).isInstanceOf(
+            ConflictingEntityException.class);
+
+        // Verify that the collision was detected without contacting the database
+        verifyNoInteractions(contextUnderTest);
     }
 
-    @Test(enabled = false) // TODO
+    @Test
     public void testPostdetectTimestampCollisionDespitePassedPredetection()
     {
-        throw new NotYetImplementedException();
+        /*
+         * Scenario:
+         * Clients A and B submits a new version of a pojo. Each includes the valid original timestamp (8 hours ago).
+         *
+         * Chronology:
+         * 1) Thread for client A reads the existing account (timestamp = 8 hours ago)
+         * 2) Thread for client B updates the row (setting timestamp to 'now')
+         * 3) Thread for client A triggers an update, passing both existing and new pojo
+         *
+         * Results:
+         * The predetect check (before contacting the database) in step 3 succeeds as the timestamp of both pojos match,
+         * but the postdetect check (WHERE condition) reveals the collision.
+         */
+
+        Account baseVersion = existingAccount.toBuilder()
+            .timestamp(existingAccount.getTimestamp()
+                .minus(8, ChronoUnit.HOURS))
+            .build();
+
+        Account newPojo = baseVersion.toBuilder()
+            .displayName("Someone Important")
+            .build();
+
+        // Note: neither baseVersion nor newPojo match the database row (which equals existingPojo).
+
+        assertThatThrownBy(() -> accountUpdateStore.update(newPojo, baseVersion)).isInstanceOf(
+            ConflictingEntityException.class);
+
+        assertPersistedEntityMatches(existingAccount);
     }
 
     @Test
