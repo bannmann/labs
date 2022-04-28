@@ -2,10 +2,10 @@ package org.example.store;
 
 import javax.inject.Inject;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import org.example.business.Account;
+import org.example.business.SingleSignOnPrincipal;
 import org.example.tables.records.AccountRecord;
 
 import com.github.mizool.core.converter.IdentifierConverter;
@@ -25,7 +25,9 @@ public class AccountRecordConverter
         {
             result = new AccountRecord();
             result.setId(identifierConverter.fromPojo(pojo.getId()));
+            result.setDisplayName(pojo.getDisplayName());
             result.setEmail(pojo.getEmail());
+            result.setSsoId(identifierConverter.fromPojo(pojo.getSsoId()));
             result.setTimestamp(pojo.getTimestamp());
         }
 
@@ -41,7 +43,9 @@ public class AccountRecordConverter
         {
             result = Account.builder()
                 .id(identifierConverter.toPojo(record.getId(), Account.class))
+                .displayName(record.getDisplayName())
                 .email(record.getEmail())
+                .ssoId(identifierConverter.toPojo(record.getSsoId(), SingleSignOnPrincipal.class))
                 .timestamp(record.getTimestamp())
                 .build();
         }

@@ -73,7 +73,11 @@
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -202,6 +206,21 @@
         </pluginManagement>
         <plugins>
             <plugin>
+                <groupId>com.github.bannmann.maven.silverchain</groupId>
+                <artifactId>silverchain-maven-plugin</artifactId>
+                <version>0.2</version>
+                <configuration>
+                    <inputFile>src/main/silverchain/records-api.ag</inputFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
             </plugin>
@@ -234,4 +253,42 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-profile</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>prepare-javadoc-silverchain</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>prepare-package</phase>
+                                    <configuration>
+                                        <outputDirectory>${javadoc.sources.directory}</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${project.build.directory}/generated-sources/silverchain</directory>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>
