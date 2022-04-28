@@ -110,7 +110,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
      * collision check is performed.<br>
      * <br>
-     * Updates without a matching value will result in a {@link ConflictingEntityException}. This is the case regardless
+     * Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless
      * of whether the collision was detected before or after contacting the database.<br>
      * <br>
      * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
@@ -182,8 +182,8 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
      * collision check is performed.<br>
      * <br>
-     * Updates without a matching value will result in a {@link ConflictingEntityException}. This is the case regardless
-     * of whether the collision was detected before or after contacting the database.<br>
+     * Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless of
+     * whether the collision was detected before or after contacting the database.<br>
      * <br>
      * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
      * states by adding {@code NOT NULL} clauses to the respective column DDL.
@@ -207,7 +207,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
      * collision check is performed.<br>
      * <br>
-     * Updates without a matching value will result in a {@link ConflictingEntityException}. This is the case regardless
+     * Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless
      * of whether the collision was detected before or after contacting the database.<br>
      * <br>
      * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
