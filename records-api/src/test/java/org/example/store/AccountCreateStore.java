@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.business.Account;
 
 import com.github.bannmann.labs.records_api.Records;
+import com.github.mizool.core.exception.ReadonlyFieldException;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
@@ -20,11 +21,21 @@ public class AccountCreateStore
 
     public Account create(Account pojo)
     {
+        verifyNoSsoId(pojo);
+
         return records.insertInto(ACCOUNT)
             .withIdentifiableConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
             .generating(ACCOUNT.TIMESTAMP)
             .normalizingEmail(ACCOUNT.EMAIL)
             .executeAndConvert(converter::toPojo);
+    }
+
+    private void verifyNoSsoId(Account pojo)
+    {
+        if (pojo.getSsoId() != null)
+        {
+            throw new ReadonlyFieldException(Account.Fields.ssoId);
+        }
     }
 }

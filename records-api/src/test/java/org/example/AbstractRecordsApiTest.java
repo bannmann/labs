@@ -4,6 +4,7 @@ import static org.example.Tables.ACCOUNT;
 
 import org.example.business.Account;
 import org.example.store.AccountRecordConverter;
+import org.example.tables.records.AccountRecord;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.testng.annotations.AfterClass;
@@ -20,13 +21,14 @@ abstract class AbstractRecordsApiTest
     protected final AccountRecordConverter accountRecordConverter = new AccountRecordConverter(identifierConverter);
 
     protected DSLContext context;
+    protected StoreClock storeClock;
     protected Records records;
 
     @BeforeClass
     public void setUp()
     {
         context = DSL.using(System.getProperty("jdbcUrl"));
-        StoreClock storeClock = new StoreClock();
+        storeClock = new StoreClock();
         records = new Records(context, storeClock);
     }
 
@@ -36,7 +38,7 @@ abstract class AbstractRecordsApiTest
         context.close();
     }
 
-    protected Account readFromDatabase(Identifier<Account> id)
+    protected Account selectDirectly(Identifier<Account> id)
     {
         return context.selectFrom(ACCOUNT)
             .where(ACCOUNT.ID.eq(id.getValue()))
