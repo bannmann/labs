@@ -45,6 +45,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     private final StoreClock storeClock;
 
     private Function<P, R> convertFromPojo;
+    private Function<R, P> presetConvertToPojo;
     private R record;
 
     @Override
@@ -54,12 +55,18 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     }
 
     @Override
-    public P executeAndConvert(@NonNull Function<R, P> convertToPojo)
+    public P executeAndConvert()
+    {
+        return executeAndConvertVia(presetConvertToPojo);
+    }
+
+    @Override
+    public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
     {
         try
         {
             context.executeInsert(record);
-            return convertToPojo.apply(record);
+            return toPojo.apply(record);
         }
         catch (DataAccessException e)
         {
@@ -110,6 +117,13 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     }
 
     @Override
+    public void withAnonymousConvertedUsing(@NonNull RecordConverter<P, R> converter)
+    {
+        withAnonymousConvertedVia(converter::fromPojo);
+        presetConvertToPojo = converter::toPojo;
+    }
+
+    @Override
     public void withAnonymousConvertedVia(@NonNull Function<P, R> fromPojo)
     {
         convertFromPojo = fromPojo.compose(this::checkNonIdentifiable);
@@ -122,6 +136,13 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
             throw new IllegalArgumentException("Cannot treat Identifiable entity as anonymous");
         }
         return pojo;
+    }
+
+    @Override
+    public void withIdentifiableConvertedUsing(@NonNull RecordConverter<P, R> converter)
+    {
+        withIdentifiableConvertedVia(converter::fromPojo);
+        presetConvertToPojo = converter::toPojo;
     }
 
     @Override

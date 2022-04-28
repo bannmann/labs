@@ -9,6 +9,7 @@ import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
 
 import com.github.bannmann.labs.records_api.Insert;
+import com.github.bannmann.labs.records_api.RecordConverter;
 import com.github.bannmann.labs.records_api.Update;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
@@ -27,59 +28,76 @@ $POST_IF =
     postdetectCollisionIf(Condition condition, String name)
     | postdetectCollisionIf(Condition condition, TableField<R, ?> field);
 
-Insert<; P, R extends UpdatableRecord<R>>
-{
-    P
-    insertInto(Table<R> table)
-    (
-        /*
-         * FIXME add the "P extends Identifiable<P>" constraint without affecting the rest of the chain
-         *
-         * When one changes 'Account' to *not* implement Identifiable<Account>, the manually written fluent API
-         * causes a compile-time error for the account create store's fromPojo() call. The Silverchain version compiles,
-         * but of course fails at runtime.
-         *
-         * For Insert1, Silverchain generates this method:
-         *      <P> Insert2<R, P> withIdentifiableConvertedVia(Function<P, R> fromPojo);
-         *
-         * Editing Insert1.java manually, we can add the constraint to the method's type parameter as follows:
-         *     <P extends Identifiable<P>> Insert2<R, P> withIdentifiableConvertedVia(Function<P, R> fromPojo);
-         *
-         * Result: P is unaffected further down the chain and would work for both with*ConvertedVia() methods
-         *
-         * Could we add AG syntax that tells Silverchain to do this? Maybe as simple as
-         *     Foo<; P, R extends UpdatableRecord<R>>
-         *     {       // ^--- As before, this defines a "global" constraint for R
-         *
-         *         // ...
-         *
-         *         <P extends Identifiable<P>> withIdentifiableConvertedVia(Function<P, R> fromPojo)
-         *         // ^--- Repeating a type variable from Foo, but adding a "method-local" constraint.
-         *
-         *         |
-         *         withAnonymousConvertedVia(Function<P, R> fromPojo)
-         *         // As before, this method implicitly gets a <P> type parameter because it introduces P to the chain.
-         *     }
-         *
-         */
-        withIdentifiableConvertedVia(Function<P, R> fromPojo)
-        |
-        withAnonymousConvertedVia(Function<P, R> fromPojo)
-    )
+$POJO_INSERT =
     fromPojo(P pojo)
     (
         generating(TableField<R, OffsetDateTime> field)
         |
         $ADJUSTMENTS
-    )*
-    executeAndConvert(Function<R, P> convertToPojo);
-}
+    )*;
 
-Update<; P, R extends UpdatableRecord<R>>
+Insert<; P, R extends UpdatableRecord<R>>
 {
     P
-    update(Table<R> table)
-    withRecordConvertedVia(Function<P, R> fromPojo)
+    insertInto(Table<R> table)
+    (
+        (
+            /*
+             * FIXME add the "P extends Identifiable<P>" constraint without affecting the rest of the chain
+             *
+             * When one changes 'Account' to *not* implement Identifiable<Account>, the manually written fluent API
+             * causes a compile-time error for the account create store's fromPojo() call. The Silverchain version
+             * compiles, but of course fails at runtime.
+             *
+             * For Insert1, Silverchain generates this method:
+             *      <P> Insert2<R, P> withIdentifiableConvertedVia(Function<P, R> fromPojo);
+             *
+             * Editing Insert1.java manually, we can add the constraint to the method's type parameter as follows:
+             *     <P extends Identifiable<P>> Insert2<R, P> withIdentifiableConvertedVia(Function<P, R> fromPojo);
+             *
+             * Result: P is unaffected further down the chain and would work for both with*ConvertedVia() methods
+             *
+             * Could we add AG syntax that tells Silverchain to do this? Maybe as simple as
+             *     Foo<; P, R extends UpdatableRecord<R>>
+             *     {       // ^--- As before, this defines a "global" constraint for R
+             *
+             *         // ...
+             *
+             *         <P extends Identifiable<P>> withIdentifiableConvertedVia(Function<P, R> fromPojo)
+             *         // ^--- Repeating a type variable from Foo, but adding a "method-local" constraint.
+             *
+             *         |
+             *         withAnonymousConvertedVia(Function<P, R> fromPojo)
+             *         // As before, this method implicitly gets a <P> type param because it introduces P to the chain.
+             *     }
+             *
+             */
+            withIdentifiableConvertedVia(Function<P, R> fromPojo)
+            $POJO_INSERT
+            executeAndConvertVia(Function<R, P> toPojo)
+        )
+        |
+        (
+            withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
+            $POJO_INSERT
+            executeAndConvert()
+        )
+        |
+        (
+            withAnonymousConvertedVia(Function<P, R> fromPojo)
+            $POJO_INSERT
+            executeAndConvertVia(Function<R, P> toPojo)
+        )
+        |
+        (
+            withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+            $POJO_INSERT
+            executeAndConvert()
+        )
+    );
+}
+
+$POJO_UPDATE =
     fromNewPojo(P newPojo)
     (
         $CHECKS*
@@ -97,9 +115,21 @@ Update<; P, R extends UpdatableRecord<R>>
         $ADJUSTMENTS
         |
         $POST_IF
-    )*
-    executeAndConvert(Function<R, P> convertToPojo);
+    )*;
 
+Update<; P, R extends UpdatableRecord<R>>
+{
+    P
+    update(Table<R> table)
+    withRecordConvertedVia(Function<P, R> fromPojo)
+    $POJO_UPDATE
+    executeAndConvertVia(Function<R, P> toPojo);
+
+    P
+    update(Table<R> table)
+    withRecordConvertedUsing(RecordConverter<P, R> converter)
+    $POJO_UPDATE
+    executeAndConvert();
 
     void
     update(Table<R> table)
@@ -110,8 +140,7 @@ Update<; P, R extends UpdatableRecord<R>>
         increase(TableField<R, ?> field)
         |
         refresh(TableField<R, OffsetDateTime> timestampField)
-    )
-    *
+    )*
     $POST_IF*
     execute();
 }

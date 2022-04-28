@@ -70,6 +70,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     private TableField<R, String> primaryKeyField;
     private Condition primaryKeyCondition;
     private Function<P, R> convertFromPojo;
+    private Function<R, P> presetConvertToPojo;
     private R existingRecord;
     private R newRecord;
 
@@ -339,10 +340,16 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     @Override
-    public P executeAndConvert(@NonNull Function<R, P> convertToPojo)
+    public P executeAndConvert()
+    {
+        return executeAndConvertVia(presetConvertToPojo);
+    }
+
+    @Override
+    public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
     {
         internalExecute();
-        return convertToPojo.apply(newRecord);
+        return toPojo.apply(newRecord);
     }
 
     @Override
@@ -545,6 +552,13 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public <I> void withPrimaryKey(@NonNull Identifier<I> id, @NonNull Class<I> identifiableClass)
     {
         initPrimaryKey(id.getValue(), Tables.obtainPrimaryKey(table));
+    }
+
+    @Override
+    public void withRecordConvertedUsing(@NonNull RecordConverter<P, R> converter)
+    {
+        withRecordConvertedVia(converter::fromPojo);
+        presetConvertToPojo = converter::toPojo;
     }
 
     /**

@@ -37,91 +37,115 @@ public class RecordsApiExamples
     public Thud simpleAnonymousCreate(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
+            .withAnonymousConvertedUsing(converter)
+            .fromPojo(pojo)
+            .executeAndConvert();
+    }
+
+    public Thud simpleAnonymousCreateWithLambdas(ThudRecordConverter converter, Thud pojo)
+    {
+        return records.insertInto(THUD)
             .withAnonymousConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvertVia(converter::toPojo);
     }
 
     public Thud anonymousCreateWithTimestampAndEmail(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
-            .withAnonymousConvertedVia(converter::fromPojo)
+            .withAnonymousConvertedUsing(converter)
             .fromPojo(pojo)
             .generating(THUD.TIMESTAMP)
             .normalizingEmail(THUD.TEXT_DATA)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Fizzle simpleCreate(FizzleRecordConverter converter, Fizzle pojo)
     {
         return records.insertInto(FIZZLE)
+            .withIdentifiableConvertedUsing(converter)
+            .fromPojo(pojo)
+            .executeAndConvert();
+    }
+
+    public Fizzle simpleCreateWithLambdas(FizzleRecordConverter converter, Fizzle pojo)
+    {
+        return records.insertInto(FIZZLE)
             .withIdentifiableConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvertVia(converter::toPojo);
     }
 
     public Fizzle createWithEmail(FizzleRecordConverter converter, Fizzle pojo)
     {
         return records.insertInto(FIZZLE)
-            .withIdentifiableConvertedVia(converter::fromPojo)
+            .withIdentifiableConvertedUsing(converter)
             .fromPojo(pojo)
             .normalizingEmail(FIZZLE.TEXT_DATA)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Bar createWithTimestamp(BarRecordConverter converter, Bar pojo)
     {
         return records.insertInto(BAR)
-            .withIdentifiableConvertedVia(converter::fromPojo)
+            .withIdentifiableConvertedUsing(converter)
             .fromPojo(pojo)
             .generating(BAR.TIMESTAMP)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Bar createWithTimestampAndEmail(BarRecordConverter converter, Bar pojo)
     {
         return records.insertInto(BAR)
-            .withIdentifiableConvertedVia(converter::fromPojo)
+            .withIdentifiableConvertedUsing(converter)
             .fromPojo(pojo)
             .generating(BAR.TIMESTAMP)
             .normalizingEmail(BAR.TEXT_DATA)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Fizzle unconditionalUpdate(FizzleRecordConverter converter, Fizzle newPojo)
     {
         return records.update(FIZZLE)
+            .withRecordConvertedUsing(converter)
+            .fromNewPojo(newPojo)
+            .executeAndConvert();
+    }
+
+    public Fizzle unconditionalUpdateWithLambdas(FizzleRecordConverter converter, Fizzle newPojo)
+    {
+        return records.update(FIZZLE)
             .withRecordConvertedVia(converter::fromPojo)
             .fromNewPojo(newPojo)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvertVia(converter::toPojo);
     }
 
     public Bar timestampedUpdate(BarRecordConverter converter, Bar newPojo, Bar existingPojo)
     {
         return records.update(BAR)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .checkAndRefresh(BAR.TIMESTAMP)
             .normalizingEmail(BAR.TEXT_DATA)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Foo versionedUpdate(FooRecordConverter converter, Foo newPojo)
     {
         return records.update(FOO)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .checkAndIncrease(FOO.VERSION)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Corge taggedUpdate(CorgeRecordConverter converter, Corge newPojo)
     {
         return records.update(CORGE)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .checkAndRandomize(CORGE.TAG, this::newTag)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     private String newTag()
@@ -134,100 +158,100 @@ public class RecordsApiExamples
     public Fizzle conditionalUpdate(FizzleRecordConverter converter, Fizzle newPojo)
     {
         return records.update(FIZZLE)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .postdetectCollisionIf(FIZZLE.BOOLEAN_DATA.ne(false), FIZZLE.BOOLEAN_DATA)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Bar refreshWithPostdetectUpdate(BarRecordConverter converter, Bar newPojo, Bar existingPojo)
     {
         return records.update(BAR)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .checkAndRefresh(BAR.TIMESTAMP)
             .postdetectCollisionIf(BAR.BOOLEAN_DATA.ne(false), BAR.BOOLEAN_DATA)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Fizzle withExistingPojo(FizzleRecordConverter converter, Fizzle newPojo, Fizzle existingPojo)
     {
         return records.update(FIZZLE)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .andExistingPojo(existingPojo)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Bar refreshWithExistingPojo(BarRecordConverter converter, Bar newPojo, Bar existingPojo)
     {
         return records.update(BAR)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .andExistingPojo(existingPojo)
             .checkAndRefresh(BAR.TIMESTAMP)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Foo increaseWithExistingPojo(FooRecordConverter converter, Foo newPojo, Foo existingPojo)
     {
         return records.update(FOO)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .andExistingPojo(existingPojo)
             .checkAndIncrease(FOO.VERSION)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Corge randomizeWithExistingPojo(CorgeRecordConverter converter, Corge newPojo, Corge existingPojo)
     {
         return records.update(CORGE)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .andExistingPojo(existingPojo)
             .checkAndRandomize(CORGE.TAG, this::newTag)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Bar refreshAndPredetectWithExistingPojo(BarRecordConverter converter, Bar newPojo, Bar existingPojo)
     {
         return records.update(BAR)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .andExistingPojo(existingPojo)
             .checkAndRefresh(BAR.TIMESTAMP)
             .predetectCollisionOn(BAR.TEXT_DATA)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Bar predetectAndRefreshWithExistingPojo(BarRecordConverter converter, Bar newPojo, Bar existingPojo)
     {
         return records.update(BAR)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .andExistingPojo(existingPojo)
             .predetectCollisionOn(BAR.TEXT_DATA)
             .checkAndRefresh(BAR.TIMESTAMP)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Foo predetectWithExistingPojo(FooRecordConverter converter, Foo newPojo, Foo existingPojo)
     {
         return records.update(FOO)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .andExistingPojo(existingPojo)
             .predetectCollisionOn(FOO.VERSION)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Thud anonymousRefresh(ThudRecordConverter converter, Thud newPojo, Thud existingPojo)
     {
         return records.update(THUD)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
             .checkAndRefresh(THUD.TIMESTAMP)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public void unconditionalPartialUpdateA(Identifier<Fizzle> id)
