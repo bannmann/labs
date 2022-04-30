@@ -6,7 +6,6 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jooq.DSLContext;
@@ -17,11 +16,11 @@ import org.jooq.exception.DataAccessException;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
+import com.github.mizool.core.concurrent.Lazy;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.GeneratedFieldOverrideException;
 import com.github.mizool.core.exception.StoreLayerException;
 
-@RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings("java:S6213")
 class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction<P, R>
@@ -38,15 +37,19 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     }
 
     private final DSLContext context;
-
-    /**
-     * TODO decide if/how to replace with regular 'Clock' without sacrificing Charlie hook for truncating
-     */
-    private final StoreClock storeClock;
+    private final Lazy<OffsetDateTime> now;
 
     private Function<P, R> convertFromPojo;
     private Function<R, P> presetConvertToPojo;
     private R record;
+
+    public InsertActionImpl(DSLContext context, StoreClock storeClock)
+    {
+        this.context = context;
+
+        // Encapsulate "now()" calls in a Lazy to ensure multiple timestamp fields all get the same value
+        now = new Lazy<>(storeClock::now);
+    }
 
     @Override
     public <F> void adjusting(@NonNull TableField<R, F> field, @NonNull UnaryOperator<F> adjuster)
@@ -93,6 +96,11 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
         record = convertFromPojo.apply(pojo);
     }
 
+    /**
+     * Verifies that the pojo does not specify a value for the given field, then sets the field to 'now'.
+     *
+     * @throws GeneratedFieldOverrideException if the pojo has a non-{@code null} value for the given field
+     */
     @Override
     public void generating(@NonNull TableField<R, OffsetDateTime> field)
     {
@@ -101,7 +109,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
             throw new GeneratedFieldOverrideException(field.getName());
         }
 
-        record.set(field, storeClock.now());
+        record.set(field, now.get());
     }
 
     @Override

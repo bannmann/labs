@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jooq.Condition;
@@ -34,6 +33,7 @@ import org.jooq.impl.SQLDataType;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
+import com.github.mizool.core.concurrent.Lazy;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
@@ -41,7 +41,6 @@ import com.github.mizool.core.exception.ReadonlyFieldException;
 import com.github.mizool.core.exception.StoreLayerException;
 import com.github.mizool.core.validation.Nullable;
 
-@RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings("java:S6213")
 class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction<P, R>
@@ -58,12 +57,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     private final DSLContext context;
-
-    /**
-     * TODO decide if/how to replace with regular 'Clock' without sacrificing Charlie hook for truncating
-     */
-    private final StoreClock storeClock;
-
+    private final Lazy<OffsetDateTime> now;
     private final Map<Name, Object> assignments = new HashMap<>();
 
     private Table<R> table;
@@ -80,6 +74,14 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * to distinguish different {@link CheckReason} types.
      */
     private final List<Check> checks = new ArrayList<>();
+
+    public UpdateActionImpl(DSLContext context, StoreClock storeClock)
+    {
+        this.context = context;
+
+        // Encapsulate "now()" calls in a Lazy to ensure multiple timestamp fields all get the same value
+        now = new Lazy<>(storeClock::now);
+    }
 
     @Override
     public <F> void adjusting(@NonNull TableField<R, F> field, @NonNull UnaryOperator<F> adjuster)
@@ -220,7 +222,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public void checkAndRefresh(@NonNull TableField<R, OffsetDateTime> field)
     {
         performCollisionDetection(field);
-        newRecord.set(field, storeClock.now());
+        newRecord.set(field, now.get());
     }
 
     @Override
@@ -243,9 +245,10 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         }
         catch (DataAccessException e)
         {
-            Constraints.findFieldOfViolatedForeignKey(e, table).ifPresent(referencingField -> {
-                throw new EntityReferenceException(referencingField);
-            });
+            Constraints.findFieldOfViolatedForeignKey(e, table)
+                .ifPresent(referencingField -> {
+                    throw new EntityReferenceException(referencingField);
+                });
 
             Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
                 .ifPresent(field -> {
@@ -470,7 +473,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void refresh(@NonNull TableField<R, OffsetDateTime> timestampField)
     {
-        putAssignment(timestampField, storeClock.now());
+        putAssignment(timestampField, now.get());
     }
 
     /**
