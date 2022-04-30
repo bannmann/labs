@@ -21,7 +21,7 @@ $ADJUSTMENTS =
 $CHECKS =
     verifyUnchanged<V>(TableField<R, V> field)
     | checkAndRefresh(TableField<R, OffsetDateTime> field)
-    | checkAndIncrease(TableField<R, Integer> field)
+    | checkAndIncrease(TableField<R, ? extends Number> field)
     | checkAndRandomize<U>(TableField<R, U> field, Supplier<U> randomSupplier);
 
 $POST_IF =

@@ -2,6 +2,7 @@ package com.github.bannmann.labs.records_api;
 
 import static org.jooq.impl.DSL.inline;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,12 +123,45 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * @param field the field to use for collision detection and to increase
      */
     @Override
-    public void checkAndIncrease(@NonNull TableField<R, Integer> field)
+    public void checkAndIncrease(@NonNull TableField<R, ? extends Number> field)
+    {
+        checkAndModify(field, value -> value.add(BigDecimal.ONE));
+    }
+
+    private <N extends Number> void checkAndModify(TableField<R, N> field, UnaryOperator<BigDecimal> unaryOperator)
     {
         performCollisionDetection(field);
+        modify(field, unaryOperator);
+    }
 
-        Integer value = newRecord.getValue(field);
-        newRecord.set(field, value + 1);
+    private <N extends Number> void modify(TableField<R, N> field, UnaryOperator<BigDecimal> unaryOperator)
+    {
+        BigDecimal original = getBigDecimal(field);
+        BigDecimal modified = unaryOperator.apply(original);
+
+        newRecord.set(field,
+            field.getDataType()
+                .convert(modified));
+    }
+
+    /**
+     * We suppress warnings because we want to be _exact_, not predictable: The rationale given by
+     * {@link BigDecimal#BigDecimal(double)} doesn't apply to us as we don't need predictability (as one would expect
+     * when passing a fixed value like 0.1).
+     */
+    @SuppressWarnings("UnpredictableBigDecimalConstructorCall")
+    private <N extends Number> BigDecimal getBigDecimal(TableField<R, N> field)
+    {
+        N value = newRecord.getValue(field);
+        if (field.getDataType()
+            .isInteger())
+        {
+            return new BigDecimal(value.longValue());
+        }
+        else
+        {
+            return new BigDecimal(value.doubleValue());
+        }
     }
 
     private void performCollisionDetection(TableField<R, ?> field)

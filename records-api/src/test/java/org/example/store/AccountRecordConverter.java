@@ -29,6 +29,7 @@ public class AccountRecordConverter implements RecordConverter<Account, AccountR
             result.setDisplayName(pojo.getDisplayName());
             result.setEmail(pojo.getEmail());
             result.setSsoId(identifierConverter.fromPojo(pojo.getSsoId()));
+            result.setRenameCount(pojo.getRenameCount());
             result.setTimestamp(pojo.getTimestamp());
         }
 
@@ -47,6 +48,7 @@ public class AccountRecordConverter implements RecordConverter<Account, AccountR
                 .displayName(record.getDisplayName())
                 .email(record.getEmail())
                 .ssoId(identifierConverter.toPojo(record.getSsoId(), SingleSignOnPrincipal.class))
+                .renameCount(record.getRenameCount())
                 .timestamp(record.getTimestamp())
                 .build();
         }
