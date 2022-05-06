@@ -3,7 +3,6 @@ package org.example.business;
 import java.time.OffsetDateTime;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
 
@@ -21,7 +20,8 @@ public class Department implements Identifiable<Department>
     /**
      * To allow a certain test, we intentionally allow null although the database column does not.
      */
-    @Nullable String name;
+    @Nullable
+    String name;
 
     Identifier<Account> ownerAccountId;
 

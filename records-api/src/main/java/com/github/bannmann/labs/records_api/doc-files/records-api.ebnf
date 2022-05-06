@@ -109,3 +109,53 @@ checks ::=
     |
     'checkAndRefresh'
 )
+
+
+selectFrom ::=
+(
+    (
+        'convertedVia' | 'convertedUsing'
+    )
+
+    (
+        (
+            (
+                (
+                    'read'
+                    'filter'?
+                )
+                |
+                'findWhere'
+            )
+            'fetchOptional'
+        )
+        |
+        (
+            'list'
+            'filter'?
+            'orderBy'?
+            'fetchStream'
+        )
+    )
+)
+
+query ::=
+(
+    (
+        (
+            'convertedVia' | 'convertedUsing'
+        )
+
+        (
+            'fetchOptional' | 'fetchStream'
+        )
+    )
+    |
+    (
+        'skipConversion'
+
+        (
+            'fetchRecordOptional' | 'fetchRecordStream'
+        )
+    )
+)

@@ -1,9 +1,15 @@
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import org.jooq.Condition;
+import org.jooq.Field;
+import org.jooq.OrderField;
+import org.jooq.Record;
+import org.jooq.ResultQuery;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
@@ -11,6 +17,8 @@ import org.jooq.UpdatableRecord;
 import com.github.bannmann.labs.records_api.Insert;
 import com.github.bannmann.labs.records_api.RecordConverter;
 import com.github.bannmann.labs.records_api.Update;
+import com.github.bannmann.labs.records_api.Quux;
+import com.github.bannmann.labs.records_api.Select;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 
@@ -143,4 +151,61 @@ Update<; P, R extends UpdatableRecord<R>>
     )*
     $POST_IF*
     execute();
+}
+
+$CONVERT =
+    (
+        convertedVia(Function<R, P> toPojo)
+        |
+        convertedUsing(RecordConverter<P, R> converter)
+    );
+
+Select<; P, R extends Record>
+{
+    /* Pojo-based high-level */
+
+    Optional<P>
+    selectFrom(Table<R> table)
+    $CONVERT
+    (
+        read(Identifier<P> id)
+        filter(Condition condition)?
+        |
+        findWhere(Condition condition)
+    )
+    fetchOptional();
+
+    Stream<P>
+    selectFrom(Table<R> table)
+    $CONVERT
+    list()
+    filter(Condition condition)?
+    orderBy(OrderField<?>... field)?
+    fetchStream();
+
+
+    /* Pojo-based low-level */
+
+    Optional<P>
+    query(ResultQuery<R> resultQuery)
+    $CONVERT
+    fetchOptional();
+
+    Stream<P>
+    query(ResultQuery<R> resultQuery)
+    $CONVERT
+    fetchStream();
+
+
+    /* Record-based low-level */
+
+    Optional<R>
+    query(ResultQuery<R> resultQuery)
+    skipConversion()
+    fetchRecordOptional();
+
+    Stream<R>
+    query(ResultQuery<R> resultQuery)
+    skipConversion()
+    fetchRecordStream();
 }
