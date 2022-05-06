@@ -2,26 +2,64 @@
 
 insertInto ::=
 (
-    'withIdentifiableConvertedVia' | 'withAnonymousConvertedVia'
-)
-
-'fromPojo'
-
-(
-    'generating'
+    (
+        'withIdentifiableConvertedVia'
+        pojoInsert
+        'executeAndConvertVia'
+    )
     |
-    adjustments
+    (
+        'withIdentifiableConvertedUsing'
+        pojoInsert
+        'executeAndConvert'
+    )
+    |
+    (
+        'withAnonymousConvertedVia'
+        pojoInsert
+        'executeAndConvertVia'
+    )
+    |
+    (
+        'withAnonymousConvertedUsing'
+        pojoInsert
+        'executeAndConvert'
+    )
 )
-*
 
-'executeAndConvert'
+pojoInsert ::=
+(
+    'fromPojo'
 
-
+    (
+        'generating'
+        |
+        adjustments
+    )
+    *
+)
 
 update ::=
 (
     'withRecordConvertedVia'
+    pojoUpdate
+    'executeAndConvertVia'
 
+    |
+
+    'withRecordConvertedUsing'
+    pojoUpdate
+    'executeAndConvert'
+
+    |
+
+    'withPrimaryKey'
+    sparseUpdate
+    'execute'
+)
+
+pojoUpdate ::=
+(
     'fromNewPojo'
 
     (
@@ -40,27 +78,23 @@ update ::=
     )
     ?
 
-    (    
+    (
         'postDetectCollisionIf'
         |
         adjustments
     )
     *
-    
-    'executeAndConvert'
+)
 
-    |
-
-    'withPrimaryKey'
+sparseUpdate ::=
+(
     (
         'set' | 'increase' | 'refresh'
     )
     +
-    
+
     'postDetectCollisionIf'
     *
-    
-    'execute'
 )
 
 adjustments ::= 'adjusting' | 'normalizingEmail'

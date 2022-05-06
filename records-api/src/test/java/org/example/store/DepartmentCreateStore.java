@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
 
 import org.example.business.Department;
+import org.example.tables.records.DepartmentRecord;
 
 import com.github.bannmann.labs.records_api.Records;
 import com.google.common.annotations.VisibleForTesting;
@@ -21,9 +22,27 @@ public class DepartmentCreateStore
     public Department create(Department pojo)
     {
         return records.insertInto(DEPARTMENT)
-            .withIdentifiableConvertedVia(converter::fromPojo)
+            .withIdentifiableConvertedVia(this::fromPojoCustom)
             .fromPojo(pojo)
             .generating(DEPARTMENT.TIMESTAMP)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvertVia(this::toPojoCustom);
+    }
+
+    /**
+     * Simulate the use case where one doesn't have a {@link com.github.bannmann.labs.records_api.RecordConverter} and
+     * therefore has to pass individual lambdas.
+     */
+    private DepartmentRecord fromPojoCustom(Department pojo)
+    {
+        return converter.fromPojo(pojo);
+    }
+
+    /**
+     * Simulate the use case where one doesn't have a {@link com.github.bannmann.labs.records_api.RecordConverter} and
+     * therefore has to pass individual lambdas.
+     */
+    private Department toPojoCustom(DepartmentRecord record)
+    {
+        return converter.toPojo(record);
     }
 }

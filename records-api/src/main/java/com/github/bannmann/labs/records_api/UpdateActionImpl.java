@@ -2,6 +2,7 @@ package com.github.bannmann.labs.records_api;
 
 import static org.jooq.impl.DSL.inline;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jooq.Condition;
@@ -34,6 +34,7 @@ import org.jooq.impl.SQLDataType;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
+import com.github.mizool.core.concurrent.Lazy;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
@@ -41,7 +42,6 @@ import com.github.mizool.core.exception.ReadonlyFieldException;
 import com.github.mizool.core.exception.StoreLayerException;
 import com.github.mizool.core.validation.Nullable;
 
-@RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings("java:S6213")
 class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction<P, R>
@@ -58,18 +58,14 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     private final DSLContext context;
-
-    /**
-     * TODO decide if/how to replace with regular 'Clock' without sacrificing Charlie hook for truncating
-     */
-    private final StoreClock storeClock;
-
+    private final Lazy<OffsetDateTime> now;
     private final Map<Name, Object> assignments = new HashMap<>();
 
     private Table<R> table;
     private TableField<R, String> primaryKeyField;
     private Condition primaryKeyCondition;
     private Function<P, R> convertFromPojo;
+    private Function<R, P> presetConvertToPojo;
     private R existingRecord;
     private R newRecord;
 
@@ -79,6 +75,14 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * to distinguish different {@link CheckReason} types.
      */
     private final List<Check> checks = new ArrayList<>();
+
+    public UpdateActionImpl(DSLContext context, StoreClock storeClock)
+    {
+        this.context = context;
+
+        // Encapsulate "now()" calls in a Lazy to ensure multiple timestamp fields all get the same value
+        now = new Lazy<>(storeClock::now);
+    }
 
     @Override
     public <F> void adjusting(@NonNull TableField<R, F> field, @NonNull UnaryOperator<F> adjuster)
@@ -119,12 +123,45 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * @param field the field to use for collision detection and to increase
      */
     @Override
-    public void checkAndIncrease(@NonNull TableField<R, Integer> field)
+    public void checkAndIncrease(@NonNull TableField<R, ? extends Number> field)
+    {
+        checkAndModify(field, value -> value.add(BigDecimal.ONE));
+    }
+
+    private <N extends Number> void checkAndModify(TableField<R, N> field, UnaryOperator<BigDecimal> unaryOperator)
     {
         performCollisionDetection(field);
+        modify(field, unaryOperator);
+    }
 
-        Integer value = newRecord.getValue(field);
-        newRecord.set(field, value + 1);
+    private <N extends Number> void modify(TableField<R, N> field, UnaryOperator<BigDecimal> unaryOperator)
+    {
+        BigDecimal original = getBigDecimal(field);
+        BigDecimal modified = unaryOperator.apply(original);
+
+        newRecord.set(field,
+            field.getDataType()
+                .convert(modified));
+    }
+
+    /**
+     * We suppress warnings because we want to be _exact_, not predictable: The rationale given by
+     * {@link BigDecimal#BigDecimal(double)} doesn't apply to us as we don't need predictability (as one would expect
+     * when passing a fixed value like 0.1).
+     */
+    @SuppressWarnings("UnpredictableBigDecimalConstructorCall")
+    private <N extends Number> BigDecimal getBigDecimal(TableField<R, N> field)
+    {
+        N value = newRecord.getValue(field);
+        if (field.getDataType()
+            .isInteger())
+        {
+            return new BigDecimal(value.longValue());
+        }
+        else
+        {
+            return new BigDecimal(value.doubleValue());
+        }
     }
 
     private void performCollisionDetection(TableField<R, ?> field)
@@ -219,7 +256,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public void checkAndRefresh(@NonNull TableField<R, OffsetDateTime> field)
     {
         performCollisionDetection(field);
-        newRecord.set(field, storeClock.now());
+        newRecord.set(field, now.get());
     }
 
     @Override
@@ -242,9 +279,10 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         }
         catch (DataAccessException e)
         {
-            Constraints.findFieldOfViolatedForeignKey(e, table).ifPresent(referencingField -> {
-                throw new EntityReferenceException(referencingField);
-            });
+            Constraints.findFieldOfViolatedForeignKey(e, table)
+                .ifPresent(referencingField -> {
+                    throw new EntityReferenceException(referencingField);
+                });
 
             Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
                 .ifPresent(field -> {
@@ -339,10 +377,16 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     @Override
-    public P executeAndConvert(@NonNull Function<R, P> convertToPojo)
+    public P executeAndConvert()
+    {
+        return executeAndConvertVia(presetConvertToPojo);
+    }
+
+    @Override
+    public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
     {
         internalExecute();
-        return convertToPojo.apply(newRecord);
+        return toPojo.apply(newRecord);
     }
 
     @Override
@@ -463,7 +507,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void refresh(@NonNull TableField<R, OffsetDateTime> timestampField)
     {
-        putAssignment(timestampField, storeClock.now());
+        putAssignment(timestampField, now.get());
     }
 
     /**
@@ -545,6 +589,13 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public <I> void withPrimaryKey(@NonNull Identifier<I> id, @NonNull Class<I> identifiableClass)
     {
         initPrimaryKey(id.getValue(), Tables.obtainPrimaryKey(table));
+    }
+
+    @Override
+    public void withRecordConvertedUsing(@NonNull RecordConverter<P, R> converter)
+    {
+        withRecordConvertedVia(converter::fromPojo);
+        presetConvertToPojo = converter::toPojo;
     }
 
     /**

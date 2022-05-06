@@ -4,6 +4,7 @@ create table if not exists account
     email varchar(128) not null,
     display_name varchar(128) not null,
     sso_id varchar(128),
+    rename_count smallint default 0 not null,
     timestamp timestamp with time zone not null,
 
     constraint account_pk

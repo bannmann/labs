@@ -3,11 +3,12 @@ package org.example.store;
 import org.example.business.Fizzle;
 import org.example.tables.records.FizzleRecord;
 
+import com.github.bannmann.labs.records_api.RecordConverter;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
-public class FizzleRecordConverter
+public class FizzleRecordConverter implements RecordConverter<Fizzle, FizzleRecord>
 {
     public FizzleRecord fromPojo(Fizzle pojo)
     {
