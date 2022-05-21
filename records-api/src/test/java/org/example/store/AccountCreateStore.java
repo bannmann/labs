@@ -24,11 +24,11 @@ public class AccountCreateStore
         verifyNoSsoId(pojo);
 
         return records.insertInto(ACCOUNT)
-            .withIdentifiableConvertedVia(converter::fromPojo)
+            .withIdentifiableConvertedUsing(converter)
             .fromPojo(pojo)
             .generating(ACCOUNT.TIMESTAMP)
             .normalizingEmail(ACCOUNT.EMAIL)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     private void verifyNoSsoId(Account pojo)

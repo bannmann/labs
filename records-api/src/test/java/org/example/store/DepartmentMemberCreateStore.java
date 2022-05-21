@@ -24,6 +24,6 @@ public class DepartmentMemberCreateStore
         return records.insertInto(DEPARTMENT_MEMBER)
             .withAnonymousConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvertVia(converter::toPojo);
     }
 }

@@ -8,12 +8,13 @@ import org.example.business.Account;
 import org.example.business.Department;
 import org.example.tables.records.DepartmentRecord;
 
+import com.github.bannmann.labs.records_api.RecordConverter;
 import com.github.mizool.core.converter.IdentifierConverter;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class DepartmentRecordConverter
+public class DepartmentRecordConverter implements RecordConverter<Department, DepartmentRecord>
 {
     private final IdentifierConverter identifierConverter;
 

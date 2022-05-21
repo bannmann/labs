@@ -19,23 +19,23 @@ public class AccountUpdateStore
     public Account update(Account pojo)
     {
         return records.update(ACCOUNT)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(pojo)
             .checkAndRefresh(ACCOUNT.TIMESTAMP)
             .verifyUnchanged(ACCOUNT.EMAIL)
             .verifyUnchanged(ACCOUNT.SSO_ID)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 
     public Account update(Account pojo, Account existingPojo)
     {
         return records.update(ACCOUNT)
-            .withRecordConvertedVia(converter::fromPojo)
+            .withRecordConvertedUsing(converter)
             .fromNewPojo(pojo)
             .andExistingPojo(existingPojo)
             .checkAndRefresh(ACCOUNT.TIMESTAMP)
             .verifyUnchanged(ACCOUNT.EMAIL)
             .verifyUnchanged(ACCOUNT.SSO_ID)
-            .executeAndConvert(converter::toPojo);
+            .executeAndConvert();
     }
 }

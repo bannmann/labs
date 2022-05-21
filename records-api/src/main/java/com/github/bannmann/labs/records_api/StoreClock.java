@@ -4,6 +4,9 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * TODO decide if/how to replace StoreClock with regular 'Clock' without sacrificing Charlie hook for truncating
+ */
 public class StoreClock
 {
     private static final Clock clock = Clock.systemUTC();

@@ -23,5 +23,7 @@ public class Account implements Identifiable<Account>
 
     Identifier<SingleSignOnPrincipal> ssoId;
 
+    short renameCount;
+
     OffsetDateTime timestamp;
 }
