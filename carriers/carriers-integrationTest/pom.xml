@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.bannmann.labs.carriers</groupId>
         <artifactId>carriers</artifactId>
-        <version>0.0.7-SNAPSHOT</version>
+        <version>0.0.6</version>
     </parent>
 
     <artifactId>carriers-integrationTest</artifactId>
