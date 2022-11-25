@@ -10,7 +10,7 @@ import org.example.business.Account;
 
 import com.github.bannmann.labs.records_api.Records;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class AccountUpdateStore
 {
     private final AccountRecordConverter converter;

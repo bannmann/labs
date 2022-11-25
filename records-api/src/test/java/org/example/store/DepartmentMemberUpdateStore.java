@@ -13,16 +13,16 @@ import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
 @RequiredArgsConstructor(onConstructor_ = @Inject)
-public class DepartmentMemberCreateStore
+public class DepartmentMemberUpdateStore
 {
     private final DepartmentMemberRecordConverter converter;
     private final Records records;
 
-    public DepartmentMember create(DepartmentMember pojo)
+    public DepartmentMember update(DepartmentMember pojo)
     {
-        return records.insertInto(DEPARTMENT_MEMBER)
-            .withAnonymousConvertedVia(converter::fromPojo)
-            .fromPojo(pojo)
-            .executeAndConvertVia(converter::toPojo);
+        return records.update(DEPARTMENT_MEMBER)
+            .withRecordConvertedUsing(converter)
+            .fromNewPojo(pojo)
+            .executeAndConvert();
     }
 }

@@ -35,6 +35,7 @@ import org.jooq.impl.SQLDataType;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.concurrent.Lazy;
+import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
@@ -62,7 +63,6 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     private final Map<Name, Object> assignments = new HashMap<>();
 
     private Table<R> table;
-    private TableField<R, String> primaryKeyField;
     private Condition primaryKeyCondition;
     private Function<P, R> convertFromPojo;
     private Function<R, P> presetConvertToPojo;
@@ -393,25 +393,42 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public void fromNewPojo(@NonNull P newPojo)
     {
         newRecord = convertFromPojo.apply(newPojo);
-        initPrimaryKey(newRecord);
+        primaryKeyCondition = obtainPrimaryKeyCondition(newRecord);
     }
 
-    private void initPrimaryKey(@NonNull R newRecord)
+    private Condition obtainPrimaryKeyCondition(@NonNull R newRecord)
     {
-        TableField<R, String> field = Tables.obtainPrimaryKey(table);
-        String value = field.get(newRecord);
+        Condition result = null;
+
+        for (TableField<R, ?> keyField : table.getPrimaryKey()
+            .getFields())
+        {
+            Condition condition = toCondition(keyField, newRecord);
+            result = result == null
+                ? condition
+                : result.and(condition);
+        }
+
+        if (result == null)
+        {
+            // jOOQ says all UpdatableRecords have a non-null primary key, but let's be paranoid here.
+            throw new CodeInconsistencyException(String.format("Table %s has no primary key",
+                newRecord.getTable()
+                    .getUnqualifiedName()));
+        }
+
+        return result;
+    }
+
+    private <T> Condition toCondition(@NonNull TableField<R, T> keyField, @NonNull R newRecord)
+    {
+        T value = keyField.get(newRecord);
         if (value == null)
         {
             throw new InvalidPrimaryKeyException(String.format("Primary key field %s is null",
-                field.getUnqualifiedName()));
+                keyField.getUnqualifiedName()));
         }
-        initPrimaryKey(value, field);
-    }
-
-    private void initPrimaryKey(@NonNull String value, @NonNull TableField<R, String> primaryKeyField)
-    {
-        this.primaryKeyField = primaryKeyField;
-        primaryKeyCondition = primaryKeyField.eq(value);
+        return keyField.eq(value);
     }
 
     @Override
@@ -428,9 +445,11 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private void verifyNotPrimaryKey(TableField<R, ?> field)
     {
-        if (field.equals(primaryKeyField))
+        if (table.getPrimaryKey()
+            .getFields()
+            .contains(field))
         {
-            throw new IllegalArgumentException("Cannot alter primary key field");
+            throw new IllegalArgumentException("Cannot alter primary key field " + field.getUnqualifiedName());
         }
     }
 
@@ -588,7 +607,8 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public <I> void withPrimaryKey(@NonNull Identifier<I> id, @NonNull Class<I> identifiableClass)
     {
-        initPrimaryKey(id.getValue(), Tables.obtainPrimaryKey(table));
+        TableField<R, String> idField = Tables.obtainSingleStringPrimaryKeyField(table);
+        primaryKeyCondition = idField.eq(id.getValue());
     }
 
     @Override

@@ -15,7 +15,7 @@ import com.github.bannmann.labs.records_api.Records;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.Optionals;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class AccountRenameStore
 {
     private final AccountRecordConverter converter;

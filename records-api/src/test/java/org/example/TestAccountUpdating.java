@@ -95,7 +95,7 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
 
     private void assertPersistedEntityMatches(Account result)
     {
-        Account persisted = selectDirectly(result.getId());
+        Account persisted = selectAccountDirectly(result.getId());
         assertThat(persisted).usingRecursiveComparison()
             .isEqualTo(result);
     }

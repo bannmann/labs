@@ -53,7 +53,7 @@ public class TestAccountRenaming extends AbstractRecordsApiTest
             .displayName("Mr. Johnson")
             .renameCount((short) 1)
             .build();
-        Account persisted = selectDirectly(expected.getId());
+        Account persisted = selectAccountDirectly(expected.getId());
         assertThat(persisted).usingRecursiveComparison()
             .ignoringFields(Account.Fields.timestamp)
             .isEqualTo(expected);

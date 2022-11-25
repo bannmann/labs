@@ -14,7 +14,7 @@ import com.github.mizool.core.converter.IdentifierConverter;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class DepartmentMemberRecordConverter implements RecordConverter<DepartmentMember, DepartmentMemberRecord>
 {
     private final IdentifierConverter identifierConverter;
@@ -28,6 +28,7 @@ public class DepartmentMemberRecordConverter implements RecordConverter<Departme
             result = new DepartmentMemberRecord();
             result.setDepartmentId(identifierConverter.fromPojo(pojo.getDepartmentId()));
             result.setAccountId(identifierConverter.fromPojo(pojo.getAccountId()));
+            result.setPermissionLevel(pojo.getPermissionLevel());
         }
 
         return result;
@@ -42,6 +43,7 @@ public class DepartmentMemberRecordConverter implements RecordConverter<Departme
             result = DepartmentMember.builder()
                 .departmentId(identifierConverter.toPojo(record.getDepartmentId(), Department.class))
                 .accountId(identifierConverter.toPojo(record.getAccountId(), Account.class))
+                .permissionLevel(record.getPermissionLevel())
                 .build();
         }
         return result;

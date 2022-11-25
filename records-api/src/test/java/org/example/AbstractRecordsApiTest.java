@@ -4,7 +4,6 @@ import static org.example.Tables.ACCOUNT;
 
 import org.example.business.Account;
 import org.example.store.AccountRecordConverter;
-import org.example.tables.records.AccountRecord;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.testng.annotations.AfterClass;
@@ -38,7 +37,7 @@ abstract class AbstractRecordsApiTest
         context.close();
     }
 
-    protected Account selectDirectly(Identifier<Account> id)
+    protected Account selectAccountDirectly(Identifier<Account> id)
     {
         return context.selectFrom(ACCOUNT)
             .where(ACCOUNT.ID.eq(id.getValue()))
