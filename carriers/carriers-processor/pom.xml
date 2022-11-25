@@ -103,6 +103,15 @@
                                     <shadedPattern>com.github.bannmann.labs._shaded_.slf4j</shadedPattern>
                                 </relocation>
                             </relocations>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/beans.xml</exclude>
+                                        <exclude>META-INF/services/com.github.mizool.*</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
