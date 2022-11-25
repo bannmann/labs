@@ -14,4 +14,5 @@ public class DepartmentMember
 {
     @NonNull Identifier<Department> departmentId;
     @NonNull Identifier<Account> accountId;
+    int permissionLevel;
 }

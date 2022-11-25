@@ -33,6 +33,7 @@ create table if not exists department_member
 (
     department_id varchar(32),
     account_id varchar(32),
+    permission_level int default 0,
 
     constraint department_member_pk
         primary key (department_id, account_id),

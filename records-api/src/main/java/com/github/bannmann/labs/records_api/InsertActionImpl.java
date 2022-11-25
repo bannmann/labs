@@ -169,7 +169,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
 
         R resultRecord = convertFromPojo.apply(pojo);
 
-        TableField<R, String> primaryKeyField = Tables.obtainPrimaryKey(resultRecord.getTable());
+        TableField<R, String> primaryKeyField = Tables.obtainSingleStringPrimaryKeyField(resultRecord.getTable());
         resultRecord.set(primaryKeyField,
             Identifier.forPojo(pojo.getClass())
                 .random()

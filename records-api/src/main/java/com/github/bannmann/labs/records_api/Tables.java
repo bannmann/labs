@@ -13,7 +13,7 @@ import com.github.mizool.core.exception.CodeInconsistencyException;
 @UtilityClass
 class Tables
 {
-    public <R extends UpdatableRecord<?>> TableField<R, String> obtainPrimaryKey(Table<R> table)
+    public <R extends UpdatableRecord<?>> TableField<R, String> obtainSingleStringPrimaryKeyField(Table<R> table)
     {
         List<TableField<R, ?>> keyFields = table.getPrimaryKey()
             .getFields();
