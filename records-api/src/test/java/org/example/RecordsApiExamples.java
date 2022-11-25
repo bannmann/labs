@@ -4,6 +4,7 @@ import static org.example.tables.Bar.BAR;
 import static org.example.tables.Corge.CORGE;
 import static org.example.tables.Fizzle.FIZZLE;
 import static org.example.tables.Foo.FOO;
+import static org.example.tables.Quux.QUUX;
 import static org.example.tables.Thud.THUD;
 
 import java.util.Optional;
@@ -18,11 +19,13 @@ import org.example.business.Bar;
 import org.example.business.Corge;
 import org.example.business.Fizzle;
 import org.example.business.Foo;
+import org.example.business.Quux;
 import org.example.business.Thud;
 import org.example.store.BarRecordConverter;
 import org.example.store.CorgeRecordConverter;
 import org.example.store.FizzleRecordConverter;
 import org.example.store.FooRecordConverter;
+import org.example.store.QuuxRecordConverter;
 import org.example.store.ThudRecordConverter;
 import org.example.tables.records.FooRecord;
 import org.jooq.Field;
@@ -36,7 +39,7 @@ import com.github.mizool.core.Identifier;
  * Serves as a compile-time only verification of the capabilities of the records API.
  */
 @SuppressWarnings("unused")
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class RecordsApiExamples
 {
     private final Records records;
@@ -252,12 +255,12 @@ public class RecordsApiExamples
             .executeAndConvert();
     }
 
-    public Thud anonymousRefresh(ThudRecordConverter converter, Thud newPojo, Thud existingPojo)
+    public Quux anonymousRefresh(QuuxRecordConverter converter, Quux newPojo, Quux existingPojo)
     {
-        return records.update(THUD)
+        return records.update(QUUX)
             .withRecordConvertedUsing(converter)
             .fromNewPojo(newPojo)
-            .checkAndRefresh(THUD.TIMESTAMP)
+            .checkAndRefresh(QUUX.UPDATED)
             .executeAndConvert();
     }
 

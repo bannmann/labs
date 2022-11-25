@@ -13,7 +13,7 @@ import com.github.mizool.core.converter.IdentifierConverter;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class AccountRecordConverter implements RecordConverter<Account, AccountRecord>
 {
     private final IdentifierConverter identifierConverter;

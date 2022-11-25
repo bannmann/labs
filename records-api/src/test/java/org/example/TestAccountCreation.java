@@ -37,7 +37,7 @@ public class TestAccountCreation extends AbstractRecordsApiTest
         assertThat(result).hasNoNullFieldsOrPropertiesExcept(Account.Fields.ssoId)
             .returns("john.doe@example.org", Account::getEmail);
 
-        Account persisted = selectDirectly(result.getId());
+        Account persisted = selectAccountDirectly(result.getId());
         assertThat(persisted).isEqualTo(result);
     }
 

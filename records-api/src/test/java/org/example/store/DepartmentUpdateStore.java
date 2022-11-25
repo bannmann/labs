@@ -11,7 +11,7 @@ import org.example.tables.records.DepartmentRecord;
 
 import com.github.bannmann.labs.records_api.Records;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class DepartmentUpdateStore
 {
     private final DepartmentRecordConverter converter;

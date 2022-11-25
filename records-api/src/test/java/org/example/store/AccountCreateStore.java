@@ -13,7 +13,7 @@ import com.github.mizool.core.exception.ReadonlyFieldException;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class AccountCreateStore
 {
     private final AccountRecordConverter converter;
