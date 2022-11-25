@@ -12,7 +12,7 @@ import com.github.bannmann.labs.records_api.Records;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class DepartmentMemberUpdateStore
 {
     private final DepartmentMemberRecordConverter converter;

@@ -39,7 +39,7 @@ import com.github.mizool.core.Identifier;
  * Serves as a compile-time only verification of the capabilities of the records API.
  */
 @SuppressWarnings("unused")
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class RecordsApiExamples
 {
     private final Records records;

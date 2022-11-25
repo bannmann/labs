@@ -6,14 +6,13 @@ import javax.inject.Inject;
 
 import lombok.RequiredArgsConstructor;
 
-import org.example.business.Department;
 import org.example.business.DepartmentMember;
 
 import com.github.bannmann.labs.records_api.Records;
 import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class DepartmentMemberCreateStore
 {
     private final DepartmentMemberRecordConverter converter;
