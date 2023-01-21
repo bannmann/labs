@@ -34,4 +34,20 @@ public abstract class StringWrapper implements CharSequence
     {
         return contents;
     }
+
+    @Override
+    public final boolean equals(Object obj)
+    {
+        if (obj != null && getClass().equals(obj.getClass()))
+        {
+            return ((StringWrapper) obj).contents.equals(contents);
+        }
+        return false;
+    }
+
+    @Override
+    public final int hashCode()
+    {
+        return contents.hashCode();
+    }
 }
