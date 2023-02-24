@@ -259,41 +259,6 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         newRecord.set(field, now.get());
     }
 
-    @Override
-    public void execute()
-    {
-        internalExecute();
-    }
-
-    private void internalExecute()
-    {
-        try
-        {
-            Update<R> update = createStatement();
-
-            int updatedRows = update.execute();
-            if (updatedRows != 1)
-            {
-                throw createException();
-            }
-        }
-        catch (DataAccessException e)
-        {
-            Constraints.findFieldOfViolatedForeignKey(e, table)
-                .ifPresent(referencingField -> {
-                    throw new EntityReferenceException(referencingField);
-                });
-
-            Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
-                .ifPresent(field -> {
-                    throw new ConflictingEntityException("Conflict with existing entity due to " + field);
-                });
-
-            // If we get here, violated constraints don't have deterministic names, or it's an unrelated problem.
-            throw new StoreLayerException("Error updating " + table.getName(), e);
-        }
-    }
-
     private Update<R> createStatement()
     {
         var tableStep = context.update(table);
@@ -387,6 +352,36 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     {
         internalExecute();
         return toPojo.apply(newRecord);
+    }
+
+    private void internalExecute()
+    {
+        try (Update<R> update = createStatement())
+        {
+            int updatedRows;
+
+            updatedRows = update.execute();
+
+            if (updatedRows != 1)
+            {
+                throw createException();
+            }
+        }
+        catch (DataAccessException e)
+        {
+            Constraints.findFieldOfViolatedForeignKey(e, table)
+                .ifPresent(referencingField -> {
+                    throw new EntityReferenceException(referencingField);
+                });
+
+            Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
+                .ifPresent(field -> {
+                    throw new ConflictingEntityException("Conflict with existing entity due to " + field);
+                });
+
+            // If we get here, violated constraints don't have deterministic names, or it's an unrelated problem.
+            throw new StoreLayerException("Error updating " + table.getName(), e);
+        }
     }
 
     @Override
@@ -598,6 +593,12 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     private boolean isComparingUpdate()
     {
         return existingRecord != null;
+    }
+
+    @Override
+    public void voidExecute()
+    {
+        internalExecute();
     }
 
     /**

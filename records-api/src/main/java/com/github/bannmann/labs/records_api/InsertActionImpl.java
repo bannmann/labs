@@ -66,10 +66,15 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
     {
+        executeInternal();
+        return toPojo.apply(record);
+    }
+
+    private void executeInternal()
+    {
         try
         {
             context.executeInsert(record);
-            return toPojo.apply(record);
         }
         catch (DataAccessException e)
         {
@@ -122,6 +127,12 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     public void normalizingEmail(@NonNull TableField<R, String> field)
     {
         normalizeEmail(record, field);
+    }
+
+    @Override
+    public void voidExecute()
+    {
+        executeInternal();
     }
 
     @Override

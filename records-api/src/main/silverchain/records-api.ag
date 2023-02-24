@@ -80,29 +80,39 @@ Insert<; P, R extends UpdatableRecord<R>>
              *     }
              *
              */
-            withIdentifiableConvertedVia(Function<P, R> fromPojo)
+            (
+                withIdentifiableConvertedVia(Function<P, R> fromPojo)
+                |
+                withAnonymousConvertedVia(Function<P, R> fromPojo)
+            )
             $POJO_INSERT
             executeAndConvertVia(Function<R, P> toPojo)
         )
         |
         (
-            withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
-            $POJO_INSERT
-            executeAndConvert()
-        )
-        |
-        (
-            withAnonymousConvertedVia(Function<P, R> fromPojo)
-            $POJO_INSERT
-            executeAndConvertVia(Function<R, P> toPojo)
-        )
-        |
-        (
-            withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+            (
+                withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
+                |
+                withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+            )
             $POJO_INSERT
             executeAndConvert()
         )
     );
+
+    void
+    insertInto(Table<R> table)
+    (
+        withIdentifiableConvertedVia(Function<P, R> fromPojo)
+        |
+        withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
+        |
+        withAnonymousConvertedVia(Function<P, R> fromPojo)
+        |
+        withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+    )
+    $POJO_INSERT
+    voidExecute();
 }
 
 $POJO_UPDATE =
@@ -133,11 +143,23 @@ Update<; P, R extends UpdatableRecord<R>>
     $POJO_UPDATE
     executeAndConvertVia(Function<R, P> toPojo);
 
+    void
+    update(Table<R> table)
+    withRecordConvertedVia(Function<P, R> fromPojo)
+    $POJO_UPDATE
+    voidExecute();
+
     P
     update(Table<R> table)
     withRecordConvertedUsing(RecordConverter<P, R> converter)
     $POJO_UPDATE
     executeAndConvert();
+
+    void
+    update(Table<R> table)
+    withRecordConvertedUsing(RecordConverter<P, R> converter)
+    $POJO_UPDATE
+    voidExecute();
 
     void
     update(Table<R> table)
@@ -150,7 +172,7 @@ Update<; P, R extends UpdatableRecord<R>>
         refresh(TableField<R, OffsetDateTime> timestampField)
     )*
     $POST_IF*
-    execute();
+    voidExecute();
 }
 
 $CONVERT =

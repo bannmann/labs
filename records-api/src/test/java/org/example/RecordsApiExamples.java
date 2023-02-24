@@ -52,7 +52,23 @@ public class RecordsApiExamples
             .executeAndConvert();
     }
 
+    public void simpleAnonymousCreateDiscardingResult(ThudRecordConverter converter, Thud pojo)
+    {
+        records.insertInto(THUD)
+            .withAnonymousConvertedUsing(converter)
+            .fromPojo(pojo)
+            .voidExecute();
+    }
+
     public Thud simpleAnonymousCreateWithLambdas(ThudRecordConverter converter, Thud pojo)
+    {
+        return records.insertInto(THUD)
+            .withAnonymousConvertedVia(converter::fromPojo)
+            .fromPojo(pojo)
+            .executeAndConvertVia(converter::toPojo);
+    }
+
+    public Thud simpleAnonymousCreateWithLambdDiscardingResult(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
             .withAnonymousConvertedVia(converter::fromPojo)
@@ -78,12 +94,28 @@ public class RecordsApiExamples
             .executeAndConvert();
     }
 
+    public void simpleCreateDiscardingResult(FizzleRecordConverter converter, Fizzle pojo)
+    {
+        records.insertInto(FIZZLE)
+            .withIdentifiableConvertedUsing(converter)
+            .fromPojo(pojo)
+            .voidExecute();
+    }
+
     public Fizzle simpleCreateWithLambdas(FizzleRecordConverter converter, Fizzle pojo)
     {
         return records.insertInto(FIZZLE)
             .withIdentifiableConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
             .executeAndConvertVia(converter::toPojo);
+    }
+
+    public void simpleCreateWithLambdaDiscardingResult(FizzleRecordConverter converter, Fizzle pojo)
+    {
+        records.insertInto(FIZZLE)
+            .withIdentifiableConvertedVia(converter::fromPojo)
+            .fromPojo(pojo)
+            .voidExecute();
     }
 
     public Fizzle createWithEmail(FizzleRecordConverter converter, Fizzle pojo)
@@ -122,12 +154,28 @@ public class RecordsApiExamples
             .executeAndConvert();
     }
 
+    public void unconditionalUpdateDiscardingResult(FizzleRecordConverter converter, Fizzle newPojo)
+    {
+        records.update(FIZZLE)
+            .withRecordConvertedUsing(converter)
+            .fromNewPojo(newPojo)
+            .voidExecute();
+    }
+
     public Fizzle unconditionalUpdateWithLambdas(FizzleRecordConverter converter, Fizzle newPojo)
     {
         return records.update(FIZZLE)
             .withRecordConvertedVia(converter::fromPojo)
             .fromNewPojo(newPojo)
             .executeAndConvertVia(converter::toPojo);
+    }
+
+    public void unconditionalUpdateWithLambdaDiscardingResult(FizzleRecordConverter converter, Fizzle newPojo)
+    {
+        records.update(FIZZLE)
+            .withRecordConvertedVia(converter::fromPojo)
+            .fromNewPojo(newPojo)
+            .voidExecute();
     }
 
     public Bar timestampedUpdate(BarRecordConverter converter, Bar newPojo, Bar existingPojo)
@@ -234,6 +282,18 @@ public class RecordsApiExamples
             .executeAndConvert();
     }
 
+    public void refreshAndPredetectWithExistingPojoDiscardingResult(
+        BarRecordConverter converter, Bar newPojo, Bar existingPojo)
+    {
+        records.update(BAR)
+            .withRecordConvertedUsing(converter)
+            .fromNewPojo(newPojo)
+            .andExistingPojo(existingPojo)
+            .checkAndRefresh(BAR.TIMESTAMP)
+            .predetectCollisionOn(BAR.TEXT_DATA)
+            .voidExecute();
+    }
+
     public Bar predetectAndRefreshWithExistingPojo(BarRecordConverter converter, Bar newPojo, Bar existingPojo)
     {
         return records.update(BAR)
@@ -269,7 +329,7 @@ public class RecordsApiExamples
         records.update(FIZZLE)
             .withPrimaryKey(id, Fizzle.class)
             .set(FIZZLE.TEXT_DATA, "Hello, World!")
-            .execute();
+            .voidExecute();
     }
 
     public void unconditionalPartialUpdateB(Identifier<Foo> id)
@@ -278,7 +338,7 @@ public class RecordsApiExamples
             .withPrimaryKey(id, Foo.class)
             .set(FOO.TEXT_DATA, "{breaking news here}")
             .increase(FOO.VERSION)
-            .execute();
+            .voidExecute();
     }
 
     public void unconditionalPartialUpdateC(Identifier<Bar> id)
@@ -287,7 +347,7 @@ public class RecordsApiExamples
             .withPrimaryKey(id, Bar.class)
             .set(BAR.TEXT_DATA, "important")
             .refresh(BAR.TIMESTAMP)
-            .execute();
+            .voidExecute();
     }
 
     public void conditionalPartialUpdate(Identifier<Fizzle> id)
@@ -296,7 +356,7 @@ public class RecordsApiExamples
             .withPrimaryKey(id, Fizzle.class)
             .set(FIZZLE.BOOLEAN_DATA, true)
             .postdetectCollisionIf(FIZZLE.BOOLEAN_DATA.ne(false), FIZZLE.BOOLEAN_DATA)
-            .execute();
+            .voidExecute();
     }
 
     public Optional<Foo> simpleRead(FooRecordConverter converter, Identifier<Foo> id)

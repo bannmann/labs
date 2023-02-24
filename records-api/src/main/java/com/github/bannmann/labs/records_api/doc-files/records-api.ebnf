@@ -3,27 +3,31 @@
 insertInto ::=
 (
     (
-        'withIdentifiableConvertedVia'
+        (
+            'withIdentifiableConvertedVia'
+            |
+            'withAnonymousConvertedVia'
+        )
         pojoInsert
-        'executeAndConvertVia'
+        (
+            'executeAndConvertVia'
+            |
+            'voidExecute'
+        )
     )
     |
     (
-        'withIdentifiableConvertedUsing'
+        (
+            'withIdentifiableConvertedUsing'
+            |
+            'withAnonymousConvertedUsing'
+        )
         pojoInsert
-        'executeAndConvert'
-    )
-    |
-    (
-        'withAnonymousConvertedVia'
-        pojoInsert
-        'executeAndConvertVia'
-    )
-    |
-    (
-        'withAnonymousConvertedUsing'
-        pojoInsert
-        'executeAndConvert'
+        (
+            'executeAndConvert'
+            |
+            'voidExecute'
+        )
     )
 )
 
@@ -43,19 +47,27 @@ update ::=
 (
     'withRecordConvertedVia'
     pojoUpdate
-    'executeAndConvertVia'
+    (
+        'executeAndConvertVia'
+        |
+        'voidExecute'
+    )
 
     |
 
     'withRecordConvertedUsing'
     pojoUpdate
-    'executeAndConvert'
+    (
+        'executeAndConvert'
+        |
+        'voidExecute'
+    )
 
     |
 
     'withPrimaryKey'
     sparseUpdate
-    'execute'
+    'voidExecute'
 )
 
 pojoUpdate ::=
