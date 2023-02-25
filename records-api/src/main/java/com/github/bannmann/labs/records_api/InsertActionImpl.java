@@ -19,6 +19,7 @@ import com.github.mizool.core.Identifier;
 import com.github.mizool.core.concurrent.Lazy;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.GeneratedFieldOverrideException;
+import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.StoreLayerException;
 
 @Slf4j
@@ -42,6 +43,8 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     private Function<P, R> convertFromPojo;
     private Function<R, P> presetConvertToPojo;
     private R record;
+    private boolean ignoreDuplicateKey;
+    private boolean usePresetId;
 
     public InsertActionImpl(DSLContext context, StoreClock storeClock)
     {
@@ -74,7 +77,19 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     {
         try
         {
-            context.executeInsert(record);
+            if (ignoreDuplicateKey)
+            {
+                record = context.insertInto(record.getTable())
+                    .set(record.intoMap())
+                    .onDuplicateKeyIgnore()
+                    .returning(record.getTable()
+                        .fields())
+                    .fetchOne();
+            }
+            else
+            {
+                context.executeInsert(record);
+            }
         }
         catch (DataAccessException e)
         {
@@ -98,6 +113,13 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void fromPojo(@NonNull P pojo)
     {
+        record = convertFromPojo.apply(pojo);
+    }
+
+    @Override
+    public void fromPojoWithPresetId(P pojo)
+    {
+        usePresetId = true;
         record = convertFromPojo.apply(pojo);
     }
 
@@ -127,6 +149,12 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     public void normalizingEmail(@NonNull TableField<R, String> field)
     {
         normalizeEmail(record, field);
+    }
+
+    @Override
+    public void onDuplicateKeyIgnore()
+    {
+        ignoreDuplicateKey = true;
     }
 
     @Override
@@ -172,20 +200,33 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
 
     private R checkAndConvertIdentifiable(P pojo, Function<P, R> convertFromPojo)
     {
-        Identifiable<?> identifiablePojo = (Identifiable<?>) pojo;
-        if (identifiablePojo.getId() != null)
-        {
-            throw new GeneratedFieldOverrideException("id");
-        }
+        verifyIdSetOrUnsetAsAppropriate(pojo);
 
         R resultRecord = convertFromPojo.apply(pojo);
 
-        TableField<R, String> primaryKeyField = Tables.obtainSingleStringPrimaryKeyField(resultRecord.getTable());
-        resultRecord.set(primaryKeyField,
-            Identifier.forPojo(pojo.getClass())
-                .random()
-                .getValue());
+        if (!usePresetId)
+        {
+            TableField<R, String> primaryKeyField = Tables.obtainSingleStringPrimaryKeyField(resultRecord.getTable());
+            resultRecord.set(primaryKeyField,
+                Identifier.forPojo(pojo.getClass())
+                    .random()
+                    .getValue());
+        }
 
         return resultRecord;
+    }
+
+    private void verifyIdSetOrUnsetAsAppropriate(P pojo)
+    {
+        Identifiable<?> identifiablePojo = (Identifiable<?>) pojo;
+        Identifier<?> pojoId = identifiablePojo.getId();
+        if (pojoId != null && !usePresetId)
+        {
+            throw new GeneratedFieldOverrideException("id");
+        }
+        if (usePresetId && pojoId == null)
+        {
+            throw new InvalidPrimaryKeyException("ID of pojo passed to fromPojoWithPresetId() was null");
+        }
     }
 }

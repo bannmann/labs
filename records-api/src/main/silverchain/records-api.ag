@@ -36,13 +36,27 @@ $POST_IF =
     postdetectCollisionIf(Condition condition, String name)
     | postdetectCollisionIf(Condition condition, TableField<R, ?> field);
 
-$POJO_INSERT =
-    fromPojo(P pojo)
+$POJO_INSERT_MODIFICATION =
+    generating(TableField<R, OffsetDateTime> field)
+    |
+    $ADJUSTMENTS;
+
+$REGULAR_POJO_INSERT =
     (
-        generating(TableField<R, OffsetDateTime> field)
-        |
-        $ADJUSTMENTS
-    )*;
+        fromPojo(P pojo)
+        $POJO_INSERT_MODIFICATION*
+    )
+    ;
+
+$REGULAR_OR_PRESETID_POJO_INSERT =
+    $REGULAR_POJO_INSERT
+    |
+    (
+        fromPojoWithPresetId(P pojo)
+        $POJO_INSERT_MODIFICATION*
+        onDuplicateKeyIgnore()?
+    )
+    ;
 
 Insert<; P, R extends UpdatableRecord<R>>
 {
@@ -80,22 +94,28 @@ Insert<; P, R extends UpdatableRecord<R>>
              *     }
              *
              */
-            (
-                withIdentifiableConvertedVia(Function<P, R> fromPojo)
-                |
-                withAnonymousConvertedVia(Function<P, R> fromPojo)
-            )
-            $POJO_INSERT
+            withIdentifiableConvertedVia(Function<P, R> fromPojo)
+            $REGULAR_OR_PRESETID_POJO_INSERT
             executeAndConvertVia(Function<R, P> toPojo)
         )
         |
         (
-            (
-                withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
-                |
-                withAnonymousConvertedUsing(RecordConverter<P, R> converter)
-            )
-            $POJO_INSERT
+            withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
+            $REGULAR_OR_PRESETID_POJO_INSERT
+            executeAndConvert()
+        )
+        |
+        (
+            withAnonymousConvertedVia(Function<P, R> fromPojo)
+            $REGULAR_POJO_INSERT
+            onDuplicateKeyIgnore()?
+            executeAndConvertVia(Function<R, P> toPojo)
+        )
+        |
+        (
+            withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+            $REGULAR_POJO_INSERT
+            onDuplicateKeyIgnore()?
             executeAndConvert()
         )
     );
@@ -103,15 +123,25 @@ Insert<; P, R extends UpdatableRecord<R>>
     void
     insertInto(Table<R> table)
     (
-        withIdentifiableConvertedVia(Function<P, R> fromPojo)
+        (
+            (
+                withIdentifiableConvertedVia(Function<P, R> fromPojo)
+                |
+                withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
+            )
+            $REGULAR_OR_PRESETID_POJO_INSERT
+        )
         |
-        withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
-        |
-        withAnonymousConvertedVia(Function<P, R> fromPojo)
-        |
-        withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+        (
+            (
+                withAnonymousConvertedVia(Function<P, R> fromPojo)
+                |
+                withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+            )
+            $REGULAR_POJO_INSERT
+            onDuplicateKeyIgnore()?
+        )
     )
-    $POJO_INSERT
     voidExecute();
 }
 

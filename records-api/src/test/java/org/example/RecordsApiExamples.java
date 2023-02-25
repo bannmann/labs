@@ -52,6 +52,15 @@ public class RecordsApiExamples
             .executeAndConvert();
     }
 
+    public Thud simpleAnonymousCreateIfNotExist(ThudRecordConverter converter, Thud pojo)
+    {
+        return records.insertInto(THUD)
+            .withAnonymousConvertedUsing(converter)
+            .fromPojo(pojo)
+            .onDuplicateKeyIgnore()
+            .executeAndConvert();
+    }
+
     public void simpleAnonymousCreateDiscardingResult(ThudRecordConverter converter, Thud pojo)
     {
         records.insertInto(THUD)
@@ -91,6 +100,23 @@ public class RecordsApiExamples
         return records.insertInto(FIZZLE)
             .withIdentifiableConvertedUsing(converter)
             .fromPojo(pojo)
+            .executeAndConvert();
+    }
+
+    public Fizzle simpleCreateWithId(FizzleRecordConverter converter, Fizzle pojo)
+    {
+        return records.insertInto(FIZZLE)
+            .withIdentifiableConvertedUsing(converter)
+            .fromPojoWithPresetId(pojo)
+            .executeAndConvert();
+    }
+
+    public Fizzle simpleCreateWithIdIfNotExist(FizzleRecordConverter converter, Fizzle pojo)
+    {
+        return records.insertInto(FIZZLE)
+            .withIdentifiableConvertedUsing(converter)
+            .fromPojoWithPresetId(pojo)
+            .onDuplicateKeyIgnore()
             .executeAndConvert();
     }
 

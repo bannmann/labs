@@ -3,12 +3,8 @@
 insertInto ::=
 (
     (
-        (
-            'withIdentifiableConvertedVia'
-            |
-            'withAnonymousConvertedVia'
-        )
-        pojoInsert
+        'withIdentifiableConvertedVia'
+        identifiablePojoInsert
         (
             'executeAndConvertVia'
             |
@@ -17,12 +13,28 @@ insertInto ::=
     )
     |
     (
+        'withIdentifiableConvertedUsing'
+        identifiablePojoInsert
         (
-            'withIdentifiableConvertedUsing'
+            'executeAndConvert'
             |
-            'withAnonymousConvertedUsing'
+            'voidExecute'
         )
-        pojoInsert
+    )
+    |
+    (
+        'withAnonymousConvertedVia'
+        anonymousPojoInsert
+        (
+            'executeAndConvertVia'
+            |
+            'voidExecute'
+        )
+    )
+    |
+    (
+        'withAnonymousConvertedUsing'
+        anonymousPojoInsert
         (
             'executeAndConvert'
             |
@@ -31,7 +43,33 @@ insertInto ::=
     )
 )
 
-pojoInsert ::=
+identifiablePojoInsert ::=
+(
+    (
+        'fromPojo'
+        (
+            'generating'
+            |
+            adjustments
+        )
+        *
+    )
+    |
+    (
+        'fromPojoWithPresetId'
+
+        (
+            'generating'
+            |
+            adjustments
+        )
+        *
+
+        'onDuplicateKeyIgnore'?
+    )
+)
+
+anonymousPojoInsert ::=
 (
     'fromPojo'
 
@@ -41,6 +79,8 @@ pojoInsert ::=
         adjustments
     )
     *
+
+    'onDuplicateKeyIgnore'?
 )
 
 update ::=
