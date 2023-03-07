@@ -4,30 +4,72 @@ insertInto ::=
 (
     (
         'withIdentifiableConvertedVia'
-        pojoInsert
-        'executeAndConvertVia'
+        identifiablePojoInsert
+        (
+            'executeAndConvertVia'
+            |
+            'voidExecute'
+        )
     )
     |
     (
         'withIdentifiableConvertedUsing'
-        pojoInsert
-        'executeAndConvert'
+        identifiablePojoInsert
+        (
+            'executeAndConvert'
+            |
+            'voidExecute'
+        )
     )
     |
     (
         'withAnonymousConvertedVia'
-        pojoInsert
-        'executeAndConvertVia'
+        anonymousPojoInsert
+        (
+            'executeAndConvertVia'
+            |
+            'voidExecute'
+        )
     )
     |
     (
         'withAnonymousConvertedUsing'
-        pojoInsert
-        'executeAndConvert'
+        anonymousPojoInsert
+        (
+            'executeAndConvert'
+            |
+            'voidExecute'
+        )
     )
 )
 
-pojoInsert ::=
+identifiablePojoInsert ::=
+(
+    (
+        'fromPojo'
+        (
+            'generating'
+            |
+            adjustments
+        )
+        *
+    )
+    |
+    (
+        'fromPojoWithPresetId'
+
+        (
+            'generating'
+            |
+            adjustments
+        )
+        *
+
+        'onDuplicateKeyIgnore'?
+    )
+)
+
+anonymousPojoInsert ::=
 (
     'fromPojo'
 
@@ -37,25 +79,35 @@ pojoInsert ::=
         adjustments
     )
     *
+
+    'onDuplicateKeyIgnore'?
 )
 
 update ::=
 (
     'withRecordConvertedVia'
     pojoUpdate
-    'executeAndConvertVia'
+    (
+        'executeAndConvertVia'
+        |
+        'voidExecute'
+    )
 
     |
 
     'withRecordConvertedUsing'
     pojoUpdate
-    'executeAndConvert'
+    (
+        'executeAndConvert'
+        |
+        'voidExecute'
+    )
 
     |
 
     'withPrimaryKey'
     sparseUpdate
-    'execute'
+    'voidExecute'
 )
 
 pojoUpdate ::=
