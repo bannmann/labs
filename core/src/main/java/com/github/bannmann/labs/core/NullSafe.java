@@ -1,6 +1,8 @@
 package com.github.bannmann.labs.core;
 
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import lombok.experimental.UtilityClass;
 
@@ -87,5 +89,21 @@ public class NullSafe
         }
 
         return getter6.apply(f);
+    }
+
+    public <T> T coalesce(T t1, T t2)
+    {
+        return t1 != null
+            ? t1
+            : t2;
+    }
+
+    @SafeVarargs
+    public <T> T coalesce(T... t)
+    {
+        return Stream.of(t)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 }
