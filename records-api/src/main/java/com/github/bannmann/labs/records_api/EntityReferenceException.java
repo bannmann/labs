@@ -15,14 +15,24 @@ public class EntityReferenceException extends AbstractUnprocessableEntityExcepti
 
     public EntityReferenceException(@NonNull String fieldName)
     {
-        super(String.format("Invalid entity reference in field %s", fieldName));
+        this(fieldName, (Throwable) null);
+    }
+
+    public EntityReferenceException(@NonNull String fieldName, Throwable cause)
+    {
+        super(String.format("Invalid entity reference in field %s", fieldName), cause);
         this.fieldName = fieldName;
         recordId = null;
     }
 
     public EntityReferenceException(@NonNull String fieldName, @NonNull String recordId)
     {
-        super(String.format("Invalid entity reference in field %s of '%s'", fieldName, recordId));
+        this(fieldName, recordId, null);
+    }
+
+    public EntityReferenceException(@NonNull String fieldName, @NonNull String recordId, Throwable cause)
+    {
+        super(String.format("Invalid entity reference in field %s of '%s'", fieldName, recordId), cause);
         this.fieldName = fieldName;
         this.recordId = recordId;
     }

@@ -371,12 +371,12 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         {
             Constraints.findFieldOfViolatedForeignKey(e, table)
                 .ifPresent(referencingField -> {
-                    throw new EntityReferenceException(referencingField);
+                    throw new EntityReferenceException(referencingField, e);
                 });
 
             Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
                 .ifPresent(field -> {
-                    throw new ConflictingEntityException("Conflict with existing entity due to " + field);
+                    throw new ConflictingEntityException("Conflict with existing entity due to " + field, e);
                 });
 
             // If we get here, violated constraints don't have deterministic names, or it's an unrelated problem.
