@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.server.Dispatcher;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
@@ -50,7 +49,7 @@ public class JettyErrorHandler extends ErrorHandler
 
     private String getMessageOrDefault(Request baseRequest, HttpServletRequest request)
     {
-        String message = (String) request.getAttribute(Dispatcher.ERROR_MESSAGE);
+        String message = (String) request.getAttribute(RequestDispatcher.ERROR_MESSAGE);
         if (message == null)
         {
             message = baseRequest.getResponse()

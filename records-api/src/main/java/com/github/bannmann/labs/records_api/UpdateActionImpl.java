@@ -106,7 +106,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Enables collision detection for the given field (based on the pojo's value), then increases it. <br>
+     * Enables collision detection for the given integer field (based on the pojo's value), then increases it. <br>
      * <br>
      * Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
      * TableField) postdetect} collision check.<br>
@@ -125,42 +125,19 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void checkAndIncrease(@NonNull TableField<R, ? extends Number> field)
     {
-        checkAndModify(field, value -> value.add(BigDecimal.ONE));
-    }
-
-    private <N extends Number> void checkAndModify(TableField<R, N> field, UnaryOperator<BigDecimal> unaryOperator)
-    {
+        verifyIsInteger(field);
         performCollisionDetection(field);
-        modify(field, unaryOperator);
+        increaseInteger(field);
     }
 
-    private <N extends Number> void modify(TableField<R, N> field, UnaryOperator<BigDecimal> unaryOperator)
+    private <N extends Number> void verifyIsInteger(TableField<R, N> field)
     {
-        BigDecimal original = getBigDecimal(field);
-        BigDecimal modified = unaryOperator.apply(original);
-
-        newRecord.set(field,
-            field.getDataType()
-                .convert(modified));
-    }
-
-    /**
-     * We suppress warnings because we want to be _exact_, not predictable: The rationale given by
-     * {@link BigDecimal#BigDecimal(double)} doesn't apply to us as we don't need predictability (as one would expect
-     * when passing a fixed value like 0.1).
-     */
-    @SuppressWarnings("UnpredictableBigDecimalConstructorCall")
-    private <N extends Number> BigDecimal getBigDecimal(TableField<R, N> field)
-    {
-        N value = newRecord.getValue(field);
-        if (field.getDataType()
+        if (!field.getDataType()
             .isInteger())
         {
-            return new BigDecimal(value.longValue());
-        }
-        else
-        {
-            return new BigDecimal(value.doubleValue());
+            throw new CodeInconsistencyException(String.format(
+                "checkAndIncrease() does not support non-integer fields like %s",
+                field.getUnqualifiedName()));
         }
     }
 
@@ -205,9 +182,25 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * exception builder} is invoked. The exception includes the field/check name. If none of the checks caused the
      * update to fail, the primary key was incorrect and an {@link ObjectNotFoundException} is thrown.
      */
-    private boolean internalAddCheck(Check check)
+    private void internalAddCheck(Check check)
     {
-        return checks.add(check);
+        checks.add(check);
+    }
+
+    private <N extends Number> void increaseInteger(TableField<R, N> field)
+    {
+        BigDecimal original = getBigDecimal(field);
+        BigDecimal modified = original.add(BigDecimal.ONE);
+
+        newRecord.set(field,
+            field.getDataType()
+                .convert(modified));
+    }
+
+    private <N extends Number> BigDecimal getBigDecimal(TableField<R, N> field)
+    {
+        N value = newRecord.getValue(field);
+        return new BigDecimal(value.longValue());
     }
 
     /**
