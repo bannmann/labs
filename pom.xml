@@ -10,7 +10,7 @@
 
     <groupId>com.github.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.0.10</version>
+    <version>0.0.11</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -22,10 +22,13 @@
     </modules>
 
     <properties>
+        <base.toolchains.jdk>17</base.toolchains.jdk>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jooq.version>3.18.4</jooq.version>
         <lombok.core.version>1.18.22</lombok.core.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <mizool.version>0.48</mizool.version>
     </properties>
 
@@ -95,7 +98,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>3.5.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

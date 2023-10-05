@@ -55,8 +55,6 @@ public class TestDepartmentCreation extends AbstractRecordsApiTest
         context.deleteFrom(ACCOUNT)
             .where(ACCOUNT.ID.eq(existingAccountIdString))
             .execute();
-
-        super.tearDown();
     }
 
     @Test

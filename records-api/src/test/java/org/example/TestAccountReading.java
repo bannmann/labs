@@ -40,8 +40,6 @@ public class TestAccountReading extends AbstractRecordsApiTest
     {
         context.deleteFrom(ACCOUNT)
             .execute();
-
-        super.tearDown();
     }
 
     @Test
