@@ -40,8 +40,6 @@ public class TestAccountFinder extends AbstractRecordsApiTest
     {
         context.deleteFrom(ACCOUNT)
             .execute();
-
-        super.tearDown();
     }
 
     @Test

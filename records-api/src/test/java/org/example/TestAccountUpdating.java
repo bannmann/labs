@@ -66,8 +66,6 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     {
         context.deleteFrom(ACCOUNT)
             .execute();
-
-        super.tearDown();
     }
 
     @Test

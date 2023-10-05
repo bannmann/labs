@@ -349,12 +349,9 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private void internalExecute()
     {
-        try (Update<R> update = createStatement())
+        try
         {
-            int updatedRows;
-
-            updatedRows = update.execute();
-
+            int updatedRows = createStatement().execute();
             if (updatedRows != 1)
             {
                 throw createException();

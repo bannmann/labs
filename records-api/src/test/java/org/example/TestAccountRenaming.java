@@ -38,8 +38,6 @@ public class TestAccountRenaming extends AbstractRecordsApiTest
     {
         context.deleteFrom(ACCOUNT)
             .execute();
-
-        super.tearDown();
     }
 
     @Test

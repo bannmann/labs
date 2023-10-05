@@ -65,8 +65,6 @@ public class TestDepartmentMemberCreation extends AbstractRecordsApiTest
             .where(DEPARTMENT.ID.eq(existingDepartment.getId()
                 .getValue()))
             .execute();
-
-        super.tearDown();
     }
 
     @Test

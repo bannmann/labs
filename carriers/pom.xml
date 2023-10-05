@@ -21,8 +21,6 @@
         <aptk.version>0.18.0</aptk.version>
         <cute.version>0.11.1</cute.version>
         <encoding>UTF-8</encoding>
-        <java.compile.source.version>11</java.compile.source.version>
-        <java.compile.target.version>11</java.compile.target.version>
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <spiap.version>0.8.1</spiap.version>
     </properties>

@@ -60,8 +60,6 @@ public class TestDepartmentUpdating extends AbstractRecordsApiTest
             .where(ACCOUNT.ID.eq(existingAccount.getId()
                 .getValue()))
             .execute();
-
-        super.tearDown();
     }
 
     @Test

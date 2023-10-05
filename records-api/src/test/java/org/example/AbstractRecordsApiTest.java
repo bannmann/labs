@@ -31,12 +31,6 @@ abstract class AbstractRecordsApiTest
         records = new Records(context, storeClock);
     }
 
-    @AfterClass
-    public void tearDown()
-    {
-        context.close();
-    }
-
     protected Account selectAccountDirectly(Identifier<Account> id)
     {
         return context.selectFrom(ACCOUNT)
