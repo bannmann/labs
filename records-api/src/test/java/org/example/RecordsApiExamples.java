@@ -44,51 +44,51 @@ public class RecordsApiExamples
 {
     private final Records records;
 
-    public Thud simpleAnonymousCreate(ThudRecordConverter converter, Thud pojo)
+    public Thud simpleCustomKeyedCreate(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
-            .withAnonymousConvertedUsing(converter)
+            .withCustomKeyedConvertedUsing(converter)
             .fromPojo(pojo)
             .executeAndConvert();
     }
 
-    public Thud simpleAnonymousCreateIfNotExist(ThudRecordConverter converter, Thud pojo)
+    public Thud simpleCustomKeyedCreateIfNotExist(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
-            .withAnonymousConvertedUsing(converter)
+            .withCustomKeyedConvertedUsing(converter)
             .fromPojo(pojo)
             .onDuplicateKeyIgnore()
             .executeAndConvert();
     }
 
-    public void simpleAnonymousCreateDiscardingResult(ThudRecordConverter converter, Thud pojo)
+    public void simpleCustomKeyedCreateDiscardingResult(ThudRecordConverter converter, Thud pojo)
     {
         records.insertInto(THUD)
-            .withAnonymousConvertedUsing(converter)
+            .withCustomKeyedConvertedUsing(converter)
             .fromPojo(pojo)
             .voidExecute();
     }
 
-    public Thud simpleAnonymousCreateWithLambdas(ThudRecordConverter converter, Thud pojo)
+    public Thud simpleCustomKeyedCreateWithLambdas(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
-            .withAnonymousConvertedVia(converter::fromPojo)
+            .withCustomKeyedConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
             .executeAndConvertVia(converter::toPojo);
     }
 
-    public Thud simpleAnonymousCreateWithLambdDiscardingResult(ThudRecordConverter converter, Thud pojo)
+    public Thud simpleCustomKeyedCreateWithLambdDiscardingResult(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
-            .withAnonymousConvertedVia(converter::fromPojo)
+            .withCustomKeyedConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
             .executeAndConvertVia(converter::toPojo);
     }
 
-    public Thud anonymousCreateWithTimestampAndEmail(ThudRecordConverter converter, Thud pojo)
+    public Thud customKeyedCreateWithTimestampAndEmail(ThudRecordConverter converter, Thud pojo)
     {
         return records.insertInto(THUD)
-            .withAnonymousConvertedUsing(converter)
+            .withCustomKeyedConvertedUsing(converter)
             .fromPojo(pojo)
             .generating(THUD.TIMESTAMP)
             .normalizingEmail(THUD.TEXT_DATA)
@@ -341,7 +341,7 @@ public class RecordsApiExamples
             .executeAndConvert();
     }
 
-    public Quux anonymousRefresh(QuuxRecordConverter converter, Quux newPojo, Quux existingPojo)
+    public Quux customKeyedRefresh(QuuxRecordConverter converter, Quux newPojo, Quux existingPojo)
     {
         return records.update(QUUX)
             .withRecordConvertedUsing(converter)

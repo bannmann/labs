@@ -164,14 +164,14 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     }
 
     @Override
-    public void withAnonymousConvertedUsing(@NonNull RecordConverter<P, R> converter)
+    public void withCustomKeyedConvertedUsing(@NonNull RecordConverter<P, R> converter)
     {
-        withAnonymousConvertedVia(converter::fromPojo);
+        withCustomKeyedConvertedVia(converter::fromPojo);
         presetConvertToPojo = converter::toPojo;
     }
 
     @Override
-    public void withAnonymousConvertedVia(@NonNull Function<P, R> fromPojo)
+    public void withCustomKeyedConvertedVia(@NonNull Function<P, R> fromPojo)
     {
         convertFromPojo = fromPojo.compose(this::checkNonIdentifiable);
     }
@@ -180,7 +180,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     {
         if (pojo instanceof Identifiable<?>)
         {
-            throw new IllegalArgumentException("Cannot treat Identifiable entity as anonymous");
+            throw new IllegalArgumentException("Cannot treat Identifiable entity as custom keyed");
         }
         return pojo;
     }

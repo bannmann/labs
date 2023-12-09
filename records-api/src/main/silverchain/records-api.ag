@@ -89,7 +89,7 @@ Insert<; P, R extends UpdatableRecord<R>>
              *         // ^--- Repeating a type variable from Foo, but adding a "method-local" constraint.
              *
              *         |
-             *         withAnonymousConvertedVia(Function<P, R> fromPojo)
+             *         withCustomKeyedConvertedVia(Function<P, R> fromPojo)
              *         // As before, this method implicitly gets a <P> type param because it introduces P to the chain.
              *     }
              *
@@ -106,14 +106,14 @@ Insert<; P, R extends UpdatableRecord<R>>
         )
         |
         (
-            withAnonymousConvertedVia(Function<P, R> fromPojo)
+            withCustomKeyedConvertedVia(Function<P, R> fromPojo)
             $REGULAR_POJO_INSERT
             onDuplicateKeyIgnore()?
             executeAndConvertVia(Function<R, P> toPojo)
         )
         |
         (
-            withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+            withCustomKeyedConvertedUsing(RecordConverter<P, R> converter)
             $REGULAR_POJO_INSERT
             onDuplicateKeyIgnore()?
             executeAndConvert()
@@ -134,9 +134,9 @@ Insert<; P, R extends UpdatableRecord<R>>
         |
         (
             (
-                withAnonymousConvertedVia(Function<P, R> fromPojo)
+                withCustomKeyedConvertedVia(Function<P, R> fromPojo)
                 |
-                withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+                withCustomKeyedConvertedUsing(RecordConverter<P, R> converter)
             )
             $REGULAR_POJO_INSERT
             onDuplicateKeyIgnore()?

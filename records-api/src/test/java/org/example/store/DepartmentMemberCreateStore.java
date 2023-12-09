@@ -21,7 +21,7 @@ public class DepartmentMemberCreateStore
     public DepartmentMember create(DepartmentMember pojo)
     {
         return records.insertInto(DEPARTMENT_MEMBER)
-            .withAnonymousConvertedVia(converter::fromPojo)
+            .withCustomKeyedConvertedVia(converter::fromPojo)
             .fromPojo(pojo)
             .executeAndConvertVia(converter::toPojo);
     }
