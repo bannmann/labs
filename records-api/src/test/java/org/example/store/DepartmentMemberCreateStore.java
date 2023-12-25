@@ -2,6 +2,8 @@ package org.example.store;
 
 import static org.example.Tables.DEPARTMENT_MEMBER;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,16 @@ public class DepartmentMemberCreateStore
     public DepartmentMember create(DepartmentMember pojo)
     {
         return records.insertInto(DEPARTMENT_MEMBER)
-            .withAnonymousConvertedVia(converter::fromPojo)
+            .withCustomKeyedConvertedUsing(converter)
             .fromPojo(pojo)
-            .executeAndConvertVia(converter::toPojo);
+            .executeAndConvert();
+    }
+
+    public void create(List<DepartmentMember> pojos)
+    {
+        records.insertInto(DEPARTMENT_MEMBER)
+            .withCustomKeyedConvertedUsing(converter)
+            .fromPojos(pojos)
+            .voidExecute();
     }
 }

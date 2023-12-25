@@ -3,6 +3,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.jooq.Condition;
@@ -58,6 +59,22 @@ $REGULAR_OR_PRESETID_POJO_INSERT =
     )
     ;
 
+$REGULAR_BATCH_POJO_INSERT =
+    (
+        fromPojos(List<P> pojos)
+        $POJO_INSERT_MODIFICATION*
+    )
+    ;
+
+$REGULAR_OR_PRESETID_BATCH_POJO_INSERT =
+    $REGULAR_BATCH_POJO_INSERT
+    |
+    (
+        fromPojosWithPresetId(List<P> pojos)
+        $POJO_INSERT_MODIFICATION*
+    )
+    ;
+
 Insert<; P, R extends UpdatableRecord<R>>
 {
     P
@@ -89,7 +106,7 @@ Insert<; P, R extends UpdatableRecord<R>>
              *         // ^--- Repeating a type variable from Foo, but adding a "method-local" constraint.
              *
              *         |
-             *         withAnonymousConvertedVia(Function<P, R> fromPojo)
+             *         withCustomKeyedConvertedVia(Function<P, R> fromPojo)
              *         // As before, this method implicitly gets a <P> type param because it introduces P to the chain.
              *     }
              *
@@ -106,14 +123,14 @@ Insert<; P, R extends UpdatableRecord<R>>
         )
         |
         (
-            withAnonymousConvertedVia(Function<P, R> fromPojo)
+            withCustomKeyedConvertedVia(Function<P, R> fromPojo)
             $REGULAR_POJO_INSERT
             onDuplicateKeyIgnore()?
             executeAndConvertVia(Function<R, P> toPojo)
         )
         |
         (
-            withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+            withCustomKeyedConvertedUsing(RecordConverter<P, R> converter)
             $REGULAR_POJO_INSERT
             onDuplicateKeyIgnore()?
             executeAndConvert()
@@ -129,17 +146,27 @@ Insert<; P, R extends UpdatableRecord<R>>
                 |
                 withIdentifiableConvertedUsing(RecordConverter<P, R> converter)
             )
-            $REGULAR_OR_PRESETID_POJO_INSERT
+            (
+                $REGULAR_OR_PRESETID_POJO_INSERT
+                |
+                $REGULAR_OR_PRESETID_BATCH_POJO_INSERT
+            )
         )
         |
         (
             (
-                withAnonymousConvertedVia(Function<P, R> fromPojo)
+                withCustomKeyedConvertedVia(Function<P, R> fromPojo)
                 |
-                withAnonymousConvertedUsing(RecordConverter<P, R> converter)
+                withCustomKeyedConvertedUsing(RecordConverter<P, R> converter)
             )
-            $REGULAR_POJO_INSERT
-            onDuplicateKeyIgnore()?
+            (
+                (
+                    $REGULAR_POJO_INSERT
+                    onDuplicateKeyIgnore()?
+                )
+                |
+                $REGULAR_BATCH_POJO_INSERT
+            )
         )
     )
     voidExecute();

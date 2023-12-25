@@ -1,9 +1,14 @@
 package com.github.bannmann.labs.records_api;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -26,57 +31,38 @@ import com.github.mizool.core.exception.StoreLayerException;
 @SuppressWarnings("java:S6213")
 class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction<P, R>
 {
-    private static <R extends UpdatableRecord<R>> void normalizeEmail(R record, TableField<R, String> field)
+    private static class RecordHolder<R extends UpdatableRecord<R>>
     {
-        adjust(record, field, s -> s.toLowerCase(Locale.ROOT));
-    }
+        private final List<R> records;
+        private boolean ignoreDuplicateKey;
 
-    private static <F, R extends UpdatableRecord<R>> void adjust(
-        R record, TableField<R, F> field, UnaryOperator<F> adjuster)
-    {
-        record.set(field, adjuster.apply(record.get(field)));
-    }
-
-    private final DSLContext context;
-    private final Lazy<OffsetDateTime> now;
-
-    private Function<P, R> convertFromPojo;
-    private Function<R, P> presetConvertToPojo;
-    private R record;
-    private boolean ignoreDuplicateKey;
-    private boolean usePresetId;
-
-    public InsertActionImpl(DSLContext context, StoreClock storeClock)
-    {
-        this.context = context;
-
-        // Encapsulate "now()" calls in a Lazy to ensure multiple timestamp fields all get the same value
-        now = new Lazy<>(storeClock::now);
-    }
-
-    @Override
-    public <F> void adjusting(@NonNull TableField<R, F> field, @NonNull UnaryOperator<F> adjuster)
-    {
-        adjust(record, field, adjuster);
-    }
-
-    @Override
-    public P executeAndConvert()
-    {
-        return executeAndConvertVia(presetConvertToPojo);
-    }
-
-    @Override
-    public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
-    {
-        executeInternal();
-        return toPojo.apply(record);
-    }
-
-    private void executeInternal()
-    {
-        try
+        public RecordHolder(@NonNull R record)
         {
+            this.records = List.of(record);
+        }
+
+        public RecordHolder(@NonNull List<R> records)
+        {
+            if (records.isEmpty())
+            {
+                throw new IllegalArgumentException("Records list cannot be empty");
+            }
+            this.records = new ArrayList<>(records);
+        }
+
+        public <F> void apply(Consumer<R> consumer)
+        {
+            for (R record : records)
+            {
+                consumer.accept(record);
+            }
+        }
+
+        public R executeSingle(DSLContext context)
+        {
+            verifySingleRecordMode();
+
+            R record = records.get(0);
             if (ignoreDuplicateKey)
             {
                 record = context.insertInto(record.getTable())
@@ -90,37 +76,150 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
             {
                 context.executeInsert(record);
             }
+            return record;
+        }
+
+        private void verifySingleRecordMode()
+        {
+            if (isMultiple())
+            {
+                throw new IllegalStateException("Multiple records");
+            }
+        }
+
+        private boolean isMultiple()
+        {
+            return records.size() > 1;
+        }
+
+        public void executeSingleOrBatch(DSLContext context)
+        {
+            if (isMultiple())
+            {
+                executeBatch(context);
+            }
+            else
+            {
+                executeSingle(context);
+            }
+        }
+
+        public void executeBatch(DSLContext context)
+        {
+            context.batchInsert(records)
+                .execute();
+        }
+
+        public Table<R> getTable()
+        {
+            return records.get(0)
+                .getTable();
+        }
+
+        public void onDuplicateKeyIgnore()
+        {
+            verifySingleRecordMode();
+            ignoreDuplicateKey = true;
+        }
+    }
+
+    private final DSLContext context;
+    private final Lazy<OffsetDateTime> now;
+
+    private Function<P, R> convertFromPojo;
+    private Function<R, P> presetConvertToPojo;
+    private RecordHolder<R> recordHolder;
+    private boolean usePresetId;
+
+    public InsertActionImpl(DSLContext context, StoreClock storeClock)
+    {
+        this.context = context;
+
+        // Encapsulate "now()" calls in a Lazy to ensure multiple timestamp fields all get the same value
+        now = new Lazy<>(storeClock::now);
+    }
+
+    @Override
+    public <F> void adjusting(@NonNull TableField<R, F> field, @NonNull UnaryOperator<F> adjuster)
+    {
+        recordHolder.apply(record -> record.set(field, adjuster.apply(record.get(field))));
+    }
+
+    @Override
+    public P executeAndConvert()
+    {
+        return executeAndConvertVia(presetConvertToPojo);
+    }
+
+    @Override
+    public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
+    {
+        R resultRecord = executeSingle();
+        return toPojo.apply(resultRecord);
+    }
+
+    private R executeSingle()
+    {
+        try
+        {
+            return recordHolder.executeSingle(context);
         }
         catch (DataAccessException e)
         {
-            Table<R> table = record.getTable();
-
-            Constraints.findFieldOfViolatedForeignKey(e, table)
-                .ifPresent(referencingField -> {
-                    throw new EntityReferenceException(referencingField, e);
-                });
-
-            Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e, table)
-                .ifPresent(field -> {
-                    throw new ConflictingEntityException("Conflict with existing entity due to " + field, e);
-                });
-
-            // If we get here, violated constraints don't have deterministic names, or it's an unrelated problem.
-            throw new StoreLayerException("Error inserting into " + table.getName(), e);
+            throw convertException(e);
         }
+    }
+
+    private RuntimeException convertException(DataAccessException e)
+    {
+        Table<R> table = recordHolder.getTable();
+
+        Optional<String> fieldOfViolatedForeignKey = Constraints.findFieldOfViolatedForeignKey(e, table);
+        if (fieldOfViolatedForeignKey.isPresent())
+        {
+            return new EntityReferenceException(fieldOfViolatedForeignKey.get(), e);
+        }
+
+        Optional<String> fieldOfViolatedUniqueOrPrimaryKey = Constraints.findFieldOfViolatedUniqueOrPrimaryKey(e,
+            table);
+        if (fieldOfViolatedUniqueOrPrimaryKey.isPresent())
+        {
+            return new ConflictingEntityException("Conflict with existing entity due to " +
+                fieldOfViolatedUniqueOrPrimaryKey.get(), e);
+        }
+
+        // If we get here, violated constraints don't have deterministic names, or it's an unrelated problem.
+        return new StoreLayerException("Error inserting into " + table.getName(), e);
     }
 
     @Override
     public void fromPojo(@NonNull P pojo)
     {
-        record = convertFromPojo.apply(pojo);
+        R record = convertFromPojo.apply(pojo);
+        recordHolder = new RecordHolder<>(record);
+    }
+
+    @Override
+    public void fromPojos(List<P> pojos)
+    {
+        List<R> records = pojos.stream()
+            .map(pojo -> convertFromPojo.apply(pojo))
+            .collect(Collectors.toList());
+        recordHolder = new RecordHolder<>(records);
     }
 
     @Override
     public void fromPojoWithPresetId(P pojo)
     {
         usePresetId = true;
-        record = convertFromPojo.apply(pojo);
+        fromPojo(pojo);
+    }
+
+    @Override
+    public void fromPojosWithPresetId(List<P> pojos)
+    {
+        usePresetId = true;
+        fromPojos(pojos);
     }
 
     /**
@@ -131,12 +230,14 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void generating(@NonNull TableField<R, OffsetDateTime> field)
     {
-        if (record.get(field) != null)
-        {
-            throw new GeneratedFieldOverrideException(field.getName());
-        }
+        recordHolder.apply(record -> {
+            if (record.get(field) != null)
+            {
+                throw new GeneratedFieldOverrideException(field.getName());
+            }
 
-        record.set(field, now.get());
+            record.set(field, now.get());
+        });
     }
 
     @Override
@@ -148,30 +249,37 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void normalizingEmail(@NonNull TableField<R, String> field)
     {
-        normalizeEmail(record, field);
+        adjusting(field, s -> s.toLowerCase(Locale.ROOT));
     }
 
     @Override
     public void onDuplicateKeyIgnore()
     {
-        ignoreDuplicateKey = true;
+        recordHolder.onDuplicateKeyIgnore();
     }
 
     @Override
     public void voidExecute()
     {
-        executeInternal();
+        try
+        {
+            recordHolder.executeSingleOrBatch(context);
+        }
+        catch (DataAccessException e)
+        {
+            throw convertException(e);
+        }
     }
 
     @Override
-    public void withAnonymousConvertedUsing(@NonNull RecordConverter<P, R> converter)
+    public void withCustomKeyedConvertedUsing(@NonNull RecordConverter<P, R> converter)
     {
-        withAnonymousConvertedVia(converter::fromPojo);
+        withCustomKeyedConvertedVia(converter::fromPojo);
         presetConvertToPojo = converter::toPojo;
     }
 
     @Override
-    public void withAnonymousConvertedVia(@NonNull Function<P, R> fromPojo)
+    public void withCustomKeyedConvertedVia(@NonNull Function<P, R> fromPojo)
     {
         convertFromPojo = fromPojo.compose(this::checkNonIdentifiable);
     }
@@ -180,7 +288,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     {
         if (pojo instanceof Identifiable<?>)
         {
-            throw new IllegalArgumentException("Cannot treat Identifiable entity as anonymous");
+            throw new IllegalArgumentException("Cannot treat Identifiable entity as custom keyed");
         }
         return pojo;
     }

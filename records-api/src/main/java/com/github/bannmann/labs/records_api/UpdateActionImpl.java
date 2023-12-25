@@ -610,7 +610,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Supports both {@link Identifiable} and "anonymous" pojos.
+     * Supports both {@link Identifiable} and custom keyed pojos.
      */
     @Override
     public void withRecordConvertedVia(@NonNull Function<P, R> fromPojo)
