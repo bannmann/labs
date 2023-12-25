@@ -2,19 +2,25 @@
 
 insertInto ::=
 (
-    (
-        'withIdentifiableConvertedVia'
-        identifiablePojoInsert
-        (
-            'executeAndConvertVia'
-            |
-            'voidExecute'
-        )
-    )
+    singleInsert
     |
+    batchInsert
+)
+
+singleInsert ::=
+(
     (
-        'withIdentifiableConvertedUsing'
-        identifiablePojoInsert
+        (
+            (
+                'withIdentifiableConvertedUsing'
+                identifiablePojoInsert
+            )
+            |
+            (
+                'withCustomKeyedConvertedUsing'
+                customKeyedPojoInsert
+            )
+        )
         (
             'executeAndConvert'
             |
@@ -23,24 +29,47 @@ insertInto ::=
     )
     |
     (
-        'withCustomKeyedConvertedVia'
-        customKeyedPojoInsert
+        (
+            (
+                'withIdentifiableConvertedVia'
+                identifiablePojoInsert
+            )
+            |
+            (
+                'withCustomKeyedConvertedVia'
+                customKeyedPojoInsert
+            )
+        )
         (
             'executeAndConvertVia'
             |
             'voidExecute'
         )
     )
-    |
+)
+
+batchInsert ::=
+(
     (
-        'withCustomKeyedConvertedUsing'
-        customKeyedPojoInsert
         (
-            'executeAndConvert'
-            |
-            'voidExecute'
+            (
+                'withIdentifiableConvertedUsing'
+                |
+                'withIdentifiableConvertedVia'
+            )
+            identifiablePojoBatchInsert
+        )
+        |
+        (
+            (
+                'withCustomKeyedConvertedUsing'
+                |
+                'withCustomKeyedConvertedVia'
+            )
+            customKeyedPojoBatchInsert
         )
     )
+    'voidExecute'
 )
 
 identifiablePojoInsert ::=
@@ -69,6 +98,21 @@ identifiablePojoInsert ::=
     )
 )
 
+identifiablePojoBatchInsert ::=
+(
+    (
+        'fromPojos'
+        |
+        'fromPojosWithPresetId'
+    )
+    (
+        'generating'
+        |
+        adjustments
+    )
+    *
+)
+
 customKeyedPojoInsert ::=
 (
     'fromPojo'
@@ -81,6 +125,17 @@ customKeyedPojoInsert ::=
     *
 
     'onDuplicateKeyIgnore'?
+)
+
+customKeyedPojoBatchInsert ::=
+(
+    'fromPojos'
+    (
+        'generating'
+        |
+        adjustments
+    )
+    *
 )
 
 update ::=

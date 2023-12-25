@@ -6,6 +6,9 @@ import static org.example.Tables.ACCOUNT;
 import static org.example.Tables.DEPARTMENT;
 import static org.example.Tables.DEPARTMENT_MEMBER;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.example.business.Account;
 import org.example.business.Department;
 import org.example.business.DepartmentMember;
@@ -28,23 +31,28 @@ public class TestDepartmentMemberCreation extends AbstractRecordsApiTest
 
     private DepartmentMemberCreateStore departmentMemberCreateStore;
 
-    private Account existingAccount;
-    private Department existingDepartment;
+    private Account account;
+    private Department astrometry;
+    private Department engineering;
 
     @BeforeMethod
     public void setUp()
     {
         super.setUp();
 
-        existingAccount = new AccountCreateStore(accountRecordConverter, records).create(Account.builder()
+        account = new AccountCreateStore(accountRecordConverter, records).create(Account.builder()
             .email("someone@example.org")
             .displayName("Someone")
             .ssoId(null)
             .build());
 
-        existingDepartment = new DepartmentCreateStore(new DepartmentRecordConverter(identifierConverter),
-            records).create(Department.builder()
+        var departmentCreateStore = new DepartmentCreateStore(new DepartmentRecordConverter(identifierConverter),
+            records);
+        astrometry = departmentCreateStore.create(Department.builder()
             .name("Astrometry")
+            .build());
+        engineering = departmentCreateStore.create(Department.builder()
+            .name("Engineering")
             .build());
 
         departmentMemberCreateStore = new DepartmentMemberCreateStore(departmentMemberRecordConverter, records);
@@ -57,36 +65,53 @@ public class TestDepartmentMemberCreation extends AbstractRecordsApiTest
             .execute();
 
         context.deleteFrom(ACCOUNT)
-            .where(ACCOUNT.ID.eq(existingAccount.getId()
+            .where(ACCOUNT.ID.eq(account.getId()
                 .getValue()))
             .execute();
 
         context.deleteFrom(DEPARTMENT)
-            .where(DEPARTMENT.ID.eq(existingDepartment.getId()
-                .getValue()))
+            .where(DEPARTMENT.ID.in(astrometry.getId()
+                    .getValue(),
+                engineering.getId()
+                    .getValue()))
             .execute();
     }
 
     @Test
-    public void testCreate()
+    public void testCreateSingle()
     {
-        DepartmentMember pojo = DepartmentMember.builder()
-            .departmentId(existingDepartment.getId())
-            .accountId(existingAccount.getId())
-            .build();
+        DepartmentMember pojo = createMembershipPojo(astrometry, account);
 
         departmentMemberCreateStore.create(pojo);
+    }
+
+    private DepartmentMember createMembershipPojo(Department department, Account account)
+    {
+        return DepartmentMember.builder()
+            .departmentId(department.getId())
+            .accountId(account.getId())
+            .build();
+    }
+
+    @Test
+    public void testCreateMultiple()
+    {
+        List<DepartmentMember> pojos = Stream.of(astrometry, engineering)
+            .map(department -> createMembershipPojo(department, account))
+            .toList();
+
+        departmentMemberCreateStore.create(pojos);
     }
 
     @Test
     public void testPrimaryKeyViolation()
     {
-        DepartmentMember pojo = DepartmentMember.builder()
-            .departmentId(existingDepartment.getId())
-            .accountId(existingAccount.getId())
-            .build();
+        DepartmentMember pojo = createMembershipPojo(astrometry, account);
 
+        // First attempt works
         assertThatCode(() -> departmentMemberCreateStore.create(pojo)).doesNotThrowAnyException();
+
+        // Second attempt fails
         assertThatThrownBy(() -> departmentMemberCreateStore.create(pojo)).isInstanceOf(ConflictingEntityException.class)
             .hasMessage("Conflict with existing entity due to DEPARTMENT_ID+ACCOUNT_ID");
     }
