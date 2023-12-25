@@ -19,11 +19,11 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.github.bannmann.labs.records_api.Records;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.ReadonlyFieldException;
+import dev.bannmann.labs.records_api.Records;
 
 @Test
 public class TestAccountUpdating extends AbstractRecordsApiTest

@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.example.business.Account;
 
-import com.github.bannmann.labs.records_api.Records;
 import com.github.mizool.core.Identifier;
+import dev.bannmann.labs.records_api.Records;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 public class AccountReadStore

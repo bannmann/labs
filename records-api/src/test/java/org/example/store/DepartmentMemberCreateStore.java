@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.example.business.DepartmentMember;
 
-import com.github.bannmann.labs.records_api.Records;
 import com.google.common.annotations.VisibleForTesting;
+import dev.bannmann.labs.records_api.Records;
 
 @VisibleForTesting
 @RequiredArgsConstructor(onConstructor_ = @Inject)

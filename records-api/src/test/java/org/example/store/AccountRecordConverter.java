@@ -8,9 +8,9 @@ import org.example.business.Account;
 import org.example.business.SingleSignOnPrincipal;
 import org.example.tables.records.AccountRecord;
 
-import com.github.bannmann.labs.records_api.RecordConverter;
 import com.github.mizool.core.converter.IdentifierConverter;
 import com.google.common.annotations.VisibleForTesting;
+import dev.bannmann.labs.records_api.RecordConverter;
 
 @VisibleForTesting
 @RequiredArgsConstructor(onConstructor_ = @Inject)

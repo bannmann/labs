@@ -14,9 +14,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.github.bannmann.labs.records_api.EntityReferenceException;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.StoreLayerException;
+import dev.bannmann.labs.records_api.EntityReferenceException;
 
 @Test(groups = "DepartmentCreation")
 public class TestDepartmentCreation extends AbstractRecordsApiTest

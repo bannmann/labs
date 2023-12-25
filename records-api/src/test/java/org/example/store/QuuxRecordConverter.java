@@ -3,9 +3,9 @@ package org.example.store;
 import org.example.business.Quux;
 import org.example.tables.records.QuuxRecord;
 
-import com.github.bannmann.labs.records_api.RecordConverter;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.google.common.annotations.VisibleForTesting;
+import dev.bannmann.labs.records_api.RecordConverter;
 
 @VisibleForTesting
 public class QuuxRecordConverter implements RecordConverter<Quux, QuuxRecord>

@@ -13,7 +13,7 @@ import org.example.store.FooRecordConverter;
 import org.example.tables.records.FooRecord;
 import org.jooq.ResultQuery;
 
-import com.github.bannmann.labs.records_api.Records;
+import dev.bannmann.labs.records_api.Records;
 
 /**
  * Serves as a compile-time only verification of the capabilities of the records API.

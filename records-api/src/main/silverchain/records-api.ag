@@ -15,13 +15,13 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
 
-import com.github.bannmann.labs.records_api.Insert;
-import com.github.bannmann.labs.records_api.RecordConverter;
-import com.github.bannmann.labs.records_api.Update;
-import com.github.bannmann.labs.records_api.Quux;
-import com.github.bannmann.labs.records_api.Select;
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
+import dev.bannmann.labs.records_api.Insert;
+import dev.bannmann.labs.records_api.RecordConverter;
+import dev.bannmann.labs.records_api.Update;
+import dev.bannmann.labs.records_api.Quux;
+import dev.bannmann.labs.records_api.Select;
 
 $ADJUSTMENTS =
     adjusting<F>(TableField<R, F> field, UnaryOperator<F> adjuster)

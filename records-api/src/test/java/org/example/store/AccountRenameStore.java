@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.business.Account;
 import org.jooq.DSLContext;
 
-import com.github.bannmann.labs.records_api.Records;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.Optionals;
+import dev.bannmann.labs.records_api.Records;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 public class AccountRenameStore

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.bannmann.labs.carriers</groupId>
+        <groupId>dev.bannmann.labs.carriers</groupId>
         <artifactId>carriers</artifactId>
         <version>0.0.14-SNAPSHOT</version>
     </parent>

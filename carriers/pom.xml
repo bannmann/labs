@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.bannmann.labs</groupId>
+        <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
         <version>0.0.14-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.github.bannmann.labs.carriers</groupId>
+    <groupId>dev.bannmann.labs.carriers</groupId>
     <artifactId>carriers</artifactId>
     <packaging>pom</packaging>
 
@@ -28,21 +28,21 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.github.bannmann.labs.carriers</groupId>
+                <groupId>com.squareup</groupId>
+                <artifactId>javapoet</artifactId>
+                <version>1.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.bannmann.labs.carriers</groupId>
                 <artifactId>carriers-api</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.github.bannmann.labs.carriers</groupId>
+                <groupId>dev.bannmann.labs.carriers</groupId>
                 <artifactId>carriers-processor</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.squareup</groupId>
-                <artifactId>javapoet</artifactId>
-                <version>1.13.0</version>
             </dependency>
             <dependency>
                 <groupId>io.toolisticon.aptk</groupId>
