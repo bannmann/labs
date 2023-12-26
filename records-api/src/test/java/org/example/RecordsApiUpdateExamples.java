@@ -22,8 +22,8 @@ import org.example.store.FizzleRecordConverter;
 import org.example.store.FooRecordConverter;
 import org.example.store.QuuxRecordConverter;
 
-import com.github.bannmann.labs.records_api.Records;
 import com.github.mizool.core.Identifier;
+import dev.bannmann.labs.records_api.Records;
 
 /**
  * Serves as a compile-time only verification of the capabilities of the records API.

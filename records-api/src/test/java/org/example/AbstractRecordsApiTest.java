@@ -6,13 +6,12 @@ import org.example.business.Account;
 import org.example.store.AccountRecordConverter;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
-import com.github.bannmann.labs.records_api.Records;
-import com.github.bannmann.labs.records_api.StoreClock;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.converter.IdentifierConverter;
+import dev.bannmann.labs.records_api.Records;
+import dev.bannmann.labs.records_api.StoreClock;
 
 abstract class AbstractRecordsApiTest
 {

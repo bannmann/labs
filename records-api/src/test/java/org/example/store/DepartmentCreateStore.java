@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.business.Department;
 import org.example.tables.records.DepartmentRecord;
 
-import com.github.bannmann.labs.records_api.Records;
 import com.google.common.annotations.VisibleForTesting;
+import dev.bannmann.labs.records_api.RecordConverter;
+import dev.bannmann.labs.records_api.Records;
 
 @VisibleForTesting
 @RequiredArgsConstructor(onConstructor_ = @Inject)
@@ -29,7 +30,7 @@ public class DepartmentCreateStore
     }
 
     /**
-     * Simulate the use case where one doesn't have a {@link com.github.bannmann.labs.records_api.RecordConverter} and
+     * Simulate the use case where one doesn't have a {@link RecordConverter} and
      * therefore has to pass individual lambdas.
      */
     private DepartmentRecord fromPojoCustom(Department pojo)
@@ -38,7 +39,7 @@ public class DepartmentCreateStore
     }
 
     /**
-     * Simulate the use case where one doesn't have a {@link com.github.bannmann.labs.records_api.RecordConverter} and
+     * Simulate the use case where one doesn't have a {@link RecordConverter} and
      * therefore has to pass individual lambdas.
      */
     private Department toPojoCustom(DepartmentRecord record)

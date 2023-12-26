@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.bannmann.labs</groupId>
+        <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
-        <version>0.0.13</version>
+        <version>0.0.14</version>
     </parent>
 
     <artifactId>kumuluzee-errorhandling</artifactId>
@@ -26,14 +26,6 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>com.github.bannmann.labs</groupId>
-            <artifactId>annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.bannmann.labs</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.github.mizool.technology</groupId>
             <artifactId>technology-jackson</artifactId>
         </dependency>
@@ -50,9 +42,12 @@
             <artifactId>kumuluzee-servlet-jetty</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <groupId>dev.bannmann.labs</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.bannmann.labs</groupId>
+            <artifactId>core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kohsuke.metainf-services</groupId>

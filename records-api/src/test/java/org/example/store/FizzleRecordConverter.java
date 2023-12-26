@@ -3,9 +3,9 @@ package org.example.store;
 import org.example.business.Fizzle;
 import org.example.tables.records.FizzleRecord;
 
-import com.github.bannmann.labs.records_api.RecordConverter;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.google.common.annotations.VisibleForTesting;
+import dev.bannmann.labs.records_api.RecordConverter;
 
 @VisibleForTesting
 public class FizzleRecordConverter implements RecordConverter<Fizzle, FizzleRecord>
