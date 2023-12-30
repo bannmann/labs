@@ -6,7 +6,7 @@ import org.example.business.Account;
 import org.example.store.AccountRecordConverter;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.converter.IdentifierConverter;
@@ -22,7 +22,7 @@ abstract class AbstractRecordsApiTest
     protected StoreClock storeClock;
     protected Records records;
 
-    @BeforeClass
+    @BeforeMethod
     public void setUp()
     {
         context = DSL.using(System.getProperty("jdbcUrl"));
