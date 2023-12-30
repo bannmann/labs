@@ -17,6 +17,7 @@ import org.jooq.UpdatableRecord;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
+import dev.bannmann.labs.records_api.Delete;
 import dev.bannmann.labs.records_api.Insert;
 import dev.bannmann.labs.records_api.RecordConverter;
 import dev.bannmann.labs.records_api.Update;
@@ -287,4 +288,49 @@ Select<; P, R extends Record>
     query(ResultQuery<R> resultQuery)
     skipConversion()
     fetchRecordStream();
+}
+
+$DELETE_CRITERIA =
+    (
+        withId(Identifier<P> id)
+        denyUnless(Condition condition)?
+    );
+
+Delete<; P, R extends UpdatableRecord<R>>
+{
+    void
+    delete()
+    fromIdentifiable(Table<R> table, Class<? extends RecordConverter<P, R>> converterClass)
+    $DELETE_CRITERIA
+    voidExecute();
+
+    void
+    delete()
+    fromIdentifiable(Table<R> table, RecordConverter<P, R> converter)
+    $DELETE_CRITERIA
+    voidExecute();
+
+    boolean
+    delete()
+    (
+        fromIdentifiable(Table<R> table, RecordConverter<P, R> converter)
+        |
+        fromIdentifiable(Table<R> table, Class<? extends RecordConverter<P, R>> converterClass)
+    )
+    $DELETE_CRITERIA
+    ignoreIfNotFound()
+    tryExecute();
+
+    P
+    delete()
+    fromIdentifiable(Table<R> table, RecordConverter<P, R> converter)
+    $DELETE_CRITERIA
+    executeAndConvert();
+
+    Optional<P>
+    delete()
+    fromIdentifiable(Table<R> table, RecordConverter<P, R> converter)
+    $DELETE_CRITERIA
+    ignoreIfNotFound()
+    tryExecuteAndConvert();
 }

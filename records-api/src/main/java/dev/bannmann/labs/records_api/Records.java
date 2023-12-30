@@ -3,7 +3,6 @@ package dev.bannmann.labs.records_api;
 import java.util.function.Function;
 
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.UtilityClass;
 
 import org.jooq.DSLContext;
 import org.jooq.Query;
@@ -13,35 +12,39 @@ import org.jooq.Table;
 import org.jooq.UpdatableRecord;
 import org.jooq.exception.DataAccessException;
 
-import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.exception.StoreLayerException;
 import dev.bannmann.labs.annotations.UpstreamCandidate;
+import dev.bannmann.labs.records_api.state1.Delete;
 import dev.bannmann.labs.records_api.state1.Insert;
 import dev.bannmann.labs.records_api.state1.Select;
 import dev.bannmann.labs.records_api.state1.Update;
 
 @UpstreamCandidate("Mizool")
 @RequiredArgsConstructor
-public class Records implements IInsert, IUpdate, ISelect
+public class Records implements IInsert, IUpdate, ISelect, IDelete
 {
-    @UtilityClass
-    private static class DummyIdentifiable implements Identifiable<DummyIdentifiable>
-    {
-    }
-
     private final DSLContext context;
     private final StoreClock storeClock;
 
     @Override
+    public Delete delete()
+    {
+        var action = new DeleteActionImpl<>(context);
+        return new Delete0(action).delete();
+    }
+
+    @Override
     public <R extends UpdatableRecord<R>> Insert<R> insertInto(Table<R> table)
     {
-        return new Insert0(new InsertActionImpl<Object, R>(context, storeClock)).insertInto(table);
+        var action = new InsertActionImpl<>(context, storeClock);
+        return new Insert0(action).insertInto(table);
     }
 
     @Override
     public <R extends UpdatableRecord<R>> Update<R> update(Table<R> table)
     {
-        return new Update0(new UpdateActionImpl<Object, R>(context, storeClock)).update(table);
+        var action = new UpdateActionImpl<>(context, storeClock);
+        return new Update0(action).update(table);
     }
 
     @Override
@@ -50,9 +53,10 @@ public class Records implements IInsert, IUpdate, ISelect
         return createSelect().selectFrom(table);
     }
 
-    private <R extends Record> Select0 createSelect()
+    private Select0 createSelect()
     {
-        return new Select0(new SelectActionImpl<DummyIdentifiable, R>(context));
+        var action = new SelectActionImpl<>(context);
+        return new Select0(action);
     }
 
     @Override
