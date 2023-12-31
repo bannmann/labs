@@ -21,6 +21,11 @@
         <module>records-api</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/bannmann/labs.git</connection>
+        <url>https://github.com/bannmann/labs/</url>
+    </scm>
+
     <properties>
         <base.toolchains.jdk>17</base.toolchains.jdk>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
