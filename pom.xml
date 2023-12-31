@@ -14,6 +14,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>anansi-postgres</module>
         <module>annotations</module>
         <module>carriers</module>
         <module>core</module>
@@ -28,7 +29,7 @@
 
     <properties>
         <base.toolchains.jdk>17</base.toolchains.jdk>
-        <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
+        <javadoc.sources.directory>${project.build.directory}/generated-sources/javadoc-input</javadoc.sources.directory>
         <jooq.version>3.18.4</jooq.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -36,6 +37,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>dev.bannmann.anansi</groupId>
+                <artifactId>anansi</artifactId>
+                <version>0.5</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.bannmann.labs</groupId>
+                <artifactId>anansi-postgres</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>dev.bannmann.labs</groupId>
                 <artifactId>annotations</artifactId>
@@ -56,6 +67,11 @@
                 <artifactId>jakarta.inject-api</artifactId>
                 <version>1.0.3</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apiguardian</groupId>
+                <artifactId>apiguardian-api</artifactId>
+                <version>1.1.2</version>
             </dependency>
             <dependency>
                 <groupId>org.jooq</groupId>
