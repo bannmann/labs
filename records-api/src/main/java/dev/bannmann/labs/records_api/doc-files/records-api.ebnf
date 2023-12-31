@@ -266,3 +266,26 @@ query ::=
         )
     )
 )
+
+delete ::=
+(
+    'fromIdentifiable'
+    'withId'
+    'denyUnless'?
+    (
+        (
+            'voidExecute'
+            |
+            'executeAndConvert'
+        )
+        |
+        (
+            'ignoreIfNotFound'
+            (
+                'tryExecute'
+                |
+                'tryExecuteAndConvert'
+            )
+        )
+    )
+)

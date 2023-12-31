@@ -32,7 +32,6 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
     private Account existingAccount;
     private Account anotherAccount;
     private DSLContext contextUnderTest;
-    private Records recordsUnderTest;
 
     @BeforeMethod
     public void setUp()
@@ -40,7 +39,7 @@ public class TestAccountUpdating extends AbstractRecordsApiTest
         super.setUp();
 
         contextUnderTest = Mockito.spy(context);
-        recordsUnderTest = new Records(contextUnderTest, storeClock);
+        Records recordsUnderTest = new Records(contextUnderTest, storeClock);
         accountUpdateStore = new AccountUpdateStore(accountRecordConverter, recordsUnderTest);
 
         Assertions.setMaxStackTraceElementsDisplayed(999);

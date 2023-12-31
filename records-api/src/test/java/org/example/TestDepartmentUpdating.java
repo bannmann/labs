@@ -10,6 +10,7 @@ import org.example.store.AccountCreateStore;
 import org.example.store.DepartmentCreateStore;
 import org.example.store.DepartmentRecordConverter;
 import org.example.store.DepartmentUpdateStore;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -48,7 +49,7 @@ public class TestDepartmentUpdating extends AbstractRecordsApiTest
         departmentUpdateStore = new DepartmentUpdateStore(departmentRecordConverter, records);
     }
 
-    @AfterMethod
+    @AfterClass
     public void tearDown()
     {
         context.deleteFrom(DEPARTMENT)

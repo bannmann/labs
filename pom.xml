@@ -5,25 +5,30 @@
     <parent>
         <groupId>dev.bannmann</groupId>
         <artifactId>base</artifactId>
-        <version>1.6</version>
+        <version>1.7</version>
     </parent>
 
     <groupId>dev.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.0.14</version>
+    <version>0.0.15</version>
     <packaging>pom</packaging>
 
     <modules>
+        <module>anansi-postgres</module>
         <module>annotations</module>
-        <module>carriers</module>
         <module>core</module>
         <module>kumuluzee-errorhandling</module>
         <module>records-api</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/bannmann/labs.git</connection>
+        <url>https://github.com/bannmann/labs/</url>
+    </scm>
+
     <properties>
         <base.toolchains.jdk>17</base.toolchains.jdk>
-        <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
+        <javadoc.sources.directory>${project.build.directory}/generated-sources/javadoc-input</javadoc.sources.directory>
         <jooq.version>3.18.4</jooq.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -31,6 +36,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>dev.bannmann.anansi</groupId>
+                <artifactId>anansi</artifactId>
+                <version>0.5</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.bannmann.labs</groupId>
+                <artifactId>anansi-postgres</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>dev.bannmann.labs</groupId>
                 <artifactId>annotations</artifactId>
@@ -53,6 +68,11 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>org.apiguardian</groupId>
+                <artifactId>apiguardian-api</artifactId>
+                <version>1.1.2</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-parent</artifactId>
                 <version>${jooq.version}</version>
@@ -72,20 +92,6 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>com.amashchenko.maven.plugin</groupId>
-                    <artifactId>gitflow-maven-plugin</artifactId>
-                    <configuration>
-                        <gitFlowConfig>
-                            <productionBranch>main</productionBranch>
-                        </gitFlowConfig>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
@@ -94,46 +100,9 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.5.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <executions>
-                        <!--
-                            This is a workaround for https://issues.apache.org/jira/browse/MNG-5939.
-                            Configuring the jar-no-fork goal within the execution "attach-sources" would result in
-                            both jar and jar-no-fork being active on the release profile.
-                        -->
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase/>
-                        </execution>
-                        <execution>
-                            <id>always-attach-sources</id>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.0.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.13</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -183,47 +152,8 @@
                 </pluginManagement>
                 <plugins>
                     <plugin>
-                        <groupId>com.github.ekryd.sortpom</groupId>
-                        <artifactId>sortpom-maven-plugin</artifactId>
-                        <configuration>
-                            <verifyFail>Stop</verifyFail>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>verify</goal>
-                                </goals>
-                                <phase>validate</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>sign</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <phase>verify</phase>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
