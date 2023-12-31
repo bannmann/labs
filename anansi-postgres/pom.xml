@@ -16,6 +16,18 @@
             <artifactId>anansi</artifactId>
         </dependency>
         <dependency>
+            <!--
+              We don't use 'core' in this module, but anansi does. Thanks to dependency management, anansi gets the
+              _current_ core artifact instead of the one it declared. However, that one hasn't been built yet:
+              "The following artifacts could not be resolved: dev.bannmann.labs:core:jar:x.x.x-SNAPSHOT (absent)"
+
+              It seems that the reactor build doesn't consider transitive dependencies when determining build order.
+              Therefore, we put an explicit dependency to 'core' here that we wouldn't need otherwise.
+            -->
+            <groupId>dev.bannmann.labs</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>dev.bannmann.labs</groupId>
             <artifactId>records-api</artifactId>
         </dependency>
