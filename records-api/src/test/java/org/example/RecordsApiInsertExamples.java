@@ -1,5 +1,6 @@
 package org.example;
 
+import static org.example.Tables.SPLAT;
 import static org.example.tables.Bar.BAR;
 import static org.example.tables.Fizzle.FIZZLE;
 import static org.example.tables.Thud.THUD;
@@ -13,9 +14,11 @@ import lombok.RequiredArgsConstructor;
 
 import org.example.business.Bar;
 import org.example.business.Fizzle;
+import org.example.business.Splat;
 import org.example.business.Thud;
 import org.example.store.BarRecordConverter;
 import org.example.store.FizzleRecordConverter;
+import org.example.store.SplatRecordConverter;
 import org.example.store.ThudRecordConverter;
 
 import dev.bannmann.labs.records_api.Records;
@@ -103,6 +106,15 @@ public class RecordsApiInsertExamples
             .fromPojo(pojo)
             .generating(BAR.TIMESTAMP)
             .normalizingEmail(BAR.TEXT_DATA)
+            .executeAndConvert();
+    }
+
+    public Splat createWithSequenceFieldNull(SplatRecordConverter converter, Splat pojo)
+    {
+        return records.insertInto(SPLAT)
+            .withCustomKeyedConvertedUsing(converter)
+            .fromPojo(pojo)
+            .keepGeneratedDefault(SPLAT.SEQUENCE)
             .executeAndConvert();
     }
 
