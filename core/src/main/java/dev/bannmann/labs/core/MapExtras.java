@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import lombok.experimental.UtilityClass;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import dev.bannmann.labs.annotations.UpstreamCandidate;
 
 @UtilityClass
@@ -33,5 +35,25 @@ public class MapExtras
     public <K, V> Optional<V> tryRemove(Map<K, V> map, K key)
     {
         return Optional.ofNullable(map.remove(key));
+    }
+
+    /**
+     * Gets the value to which the given key is mapped or throws an exception. <br>
+     * <br>
+     * Unlike {@link Map#get(Object)}, with this method the compiler verifies type of the key argument.
+     *
+     * @return the non-null value for the given key
+     *
+     * @throws IllegalArgumentException if the given map does not contain a non-{@code null} value for the given {@code key}.
+     */
+    @UpstreamCandidate("Mizool")
+    public <K, V> @NonNull V obtain(Map<K, V> map, K key)
+    {
+        V result = map.get(key);
+        if (result == null)
+        {
+            throw new IllegalArgumentException("Key %s not found in map".formatted(key));
+        }
+        return result;
     }
 }

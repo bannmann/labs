@@ -50,7 +50,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
             this.records = new ArrayList<>(records);
         }
 
-        public <F> void apply(Consumer<R> consumer)
+        public void apply(Consumer<R> consumer)
         {
             for (R record : records)
             {
@@ -231,19 +231,41 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     public void generating(@NonNull TableField<R, OffsetDateTime> field)
     {
         recordHolder.apply(record -> {
-            if (record.get(field) != null)
-            {
-                throw new GeneratedFieldOverrideException(field.getName());
-            }
-
+            verifyFieldIsNull(field, record, GeneratedFieldOverrideException::new);
             record.set(field, now.get());
         });
+    }
+
+    private void verifyFieldIsNull(
+        TableField<R, ?> field, R record, Function<String, ? extends RuntimeException> exceptionConstructor)
+    {
+        if (record.get(field) != null)
+        {
+            throw exceptionConstructor.apply(field.getName());
+        }
     }
 
     @Override
     public void insertInto(@NonNull Table<R> table)
     {
         // No-op - we don't use the table at all, it's just there for type checking arguments further down the chain
+    }
+
+    /**
+     * Verifies that the pojo does not specify a value for the given field so that the column default is applied. This
+     * is important to ensure {@code SERIAL} columns are never written with user-supplied values.
+     *
+     * @throws GeneratedFieldOverrideException if the pojo has a non-{@code null} value for the given field
+     */
+    @Override
+    public void keepGeneratedDefault(TableField<R, ?> field)
+    {
+        recordHolder.apply(record -> {
+            verifyFieldIsNull(field, record, GeneratedFieldOverrideException::new);
+
+            // Tell jOOQ to not write the null value, as that would violate the 'not null' constraint
+            record.reset(field);
+        });
     }
 
     @Override
@@ -256,6 +278,17 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     public void onDuplicateKeyIgnore()
     {
         recordHolder.onDuplicateKeyIgnore();
+    }
+
+    /**
+     * Verifies that the pojo does not specify a value for the given field.
+     *
+     * @throws FieldExclusionException if the pojo has a non-{@code null} value for the given field
+     */
+    @Override
+    public void requireNull(TableField<R, ?> field)
+    {
+        recordHolder.apply(record -> verifyFieldIsNull(field, record, FieldExclusionException::new));
     }
 
     @Override

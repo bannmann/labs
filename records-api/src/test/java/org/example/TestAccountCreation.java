@@ -2,8 +2,10 @@ package org.example;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.example.Tables.ACCOUNT;
 
 import org.example.business.Account;
+import org.example.business.SingleSignOnPrincipal;
 import org.example.store.AccountCreateStore;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -11,6 +13,7 @@ import org.testng.annotations.Test;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.GeneratedFieldOverrideException;
+import dev.bannmann.labs.records_api.FieldExclusionException;
 
 @Test(groups = "AccountCreation")
 public class TestAccountCreation extends AbstractRecordsApiTest
@@ -52,6 +55,20 @@ public class TestAccountCreation extends AbstractRecordsApiTest
             .build();
 
         assertThatThrownBy(() -> accountCreateStore.create(pojo)).isInstanceOf(GeneratedFieldOverrideException.class);
+    }
+
+    @Test
+    public void testRejectsIfSsoIdGiven()
+    {
+        Account pojo = Account.builder()
+            .email("john.doe@example.org")
+            .displayName("J. Doe")
+            .ssoId(Identifier.forPojo(SingleSignOnPrincipal.class)
+                .random())
+            .build();
+
+        assertThatThrownBy(() -> accountCreateStore.create(pojo)).isInstanceOf(FieldExclusionException.class)
+            .returns(ACCOUNT.SSO_ID.getName(), throwable -> ((FieldExclusionException) throwable).getFieldName());
     }
 
     @Test

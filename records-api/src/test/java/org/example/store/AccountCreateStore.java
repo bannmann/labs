@@ -21,21 +21,12 @@ public class AccountCreateStore
 
     public Account create(Account pojo)
     {
-        verifyNoSsoId(pojo);
-
         return records.insertInto(ACCOUNT)
             .withIdentifiableConvertedUsing(converter)
             .fromPojo(pojo)
+            .requireNull(ACCOUNT.SSO_ID)
             .generating(ACCOUNT.TIMESTAMP)
             .normalizingEmail(ACCOUNT.EMAIL)
             .executeAndConvert();
-    }
-
-    private void verifyNoSsoId(Account pojo)
-    {
-        if (pojo.getSsoId() != null)
-        {
-            throw new ReadonlyFieldException(Account.Fields.ssoId);
-        }
     }
 }

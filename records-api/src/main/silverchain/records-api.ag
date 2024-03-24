@@ -38,15 +38,19 @@ $POST_IF =
     postdetectCollisionIf(Condition condition, String name)
     | postdetectCollisionIf(Condition condition, TableField<R, ?> field);
 
-$POJO_INSERT_MODIFICATION =
+$POJO_INSERT_RULES =
     generating(TableField<R, OffsetDateTime> field)
+    |
+    keepGeneratedDefault(TableField<R, ?> field)
+    |
+    requireNull(TableField<R, ?> field)
     |
     $ADJUSTMENTS;
 
 $REGULAR_POJO_INSERT =
     (
         fromPojo(P pojo)
-        $POJO_INSERT_MODIFICATION*
+        $POJO_INSERT_RULES*
     )
     ;
 
@@ -55,7 +59,7 @@ $REGULAR_OR_PRESETID_POJO_INSERT =
     |
     (
         fromPojoWithPresetId(P pojo)
-        $POJO_INSERT_MODIFICATION*
+        $POJO_INSERT_RULES*
         onDuplicateKeyIgnore()?
     )
     ;
@@ -63,7 +67,7 @@ $REGULAR_OR_PRESETID_POJO_INSERT =
 $REGULAR_BATCH_POJO_INSERT =
     (
         fromPojos(List<P> pojos)
-        $POJO_INSERT_MODIFICATION*
+        $POJO_INSERT_RULES*
     )
     ;
 
@@ -72,7 +76,7 @@ $REGULAR_OR_PRESETID_BATCH_POJO_INSERT =
     |
     (
         fromPojosWithPresetId(List<P> pojos)
-        $POJO_INSERT_MODIFICATION*
+        $POJO_INSERT_RULES*
     )
     ;
 
