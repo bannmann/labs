@@ -1,6 +1,7 @@
 package dev.bannmann.labs.records_api;
 
 import java.util.function.Function;
+import java.util.function.IntSupplier;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,16 +67,19 @@ public class Records implements IInsert, IUpdate, ISelect, IDelete
         return createSelect().query(resultQuery);
     }
 
-    public void execute(Query query)
+    /**
+     * @return the number of affected rows
+     */
+    public int execute(Query query)
     {
-        wrapExecution(() -> context.execute(query));
+        return wrapExecution(() -> context.execute(query));
     }
 
-    private void wrapExecution(Runnable execution)
+    private int wrapExecution(IntSupplier execution)
     {
         try
         {
-            execution.run();
+            return execution.getAsInt();
         }
         catch (DataAccessException e)
         {
@@ -83,9 +87,12 @@ public class Records implements IInsert, IUpdate, ISelect, IDelete
         }
     }
 
-    public void execute(Function<DSLContext, Query> queryFactory)
+    /**
+     * @return the number of affected rows
+     */
+    public int execute(Function<DSLContext, Query> queryFactory)
     {
-        wrapExecution(() -> queryFactory.apply(context)
+        return wrapExecution(() -> queryFactory.apply(context)
             .execute());
     }
 }
