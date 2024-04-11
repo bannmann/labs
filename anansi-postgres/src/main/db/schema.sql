@@ -25,6 +25,18 @@ create table if not exists incident
         primary key (id)
 );
 
+create index incident_idx_timestamp
+    on incident (timestamp);
+
+create index incident_idx_fingerprintid
+    on incident (fingerprint_id);
+
+create index incident_idx_severity
+    on incident (severity);
+
+create index incident_idx_build
+    on incident (build);
+
 /* stores both extra data used for fingerprinting and context data logged for the incident. */
 create table if not exists incident_data
 (
@@ -39,3 +51,6 @@ create table if not exists incident_data
             references incident (id)
             on delete cascade
 );
+
+create index incidentdata_idx_incidentid
+    on incident_data (incident_id);

@@ -20,14 +20,15 @@ public class RecordsApiExecuteExamples
 {
     private final Records records;
 
-    public void execute()
+    public int execute()
     {
-        records.execute(DSL.dropTable(FOO));
+        return records.execute(DSL.update(FOO)
+            .set(FOO.TEXT_DATA, "Bar"));
     }
 
-    public void executeOnContext()
+    public int executeOnContext()
     {
-        records.execute(dslContext -> dslContext.alterTable(FOO)
-            .dropColumn(FOO.BOOLEAN_DATA));
+        return records.execute(dslContext -> dslContext.update(FOO)
+            .set(FOO.TEXT_DATA, "Bar"));
     }
 }
