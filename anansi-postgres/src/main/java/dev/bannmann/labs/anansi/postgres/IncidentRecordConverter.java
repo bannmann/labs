@@ -68,7 +68,8 @@ class IncidentRecordConverter
     }
 
     /**
-     * @return whether current message is non-null and equals neither the previous one nor a trivial "class: message"
+     * @return whether current message is non-null and equals neither the previous one nor a trivial
+     * "causeClass: causeMessage" (with causeMessage being non-null) or "causeClass" (if causeMessage is null)
      */
     private boolean isNewMessage(ThrowableData previous, ThrowableData current)
     {
@@ -84,7 +85,13 @@ class IncidentRecordConverter
         }
 
         String previousMessage = previous.getThrowableMessage();
-        String previousClassAndMessage = previous.getThrowableClassName() + ": " + previousMessage;
+        String previousClass = previous.getThrowableClassName();
+        if (previousMessage == null && currentMessage.equals(previousClass))
+        {
+            return false;
+        }
+
+        String previousClassAndMessage = previousClass + ": " + previousMessage;
         return !(currentMessage.equals(previousMessage) || currentMessage.equals(previousClassAndMessage));
     }
 }
