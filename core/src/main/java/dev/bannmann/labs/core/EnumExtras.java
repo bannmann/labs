@@ -1,5 +1,7 @@
 package dev.bannmann.labs.core;
 
+import java.util.Optional;
+
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -7,8 +9,8 @@ import lombok.experimental.UtilityClass;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import com.google.common.base.Enums;
 import com.google.errorprone.annotations.CheckReturnValue;
-import dev.bannmann.labs.annotations.UpstreamCandidate;
 
 @UtilityClass
 public class EnumExtras
@@ -87,5 +89,12 @@ public class EnumExtras
     public static <E extends Enum<E>> FluentCheck<E> is(@Nullable E value)
     {
         return new FluentCheck<>(value);
+    }
+
+    @CheckReturnValue
+    public static <T extends Enum<T>> Optional<T> getIfPresent(Class<T> enumClass, String value)
+    {
+        return Enums.getIfPresent(enumClass, value)
+            .toJavaUtil();
     }
 }
