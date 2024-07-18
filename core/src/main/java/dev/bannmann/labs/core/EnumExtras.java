@@ -7,7 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.google.common.base.Enums;
 import com.google.errorprone.annotations.CheckReturnValue;
@@ -16,7 +16,7 @@ import com.google.errorprone.annotations.CheckReturnValue;
 public class EnumExtras
 {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class FluentCheck<E extends Enum<E>>
+    public static final class FluentCheck<E extends @Nullable Enum<E>>
     {
         private final @Nullable E value;
 
@@ -86,7 +86,7 @@ public class EnumExtras
     }
 
     @CheckReturnValue
-    public static <E extends Enum<E>> FluentCheck<E> is(@Nullable E value)
+    public static <E extends @Nullable Enum<E>> FluentCheck<E> is(E value)
     {
         return new FluentCheck<>(value);
     }

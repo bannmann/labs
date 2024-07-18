@@ -5,7 +5,8 @@ import java.util.Optional;
 
 import lombok.experimental.UtilityClass;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import dev.bannmann.labs.annotations.UpstreamCandidate;
 
@@ -15,13 +16,13 @@ public class MapExtras
     /**
      * Gets the value to which the given key is mapped, if existing. <br>
      * <br>
-     * Unlike {@link Map#get(Object)}, with this method the compiler verifies type of the key argument. Also, as it
+     * Unlike {@link Map#get(Object)}, with this method the compiler verifies the type of the key argument. Also, as it
      * returns an {@link Optional}, calling code can use chained method calls instead of separate {@code if} blocks.
      *
      * @return a present {@link Optional} if the given map contains a non-{@code null} value for the given {@code key}.
      */
     @UpstreamCandidate("Mizool")
-    public <K, V> Optional<V> tryGet(Map<K, V> map, K key)
+    public <K extends @Nullable Object, V extends @Nullable Object> Optional<@NonNull V> tryGet(Map<K, V> map, K key)
     {
         return Optional.ofNullable(map.get(key));
     }
@@ -32,7 +33,7 @@ public class MapExtras
      * @return a present {@link Optional} of the value associated with the given {@code key}, if one existed.
      */
     @UpstreamCandidate("Mizool")
-    public <K, V> Optional<V> tryRemove(Map<K, V> map, K key)
+    public <K extends @Nullable Object, V extends @Nullable Object> Optional<@NonNull V> tryRemove(Map<K, V> map, K key)
     {
         return Optional.ofNullable(map.remove(key));
     }
@@ -47,7 +48,7 @@ public class MapExtras
      * @throws IllegalArgumentException if the given map does not contain a non-{@code null} value for the given {@code key}.
      */
     @UpstreamCandidate("Mizool")
-    public <K, V> @NonNull V obtain(Map<K, V> map, K key)
+    public <K extends @Nullable Object, V extends @Nullable Object> @NonNull V obtain(Map<K, V> map, K key)
     {
         V result = map.get(key);
         if (result == null)
