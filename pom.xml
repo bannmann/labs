@@ -10,7 +10,7 @@
 
     <groupId>dev.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.0.20</version>
+    <version>0.0.21</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -28,10 +28,12 @@
 
     <properties>
         <base.toolchains.jdk>17</base.toolchains.jdk>
+        <error_prone.version>2.27.1</error_prone.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/javadoc-input</javadoc.sources.directory>
         <jooq.version>3.18.4</jooq.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <nullaway.version>0.11.0</nullaway.version>
     </properties>
 
     <dependencyManagement>
@@ -78,6 +80,11 @@
                 <version>${jooq.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>

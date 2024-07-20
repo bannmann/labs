@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 
 import lombok.experimental.UtilityClass;
 
+import org.jspecify.annotations.Nullable;
+
 import com.google.common.collect.MoreCollectors;
 import dev.bannmann.labs.annotations.UpstreamCandidate;
 
@@ -21,7 +23,7 @@ public class StreamExtras
      *
      * @return an operator to use with {@link java.util.stream.Stream#reduce(BinaryOperator)}
      */
-    public static <T> BinaryOperator<T> atMostOne()
+    public static <T extends @Nullable Object> BinaryOperator<T> atMostOne()
     {
         return atMostOneThrowing(IllegalArgumentException::new);
     }
@@ -35,7 +37,7 @@ public class StreamExtras
      * @param <E> type of the exception to throw if more than one element is encountered
      * @param exception thrown if more than one element is encountered
      */
-    public static <T, E extends RuntimeException> BinaryOperator<T> atMostOneThrowing(Supplier<E> exception)
+    public static <T extends @Nullable Object, E extends RuntimeException> BinaryOperator<T> atMostOneThrowing(Supplier<E> exception)
     {
         return (element, otherElement) -> {
             throw exception.get();
