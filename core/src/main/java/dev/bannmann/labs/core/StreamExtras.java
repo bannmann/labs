@@ -1,7 +1,12 @@
 package dev.bannmann.labs.core;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 import lombok.experimental.UtilityClass;
 
@@ -42,5 +47,36 @@ public class StreamExtras
         return (element, otherElement) -> {
             throw exception.get();
         };
+    }
+
+    /**
+     * Collects the last n input elements (or fewer) into a list.
+     *
+     * @param <T> element type
+     * @param limit the maximum number of elements. Must be greater than 0.
+     *
+     * @throws IllegalArgumentException if {@code limit} is 0 or negative
+     */
+    public static <T> Collector<T, ?, List<T>> lastN(int limit)
+    {
+        if (limit < 1)
+        {
+            throw new IllegalArgumentException("Limit must be greater than 0");
+        }
+
+        // from https://stackoverflow.com/a/30477722/7641
+        return Collector.of(ArrayDeque::new, (deque, e) -> {
+            if (deque.size() == limit)
+            {
+                deque.pollFirst();
+            }
+            deque.add(e);
+        }, (BinaryOperator<Deque<T>>) (deque1, deque2) -> {
+            while (deque2.size() < limit && !deque1.isEmpty())
+            {
+                deque2.addFirst(deque1.pollLast());
+            }
+            return deque2;
+        }, ArrayList::new);
     }
 }
