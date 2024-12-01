@@ -11,6 +11,9 @@ import org.jspecify.annotations.Nullable;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.annotations.UpstreamCandidate;
 
+/**
+ * Provides helper methods to succinctly deal with null values.
+ */
 @UpstreamCandidate("Mizool")
 @UtilityClass
 public class NullSafe
@@ -112,6 +115,15 @@ public class NullSafe
         return getter6.apply(f);
     }
 
+    /**
+     * Returns the first non-null argument, or null if all arguments are null.
+     *
+     * @param t1 first argument
+     * @param t2 second argument
+     * @param <T> type of arguments
+     *
+     * @return the first non-null argument, or {@code null} if all arguments are null
+     */
     public static <T extends @Nullable Object> T coalesce(T t1, T t2)
     {
         return t1 != null
