@@ -29,7 +29,7 @@ public class Nullness
      *
      * @throws CodeInconsistencyException if the value is null
      */
-    public static <T> T guaranteeNonNull(@Nullable T value)
+    public static <T> @NonNull T guaranteeNonNull(@Nullable T value)
     {
         if (value == null)
         {
