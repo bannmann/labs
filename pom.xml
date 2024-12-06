@@ -10,7 +10,7 @@
 
     <groupId>dev.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.0.23-SNAPSHOT</version>
+    <version>0.0.23</version>
     <packaging>pom</packaging>
 
     <modules>
