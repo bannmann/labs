@@ -29,7 +29,7 @@ public class Nullness
      *
      * @throws CodeInconsistencyException if the value is null
      */
-    public static <T> @NonNull T guaranteeNonNull(@Nullable T value)
+    public static <T> T guaranteeNonNull(@Nullable T value)
     {
         if (value == null)
         {
@@ -43,7 +43,7 @@ public class Nullness
     /**
      * Raises an {@link IllegalArgumentException} if the retrieved value is {@code null}.
      *
-     * @param valueSupplier the call that gets the value from the argument
+     * @param valueSupplier the call that gets the value from an argument passed to the caller
      * @param argumentName the argument name to use for the exception message
      * @param <T> the type of the value
      *
@@ -51,10 +51,11 @@ public class Nullness
      *
      * @throws IllegalArgumentException if the value is {@code null}
      */
-    @SuppressWarnings("ConstantValue")
-    @SuppressWarningsRationale("IntelliJ thinks value is never null")
+    @SuppressWarnings("java:S2259")
+    @SuppressWarningsRationale("Sonar thinks valueSupplier can be null")
     public static <T extends @Nullable Object> @NonNull T obtainNonNullFromArgument(
-        Supplier<T> valueSupplier, String argumentName)
+        Supplier<T> valueSupplier,
+        String argumentName)
     {
         T value = valueSupplier.get();
         if (value == null)
