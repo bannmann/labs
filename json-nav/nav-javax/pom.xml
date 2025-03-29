@@ -12,10 +12,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.bannmann.labs</groupId>
-            <artifactId>annotations</artifactId>
-        </dependency>
-        <dependency>
             <groupId>dev.bannmann.labs.json-nav</groupId>
             <artifactId>nav-core</artifactId>
         </dependency>
