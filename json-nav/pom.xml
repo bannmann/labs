@@ -8,5 +8,14 @@
         <version>0.0.25</version>
     </parent>
 
-    <artifactId>annotations</artifactId>
+    <groupId>dev.bannmann.labs.json-nav</groupId>
+    <artifactId>json-nav-parent</artifactId>
+    <version>0.0.25</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>nav-core</module>
+        <module>nav-javax</module>
+    </modules>
+
 </project>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
-        <version>0.0.24</version>
+        <version>0.0.25</version>
     </parent>
 
     <artifactId>kumuluzee-errorhandling</artifactId>
@@ -28,6 +28,17 @@
         <dependency>
             <groupId>com.github.mizool.technology</groupId>
             <artifactId>technology-jackson</artifactId>
+            <exclusions>
+                <exclusion>
+                    <!--
+                        This artifact duplicates classes in jakarta.inject-api 1.0.3 which we have on the 'provided'
+                        scope. Also, as this artifact is on the 'compile' scope, we would cause an additional dependency
+                        in downstream projects.
+                    -->
+                    <groupId>org.glassfish.hk2.external</groupId>
+                    <artifactId>jakarta.inject</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.kumuluz.ee</groupId>
@@ -48,6 +59,10 @@
         <dependency>
             <groupId>dev.bannmann.labs</groupId>
             <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kohsuke.metainf-services</groupId>
