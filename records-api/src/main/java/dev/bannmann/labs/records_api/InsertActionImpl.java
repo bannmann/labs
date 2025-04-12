@@ -2,9 +2,12 @@ package dev.bannmann.labs.records_api;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -35,6 +38,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     {
         private final List<R> records;
         private boolean ignoreDuplicateKey;
+        private final Set<TableField<R, ?>> excludedFields = new HashSet<>();
 
         public RecordHolder(@NonNull R record)
         {
@@ -63,10 +67,13 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
             verifySingleRecordMode();
 
             R record = records.get(0);
+
+            Map<String, Object> values = getInsertableValues(record);
+
             if (ignoreDuplicateKey)
             {
                 record = context.insertInto(record.getTable())
-                    .set(record.intoMap())
+                    .set(values)
                     .onDuplicateKeyIgnore()
                     .returning(record.getTable()
                         .fields())
@@ -74,9 +81,23 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
             }
             else
             {
-                context.executeInsert(record);
+                record = context.insertInto(record.getTable())
+                    .set(values)
+                    .returning(record.getTable()
+                        .fields())
+                    .fetchOne();
             }
             return record;
+        }
+
+        private Map<String, Object> getInsertableValues(R record)
+        {
+            Map<String, Object> values = record.intoMap();
+            for (TableField<R, ?> excludedField : excludedFields)
+            {
+                values.remove(excludedField.getName());
+            }
+            return values;
         }
 
         private void verifySingleRecordMode()
@@ -120,6 +141,11 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
         {
             verifySingleRecordMode();
             ignoreDuplicateKey = true;
+        }
+
+        public void excludeField(TableField<R, ?> field)
+        {
+            excludedFields.add(field);
         }
     }
 
@@ -260,6 +286,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void keepGeneratedDefault(TableField<R, ?> field)
     {
+        recordHolder.excludeField(field);
         recordHolder.apply(record -> {
             verifyFieldIsNull(field, record, GeneratedFieldOverrideException::new);
 
