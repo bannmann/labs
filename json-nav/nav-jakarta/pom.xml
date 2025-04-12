@@ -8,7 +8,7 @@
         <version>0.0.26</version>
     </parent>
 
-    <artifactId>nav-javax</artifactId>
+    <artifactId>nav-jakarta</artifactId>
 
     <dependencies>
         <dependency>
@@ -16,8 +16,8 @@
             <artifactId>nav-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
         </dependency>
     </dependencies>
 

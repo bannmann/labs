@@ -1,19 +1,18 @@
-package dev.bannmann.labs.json_nav.javax;
+package dev.bannmann.labs.json_nav.jackson;
 
 import java.util.Optional;
 
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-
 import lombok.RequiredArgsConstructor;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ObjectRef;
 
 @RequiredArgsConstructor
-class JsonpObject implements ObjectRef, AnyRef
+class JacksonObject implements ObjectRef, AnyRef
 {
-    private final JsonObject target;
+    private final ObjectNode target;
 
     @Override
     public boolean isObject()
@@ -30,12 +29,12 @@ class JsonpObject implements ObjectRef, AnyRef
     @Override
     public Optional<AnyRef> tryGet(String name)
     {
-        JsonValue jsonValue = target.get(name);
-        if (jsonValue == null || jsonValue == JsonValue.NULL)
+        JsonNode jsonNode = target.get(name);
+        if (jsonNode == null || jsonNode.isNull())
         {
             return Optional.empty();
         }
 
-        return Optional.of(Jsonp.wrap(jsonValue));
+        return Optional.of(Jackson.wrap(jsonNode));
     }
 }

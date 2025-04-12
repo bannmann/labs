@@ -5,16 +5,18 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
-        <version>0.0.25</version>
+        <version>0.0.26</version>
     </parent>
 
     <groupId>dev.bannmann.labs.json-nav</groupId>
     <artifactId>json-nav-parent</artifactId>
-    <version>0.0.25</version>
+    <version>0.0.26</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>nav-core</module>
+        <module>nav-jackson</module>
+        <module>nav-jakarta</module>
         <module>nav-javax</module>
     </modules>
 

@@ -1,14 +1,13 @@
-package dev.bannmann.labs.json_nav.javax;
+package dev.bannmann.labs.json_nav.jakarta;
 
 import java.util.Optional;
-
-import javax.json.JsonObject;
-import javax.json.JsonValue;
 
 import lombok.RequiredArgsConstructor;
 
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ObjectRef;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 @RequiredArgsConstructor
 class JsonpObject implements ObjectRef, AnyRef
