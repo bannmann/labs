@@ -5,9 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 
+import com.google.errorprone.annotations.Immutable;
+
 @UtilityClass
 public class Constants
 {
+    @Immutable
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class NullRefImpl implements NullRef, AnyRef
     {
@@ -30,6 +33,7 @@ public class Constants
         }
     }
 
+    @Immutable
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class BooleanRefImpl implements BooleanRef, AnyRef
     {

@@ -11,15 +11,21 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import com.google.common.collect.Lists;
+import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
 import dev.bannmann.labs.json_nav.JsonNode;
 
+@Immutable
 @EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
 {
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("javax.json values *are* immutable")
     private final JsonArray target;
+
     private final Class<T> elementClass;
 
     @Override

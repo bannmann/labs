@@ -7,14 +7,19 @@ import javax.json.JsonNumber;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.NumberRef;
 import dev.bannmann.labs.json_nav.Value;
 
+@Immutable
 @EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpNumber implements NumberRef, AnyRef
 {
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("javax.json values *are* immutable")
     private final JsonNumber target;
 
     @Override

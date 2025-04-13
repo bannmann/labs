@@ -3,19 +3,27 @@ package dev.bannmann.labs.json_nav.jackson;
 import java.math.BigDecimal;
 
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.databind.node.NumericNode;
+import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.NumberRef;
 import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.Value;
 
+@Immutable
 @EqualsAndHashCode
-@RequiredArgsConstructor
 class JacksonNumber implements NumberRef, AnyRef
 {
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")
     private final NumericNode target;
+
+    JacksonNumber(NumericNode target)
+    {
+        this.target = target.deepCopy();
+    }
 
     @Override
     public boolean isNumber()

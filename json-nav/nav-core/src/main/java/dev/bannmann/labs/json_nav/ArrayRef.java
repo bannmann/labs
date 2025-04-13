@@ -4,6 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.Immutable;
+
+@Immutable
 public non-sealed interface ArrayRef<T extends JsonNode> extends Iterable<T>, JsonNode
 {
     boolean isEmpty();

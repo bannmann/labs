@@ -5,13 +5,18 @@ import javax.json.JsonString;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.StringRef;
 
+@Immutable
 @EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpString implements StringRef, AnyRef
 {
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("javax.json values *are* immutable")
     private final JsonString target;
 
     @Override

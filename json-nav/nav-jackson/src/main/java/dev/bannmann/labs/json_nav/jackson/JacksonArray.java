@@ -9,20 +9,30 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.Iterators;
+import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
 import dev.bannmann.labs.json_nav.JsonNode;
 
+@Immutable
 @EqualsAndHashCode
-@RequiredArgsConstructor
-class JacksonArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
+final class JacksonArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
 {
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")
     private final ArrayNode target;
+
     private final Class<T> elementClass;
+
+    JacksonArray(ArrayNode target, Class<T> elementClass)
+    {
+        this.target = target.deepCopy();
+        this.elementClass = elementClass;
+    }
 
     @Override
     public boolean isArray()

@@ -9,4 +9,11 @@
     </parent>
 
     <artifactId>annotations</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+        </dependency>
+    </dependencies>
 </project>
