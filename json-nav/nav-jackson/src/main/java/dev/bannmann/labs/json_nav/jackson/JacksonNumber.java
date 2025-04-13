@@ -70,4 +70,10 @@ class JacksonNumber implements NumberRef, AnyRef
     {
         return target::decimalValue;
     }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
+    }
 }

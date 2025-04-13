@@ -83,4 +83,10 @@ class JacksonArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
     {
         return target.size();
     }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
+    }
 }

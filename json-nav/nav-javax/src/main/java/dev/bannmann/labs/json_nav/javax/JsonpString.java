@@ -31,4 +31,10 @@ class JsonpString implements StringRef, AnyRef
     {
         return target.getString();
     }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
+    }
 }

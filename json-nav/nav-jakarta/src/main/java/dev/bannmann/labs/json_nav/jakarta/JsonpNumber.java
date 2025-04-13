@@ -51,4 +51,10 @@ class JsonpNumber implements NumberRef, AnyRef
     {
         return target::bigDecimalValue;
     }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
+    }
 }

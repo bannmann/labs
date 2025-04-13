@@ -22,6 +22,12 @@ public class Constants
         {
             return this;
         }
+
+        @Override
+        public String getRawJson()
+        {
+            return "null";
+        }
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -45,6 +51,14 @@ public class Constants
         public Boolean read()
         {
             return value;
+        }
+
+        @Override
+        public String getRawJson()
+        {
+            return Boolean.TRUE.equals(value)
+                ? "true"
+                : "false";
         }
     }
 

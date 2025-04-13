@@ -39,4 +39,10 @@ class JsonpObject implements ObjectRef, AnyRef
 
         return Optional.of(Jsonp.wrap(jsonValue));
     }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
+    }
 }

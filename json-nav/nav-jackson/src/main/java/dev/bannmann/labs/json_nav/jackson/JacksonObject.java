@@ -39,4 +39,10 @@ class JacksonObject implements ObjectRef, AnyRef
 
         return Optional.of(Jackson.wrap(jsonNode));
     }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
+    }
 }

@@ -30,4 +30,10 @@ class JacksonString implements StringRef, AnyRef
     {
         return target.asText();
     }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
+    }
 }
