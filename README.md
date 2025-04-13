@@ -6,9 +6,15 @@
 [![](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs/annotations/badge.svg "Javadoc")](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs/annotations)
 
 
+----
+
+
 ## annotations
 
 [![](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs/annotations/badge.svg "Javadoc")](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs/annotations)&ensp;[![](https://javadoc.io/badge2/dev.bannmann.labs/annotations/javadoc.svg "Javadoc")](https://javadoc.io/doc/dev.bannmann.labs/annotations)
+
+
+----
 
 
 ## core
@@ -18,9 +24,39 @@
 [![](https://img.shields.io/badge/nullness_annotations-JSpecify_1.0-darkgreen "JSpecify 1.0 nullness annotations")](https://jspecify.dev/)
 
 
+----
+
+
+## json-nav
+[![](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-core/badge.svg "Javadoc")](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-core)&ensp;[![](https://javadoc.io/badge2/dev.bannmann.labs.json-nav/nav-core/javadoc.svg "Javadoc")](https://javadoc.io/doc/dev.bannmann.labs.json-nav/nav-core)
+
+[![](https://img.shields.io/badge/nullness_annotations-JSpecify_1.0-darkgreen "JSpecify 1.0 nullness annotations")](https://jspecify.dev/)
+
+### Adapter for [Jackson](https://github.com/FasterXML/jackson)
+Start with `com.fasterxml.jackson.databind.node.ObjectNode` or `com.fasterxml.jackson.databind.node.ArrayNode`.
+
+[![](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-jackson/badge.svg "Javadoc")](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-jackson)&ensp;[![](https://javadoc.io/badge2/dev.bannmann.labs.json-nav/nav-jackson/javadoc.svg "Javadoc")](https://javadoc.io/doc/dev.bannmann.labs.json-nav/nav-jackson)
+
+### Adapter for [JSR-374 JSON Processing](https://javaee.github.io/jsonp/)
+Start with `javax.json.JsonObject` or `javax.json.JsonArray`.
+
+[![](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-javax/badge.svg "Javadoc")](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-javax)&ensp;[![](https://javadoc.io/badge2/dev.bannmann.labs.json-nav/nav-javax/javadoc.svg "Javadoc")](https://javadoc.io/doc/dev.bannmann.labs.json-nav/nav-javax)
+
+### Adapter for [Jakarta JSON Processing](https://jakarta.ee/specifications/jsonp/)
+Start with `jakarta.json.JsonObject` or `jakarta.json.JsonArray`.
+
+[![](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-jakarta/badge.svg "Javadoc")](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs.json-nav/nav-jakarta)&ensp;[![](https://javadoc.io/badge2/dev.bannmann.labs.json-nav/nav-jakarta/javadoc.svg "Javadoc")](https://javadoc.io/doc/dev.bannmann.labs.json-nav/nav-jakarta)
+
+
+----
+
+
 ## kumuluzee-errorhandling
 
 [![](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs/kumuluzee-errorhandling/badge.svg "Javadoc")](https://maven-badges.herokuapp.com/maven-central/dev.bannmann.labs/kumuluzee-errorhandling)
+
+
+----
 
 
 ## records-api
