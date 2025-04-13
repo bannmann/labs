@@ -77,4 +77,10 @@ class JacksonArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
     {
         return Iterators.transform(target.iterator(), this::wrapElement);
     }
+
+    @Override
+    public int size()
+    {
+        return target.size();
+    }
 }

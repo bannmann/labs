@@ -63,4 +63,10 @@ class JsonpArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
     {
         return toList().iterator();
     }
+
+    @Override
+    public int size()
+    {
+        return target.size();
+    }
 }

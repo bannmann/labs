@@ -14,4 +14,6 @@ public non-sealed interface ArrayRef<T extends JsonNode> extends Iterable<T>, Js
 
     @Override
     Iterator<T> iterator();
+
+    int size();
 }
