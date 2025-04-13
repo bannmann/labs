@@ -8,6 +8,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -16,6 +17,7 @@ import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
 import dev.bannmann.labs.json_nav.JsonNode;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JacksonArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
 {

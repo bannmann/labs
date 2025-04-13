@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import com.google.common.collect.Lists;
@@ -13,6 +14,7 @@ import dev.bannmann.labs.json_nav.JsonNode;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
 {

@@ -2,6 +2,7 @@ package dev.bannmann.labs.json_nav.jakarta;
 
 import java.math.BigDecimal;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import dev.bannmann.labs.json_nav.AnyRef;
@@ -9,6 +10,7 @@ import dev.bannmann.labs.json_nav.NumberRef;
 import dev.bannmann.labs.json_nav.Value;
 import jakarta.json.JsonNumber;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpNumber implements NumberRef, AnyRef
 {

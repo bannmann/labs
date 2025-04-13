@@ -2,6 +2,7 @@ package dev.bannmann.labs.json_nav.jakarta;
 
 import java.util.Optional;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import dev.bannmann.labs.json_nav.AnyRef;
@@ -9,6 +10,7 @@ import dev.bannmann.labs.json_nav.ObjectRef;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpObject implements ObjectRef, AnyRef
 {

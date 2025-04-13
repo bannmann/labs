@@ -2,6 +2,7 @@ package dev.bannmann.labs.json_nav.jackson;
 
 import java.math.BigDecimal;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.databind.node.NumericNode;
@@ -10,6 +11,7 @@ import dev.bannmann.labs.json_nav.NumberRef;
 import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.Value;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JacksonNumber implements NumberRef, AnyRef
 {

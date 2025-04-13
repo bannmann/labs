@@ -2,11 +2,13 @@ package dev.bannmann.labs.json_nav.javax;
 
 import javax.json.JsonString;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.StringRef;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpString implements StringRef, AnyRef
 {

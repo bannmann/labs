@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 
 import javax.json.JsonNumber;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.NumberRef;
 import dev.bannmann.labs.json_nav.Value;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpNumber implements NumberRef, AnyRef
 {

@@ -2,6 +2,7 @@ package dev.bannmann.labs.json_nav.jackson;
 
 import java.util.Optional;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ObjectRef;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JacksonObject implements ObjectRef, AnyRef
 {

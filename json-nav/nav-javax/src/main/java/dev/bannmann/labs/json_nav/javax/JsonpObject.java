@@ -5,11 +5,13 @@ import java.util.Optional;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ObjectRef;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 class JsonpObject implements ObjectRef, AnyRef
 {
