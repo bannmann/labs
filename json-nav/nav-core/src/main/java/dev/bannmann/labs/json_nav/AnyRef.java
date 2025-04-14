@@ -1,5 +1,8 @@
 package dev.bannmann.labs.json_nav;
 
+import com.google.errorprone.annotations.Immutable;
+
+@Immutable
 public interface AnyRef
 {
     default boolean isObject()

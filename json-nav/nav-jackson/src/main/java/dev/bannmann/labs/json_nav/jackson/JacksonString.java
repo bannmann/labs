@@ -1,15 +1,25 @@
 package dev.bannmann.labs.json_nav.jackson;
 
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.StringRef;
 
-@RequiredArgsConstructor
+@Immutable
+@EqualsAndHashCode
 class JacksonString implements StringRef, AnyRef
 {
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")
     private final TextNode target;
+
+    JacksonString(TextNode target)
+    {
+        this.target = target.deepCopy();
+    }
 
     @Override
     public boolean isString()
@@ -27,5 +37,11 @@ class JacksonString implements StringRef, AnyRef
     public String read()
     {
         return target.asText();
+    }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
     }
 }

@@ -5,9 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 
+import com.google.errorprone.annotations.Immutable;
+
 @UtilityClass
 public class Constants
 {
+    @Immutable
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class NullRefImpl implements NullRef, AnyRef
     {
@@ -22,8 +25,15 @@ public class Constants
         {
             return this;
         }
+
+        @Override
+        public String getRawJson()
+        {
+            return "null";
+        }
     }
 
+    @Immutable
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class BooleanRefImpl implements BooleanRef, AnyRef
     {
@@ -45,6 +55,14 @@ public class Constants
         public Boolean read()
         {
             return value;
+        }
+
+        @Override
+        public String getRawJson()
+        {
+            return Boolean.TRUE.equals(value)
+                ? "true"
+                : "false";
         }
     }
 

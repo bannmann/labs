@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.ReadonlyFieldException;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 
 @RequiredArgsConstructor
 @Getter
@@ -21,5 +22,7 @@ enum CheckReason
         recordKey.toString()));
 
     @NonNull
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("The lambdas used are stateless")
     private final BiFunction<RecordKey, CheckLabel, RuntimeException> exceptionBuilder;
 }

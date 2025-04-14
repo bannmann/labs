@@ -2,17 +2,27 @@ package dev.bannmann.labs.json_nav.jackson;
 
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ObjectRef;
 
-@RequiredArgsConstructor
+@Immutable
+@EqualsAndHashCode
 class JacksonObject implements ObjectRef, AnyRef
 {
+    @SuppressWarnings("Immutable")
+    @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")
     private final ObjectNode target;
+
+    JacksonObject(ObjectNode target)
+    {
+        this.target = target.deepCopy();
+    }
 
     @Override
     public boolean isObject()
@@ -36,5 +46,11 @@ class JacksonObject implements ObjectRef, AnyRef
         }
 
         return Optional.of(Jackson.wrap(jsonNode));
+    }
+
+    @Override
+    public String getRawJson()
+    {
+        return target.toString();
     }
 }

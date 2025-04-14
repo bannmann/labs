@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.annotations.UpstreamCandidate;
 
 /**
@@ -36,6 +37,8 @@ public abstract class StringWrapper implements CharSequence
     }
 
     @Override
+    @SuppressWarnings("EqualsGetClass")
+    @SuppressWarningsRationale("We don't want equals to work across different StringWrapper subclasses")
     public final boolean equals(Object obj)
     {
         if (obj != null && getClass().equals(obj.getClass()))

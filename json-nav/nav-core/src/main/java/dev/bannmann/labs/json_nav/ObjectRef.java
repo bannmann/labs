@@ -3,9 +3,9 @@ package dev.bannmann.labs.json_nav;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.jspecify.annotations.NullMarked;
+import com.google.errorprone.annotations.Immutable;
 
-@NullMarked
+@Immutable
 public non-sealed interface ObjectRef extends JsonNode
 {
     Optional<AnyRef> tryGet(String name);

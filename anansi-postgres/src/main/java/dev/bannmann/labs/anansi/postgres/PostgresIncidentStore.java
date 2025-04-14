@@ -32,6 +32,7 @@ public class PostgresIncidentStore implements IncidentStore
     private final IncidentRecordConverter incidentRecordConverter;
     private final FingerprintRecordConverter fingerprintRecordConverter;
 
+    @Override
     public void store(Incident pojo, StorableFingerprint fingerprint)
     {
         records.insertInto(FINGERPRINT)

@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.bannmann.labs.json-nav</groupId>
         <artifactId>json-nav-parent</artifactId>
-        <version>0.0.26</version>
+        <version>0.27</version>
     </parent>
 
     <artifactId>nav-jakarta</artifactId>
@@ -18,6 +18,7 @@
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
