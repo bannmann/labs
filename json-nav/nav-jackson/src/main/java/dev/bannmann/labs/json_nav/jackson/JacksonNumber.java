@@ -40,7 +40,7 @@ class JacksonNumber implements NumberRef, AnyRef
     @Override
     public Value<Integer> intoInteger()
     {
-        if (!target.isIntegralNumber() || !target.canConvertToInt())
+        if (!target.isIntegralNumber() && !target.canConvertToInt())
         {
             throw new TypeMismatchException();
         }
@@ -50,7 +50,7 @@ class JacksonNumber implements NumberRef, AnyRef
     @Override
     public Value<Long> intoLong()
     {
-        if (!target.isIntegralNumber() || !target.canConvertToLong())
+        if (!target.isIntegralNumber() && !target.canConvertToLong())
         {
             throw new TypeMismatchException();
         }

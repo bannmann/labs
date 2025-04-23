@@ -38,11 +38,13 @@ class JsonpObject implements ObjectRef, AnyRef
     public Optional<AnyRef> tryGet(String name)
     {
         JsonValue jsonValue = target.get(name);
-        if (jsonValue == null || jsonValue == JsonValue.NULL)
+        if (jsonValue == null)
         {
+            // We have no mapping
             return Optional.empty();
         }
 
+        // We have a mapping, but it may be a JSON null literal
         return Optional.of(Jsonp.wrap(jsonValue));
     }
 
