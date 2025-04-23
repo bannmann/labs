@@ -40,11 +40,13 @@ class JacksonObject implements ObjectRef, AnyRef
     public Optional<AnyRef> tryGet(String name)
     {
         JsonNode jsonNode = target.get(name);
-        if (jsonNode == null || jsonNode.isNull())
+        if (jsonNode == null)
         {
+            // We have no mapping
             return Optional.empty();
         }
 
+        // We have a mapping, but it may be a JSON null literal
         return Optional.of(Jackson.wrap(jsonNode));
     }
 
