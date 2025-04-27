@@ -52,7 +52,7 @@
             <dependency>
                 <groupId>dev.bannmann.anansi</groupId>
                 <artifactId>anansi</artifactId>
-                <version>0.5</version>
+                <version>0.12</version>
             </dependency>
             <dependency>
                 <groupId>dev.bannmann.labs</groupId>
