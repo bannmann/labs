@@ -12,8 +12,8 @@ import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ObjectRef;
 
 @Immutable
-@EqualsAndHashCode
-class JacksonObject implements ObjectRef, AnyRef
+@EqualsAndHashCode(callSuper = false)
+class JacksonObject extends ObjectRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")
@@ -37,7 +37,7 @@ class JacksonObject implements ObjectRef, AnyRef
     }
 
     @Override
-    public Optional<AnyRef> tryGet(String name)
+    public Optional<AnyRef> tryGetAny(String name)
     {
         JsonNode jsonNode = target.get(name);
         if (jsonNode == null)

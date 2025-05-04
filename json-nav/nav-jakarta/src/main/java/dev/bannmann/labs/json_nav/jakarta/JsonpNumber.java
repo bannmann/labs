@@ -13,9 +13,9 @@ import dev.bannmann.labs.json_nav.Value;
 import jakarta.json.JsonNumber;
 
 @Immutable
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
-class JsonpNumber implements NumberRef, AnyRef
+class JsonpNumber extends NumberRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("jakarta.json values *are* immutable")

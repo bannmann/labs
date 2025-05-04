@@ -19,8 +19,8 @@ import dev.bannmann.labs.json_nav.ArrayRef;
 import dev.bannmann.labs.json_nav.JsonNode;
 
 @Immutable
-@EqualsAndHashCode
-final class JacksonArray<T extends JsonNode> implements ArrayRef<T>, AnyRef
+@EqualsAndHashCode(callSuper = false)
+final class JacksonArray<T extends JsonNode> extends ArrayRef<T> implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")

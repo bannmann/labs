@@ -5,13 +5,13 @@ import java.math.BigDecimal;
 import com.google.errorprone.annotations.Immutable;
 
 @Immutable
-public non-sealed interface NumberRef extends JsonNode
+public abstract non-sealed class NumberRef implements JsonNode
 {
-    Value<Integer> intoInteger();
+    public abstract Value<Integer> intoInteger();
 
-    Value<Long> intoLong();
+    public abstract Value<Long> intoLong();
 
-    Value<Double> intoDouble();
+    public abstract Value<Double> intoDouble();
 
-    Value<BigDecimal> intoBigDecimal();
+    public abstract Value<BigDecimal> intoBigDecimal();
 }

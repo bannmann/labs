@@ -12,7 +12,7 @@ public class Constants
 {
     @Immutable
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class NullRefImpl implements NullRef, AnyRef
+    public static final class NullRefImpl extends NullRef implements AnyRef
     {
         @Override
         public boolean isNull()
@@ -35,7 +35,7 @@ public class Constants
 
     @Immutable
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class BooleanRefImpl implements BooleanRef, AnyRef
+    public static final class BooleanRefImpl extends BooleanRef implements AnyRef
     {
         private final Boolean value;
 
