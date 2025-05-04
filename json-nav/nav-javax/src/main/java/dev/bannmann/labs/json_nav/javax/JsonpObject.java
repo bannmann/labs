@@ -35,7 +35,7 @@ class JsonpObject implements ObjectRef, AnyRef
     }
 
     @Override
-    public Optional<AnyRef> tryGet(String name)
+    public Optional<AnyRef> tryGetAny(String name)
     {
         JsonValue jsonValue = target.get(name);
         if (jsonValue == null)

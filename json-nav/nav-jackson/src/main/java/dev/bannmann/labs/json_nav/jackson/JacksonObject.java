@@ -37,7 +37,7 @@ class JacksonObject implements ObjectRef, AnyRef
     }
 
     @Override
-    public Optional<AnyRef> tryGet(String name)
+    public Optional<AnyRef> tryGetAny(String name)
     {
         JsonNode jsonNode = target.get(name);
         if (jsonNode == null)
