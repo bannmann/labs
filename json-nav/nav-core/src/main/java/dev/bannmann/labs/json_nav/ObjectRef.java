@@ -2,12 +2,15 @@ package dev.bannmann.labs.json_nav;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.google.errorprone.annotations.Immutable;
 
 @Immutable
-public non-sealed interface ObjectRef extends JsonNode
+public abstract non-sealed class ObjectRef implements JsonNode
 {
+    private static final Predicate<AnyRef> EXCLUDE_NULL_REFS = Predicate.not(AnyRef::isNull);
+
     /**
      * Gets a JSON value that the given name maps to.<br>
      * <br>
@@ -18,7 +21,7 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @return an {@code Optional} containing a ref to the JSON value that the given name maps to (which may be a {@link NullRef}), or an empty {@code Optional} if there is no such mapping.
      */
-    Optional<AnyRef> tryGetAny(String name);
+    public abstract Optional<AnyRef> tryGetAny(String name);
 
     /**
      * Gets a JSON value that the given name maps to.<br>
@@ -33,7 +36,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @deprecated This method was renamed. Use {@link #tryGetAny(String)} instead
      */
     @Deprecated(forRemoval = true)
-    default Optional<AnyRef> tryGet(String name)
+    public final Optional<AnyRef> tryGet(String name)
     {
         return tryGetAny(name);
     }
@@ -50,10 +53,15 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @throws TypeMismatchException if the given name is mapped to a value that is neither a boolean nor a {@code null} literal
      */
-    default Optional<BooleanRef> tryGetBoolean(String name)
+    public final Optional<BooleanRef> tryGetBoolean(String name)
     {
-        return tryGetAny(name).filter(NullRef.EXCLUDE)
-            .map(AnyRef::asBoolean);
+        return tryGetTangibleValue(name, AnyRef::asBoolean);
+    }
+
+    private <T> Optional<T> tryGetTangibleValue(String name, Function<AnyRef, T> as)
+    {
+        return tryGetAny(name).filter(EXCLUDE_NULL_REFS)
+            .map(as);
     }
 
     /**
@@ -68,10 +76,9 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @throws TypeMismatchException if the given name is mapped to a value that is neither a number nor a {@code null} literal
      */
-    default Optional<NumberRef> tryGetNumber(String name)
+    public final Optional<NumberRef> tryGetNumber(String name)
     {
-        return tryGetAny(name).filter(NullRef.EXCLUDE)
-            .map(AnyRef::asNumber);
+        return tryGetTangibleValue(name, AnyRef::asNumber);
     }
 
     /**
@@ -86,10 +93,9 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @throws TypeMismatchException if the given name is mapped to a value that is neither a string nor a {@code null} literal
      */
-    default Optional<StringRef> tryGetString(String name)
+    public final Optional<StringRef> tryGetString(String name)
     {
-        return tryGetAny(name).filter(NullRef.EXCLUDE)
-            .map(AnyRef::asString);
+        return tryGetTangibleValue(name, AnyRef::asString);
     }
 
     /**
@@ -104,10 +110,9 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @throws TypeMismatchException if the given name is mapped to a value that is neither an object nor a {@code null} literal
      */
-    default Optional<ObjectRef> tryGetObject(String name)
+    public final Optional<ObjectRef> tryGetObject(String name)
     {
-        return tryGetAny(name).filter(NullRef.EXCLUDE)
-            .map(AnyRef::asObject);
+        return tryGetTangibleValue(name, AnyRef::asObject);
     }
 
     /**
@@ -122,10 +127,9 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @throws TypeMismatchException if the given name is mapped to a value that is neither an array nor a {@code null} literal
      */
-    default Optional<ArrayRef<ObjectRef>> tryGetArrayOfObjects(String name)
+    public final Optional<ArrayRef<ObjectRef>> tryGetArrayOfObjects(String name)
     {
-        return tryGetAny(name).filter(NullRef.EXCLUDE)
-            .map(AnyRef::asArrayOfObjects);
+        return tryGetTangibleValue(name, AnyRef::asArrayOfObjects);
     }
 
     /**
@@ -142,10 +146,9 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @throws TypeMismatchException if the given name is mapped to a value that is neither an array nor a {@code null} literal
      */
-    default <E extends JsonNode> Optional<ArrayRef<E>> tryGetArray(Class<E> elementClass, String name)
+    public final <E extends JsonNode> Optional<ArrayRef<E>> tryGetArray(Class<E> elementClass, String name)
     {
-        return tryGetAny(name).filter(NullRef.EXCLUDE)
-            .map(anyRef -> anyRef.asArray(elementClass));
+        return tryGetTangibleValue(name, anyRef -> anyRef.asArray(elementClass));
     }
 
     /**
@@ -160,7 +163,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @deprecated This method was renamed. Use {@link #obtainAny(String)} instead
      */
     @Deprecated(forRemoval = true)
-    default AnyRef obtain(String name)
+    public final AnyRef obtain(String name)
     {
         return obtainAny(name);
     }
@@ -174,7 +177,7 @@ public non-sealed interface ObjectRef extends JsonNode
      *
      * @throws MissingElementException if the given name is not mapped to a value
      */
-    default AnyRef obtainAny(String name)
+    public final AnyRef obtainAny(String name)
     {
         return tryGetAny(name).orElseThrow(MissingElementException::new);
     }
@@ -195,7 +198,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @deprecated This method was renamed. Use {@link #obtainAny(String, String...)} instead
      */
     @Deprecated(forRemoval = true)
-    default AnyRef obtain(String firstLevel, String... moreLevels)
+    public final AnyRef obtain(String firstLevel, String... moreLevels)
     {
         return obtainAny(firstLevel, moreLevels);
     }
@@ -213,7 +216,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default AnyRef obtainAny(String firstLevel, String... moreLevels)
+    public final AnyRef obtainAny(String firstLevel, String... moreLevels)
     {
         if (moreLevels.length == 0)
         {
@@ -241,7 +244,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if the given name is not mapped to a value
      * @throws TypeMismatchException if the given name is mapped to a value that is not a boolean, e.g. a {@code null} literal
      */
-    default BooleanRef obtainBoolean(String name)
+    public final BooleanRef obtainBoolean(String name)
     {
         return obtainAny(name).asBoolean();
     }
@@ -259,7 +262,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
      * @throws TypeMismatchException if the last name is mapped to a value that is not a boolean, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default BooleanRef obtainBoolean(String firstLevel, String... moreLevels)
+    public final BooleanRef obtainBoolean(String firstLevel, String... moreLevels)
     {
         return obtainAny(firstLevel, moreLevels).asBoolean();
     }
@@ -276,7 +279,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if the given name is not mapped to a value
      * @throws TypeMismatchException if the given name is mapped to a value that is not a number, e.g. a {@code null} literal
      */
-    default NumberRef obtainNumber(String name)
+    public final NumberRef obtainNumber(String name)
     {
         return obtainAny(name).asNumber();
     }
@@ -294,7 +297,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
      * @throws TypeMismatchException if the last name is mapped to a value that is not a number, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default NumberRef obtainNumber(String firstLevel, String... moreLevels)
+    public final NumberRef obtainNumber(String firstLevel, String... moreLevels)
     {
         return obtainAny(firstLevel, moreLevels).asNumber();
     }
@@ -311,7 +314,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if the given name is not mapped to a value
      * @throws TypeMismatchException if the given name is mapped to a value that is not a string, e.g. a {@code null} literal
      */
-    default StringRef obtainString(String name)
+    public final StringRef obtainString(String name)
     {
         return obtainAny(name).asString();
     }
@@ -329,7 +332,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
      * @throws TypeMismatchException if the last name is mapped to a value that is not a string, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default StringRef obtainString(String firstLevel, String... moreLevels)
+    public final StringRef obtainString(String firstLevel, String... moreLevels)
     {
         return obtainAny(firstLevel, moreLevels).asString();
     }
@@ -346,7 +349,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if the given name is not mapped to a value
      * @throws TypeMismatchException if the given name is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default ObjectRef obtainObject(String name)
+    public final ObjectRef obtainObject(String name)
     {
         return obtainAny(name).asObject();
     }
@@ -364,7 +367,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
      * @throws TypeMismatchException if any of the names given is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default ObjectRef obtainObject(String firstLevel, String... moreLevels)
+    public final ObjectRef obtainObject(String firstLevel, String... moreLevels)
     {
         return obtainAny(firstLevel, moreLevels).asObject();
     }
@@ -381,7 +384,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if the given name is not mapped to a value
      * @throws TypeMismatchException if the given name is mapped to a value that is not an array, e.g. a {@code null} literal
      */
-    default ArrayRef<ObjectRef> obtainArrayOfObjects(String name)
+    public final ArrayRef<ObjectRef> obtainArrayOfObjects(String name)
     {
         return obtainAny(name).asArrayOfObjects();
     }
@@ -399,7 +402,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
      * @throws TypeMismatchException if the last name is mapped to a value that is not an array, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default ArrayRef<ObjectRef> obtainArrayOfObjects(String firstLevel, String... moreLevels)
+    public final ArrayRef<ObjectRef> obtainArrayOfObjects(String firstLevel, String... moreLevels)
     {
         return obtainAny(firstLevel, moreLevels).asArrayOfObjects();
     }
@@ -418,7 +421,7 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if the given name is not mapped to a value
      * @throws TypeMismatchException if the given name is mapped to a value that is not a boolean, e.g. a {@code null} literal
      */
-    default <E extends JsonNode> ArrayRef<E> obtainArray(Class<E> elementClass, String name)
+    public final <E extends JsonNode> ArrayRef<E> obtainArray(Class<E> elementClass, String name)
     {
         return obtainAny(name).asArray(elementClass);
     }
@@ -438,12 +441,15 @@ public non-sealed interface ObjectRef extends JsonNode
      * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
      * @throws TypeMismatchException if the last name is mapped to a value that is not an array, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    default <E extends JsonNode> ArrayRef<E> obtainArray(Class<E> elementClass, String firstLevel, String... moreLevels)
+    public final <E extends JsonNode> ArrayRef<E> obtainArray(
+        Class<E> elementClass,
+        String firstLevel,
+        String... moreLevels)
     {
         return obtainAny(firstLevel, moreLevels).asArray(elementClass);
     }
 
-    default <V extends Value<T>, T, R> R obtainMapped(
+    public final <V extends Value<T>, T, R> R obtainMapped(
         String name,
         Function<AnyRef, V> valueGetter,
         Function<T, R> mapper)

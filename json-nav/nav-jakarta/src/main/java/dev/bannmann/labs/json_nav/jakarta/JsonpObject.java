@@ -13,9 +13,9 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 @Immutable
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
-class JsonpObject implements ObjectRef, AnyRef
+class JsonpObject extends ObjectRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("jakarta.json values *are* immutable")

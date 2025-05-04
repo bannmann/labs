@@ -10,9 +10,9 @@ import dev.bannmann.labs.json_nav.StringRef;
 import jakarta.json.JsonString;
 
 @Immutable
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
-class JsonpString implements StringRef, AnyRef
+class JsonpString extends StringRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("jakarta.json values *are* immutable")

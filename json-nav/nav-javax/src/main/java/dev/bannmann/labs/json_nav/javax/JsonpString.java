@@ -11,9 +11,9 @@ import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.StringRef;
 
 @Immutable
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
-class JsonpString implements StringRef, AnyRef
+class JsonpString extends StringRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("javax.json values *are* immutable")

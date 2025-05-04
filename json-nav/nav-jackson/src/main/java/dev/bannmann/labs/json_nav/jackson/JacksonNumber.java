@@ -13,8 +13,8 @@ import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.Value;
 
 @Immutable
-@EqualsAndHashCode
-class JacksonNumber implements NumberRef, AnyRef
+@EqualsAndHashCode(callSuper = false)
+class JacksonNumber extends NumberRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")

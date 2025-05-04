@@ -9,8 +9,8 @@ import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.StringRef;
 
 @Immutable
-@EqualsAndHashCode
-class JacksonString implements StringRef, AnyRef
+@EqualsAndHashCode(callSuper = false)
+class JacksonString extends StringRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")
