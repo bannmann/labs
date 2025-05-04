@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.google.errorprone.annotations.Immutable;
+import com.google.errorprone.annotations.InlineMe;
 
 @Immutable
 public abstract non-sealed class ObjectRef implements JsonNode
@@ -35,6 +36,7 @@ public abstract non-sealed class ObjectRef implements JsonNode
      *
      * @deprecated This method was renamed. Use {@link #tryGetAny(String)} instead
      */
+    @InlineMe(replacement = "this.tryGetAny(name)")
     @Deprecated(forRemoval = true)
     public final Optional<AnyRef> tryGet(String name)
     {
@@ -162,6 +164,7 @@ public abstract non-sealed class ObjectRef implements JsonNode
      *
      * @deprecated This method was renamed. Use {@link #obtainAny(String)} instead
      */
+    @InlineMe(replacement = "this.obtainAny(name)")
     @Deprecated(forRemoval = true)
     public final AnyRef obtain(String name)
     {
@@ -197,6 +200,7 @@ public abstract non-sealed class ObjectRef implements JsonNode
      *
      * @deprecated This method was renamed. Use {@link #obtainAny(String, String...)} instead
      */
+    @InlineMe(replacement = "this.obtainAny(firstLevel, moreLevels)")
     @Deprecated(forRemoval = true)
     public final AnyRef obtain(String firstLevel, String... moreLevels)
     {
