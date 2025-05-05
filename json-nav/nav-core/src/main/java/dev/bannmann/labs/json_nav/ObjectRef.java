@@ -7,13 +7,16 @@ import java.util.function.Predicate;
 import com.google.errorprone.annotations.Immutable;
 import com.google.errorprone.annotations.InlineMe;
 
+/**
+ * Represents a JSON object.
+ */
 @Immutable
 public abstract non-sealed class ObjectRef extends TypedRef
 {
     private static final Predicate<AnyRef> EXCLUDE_NULL_REFS = Predicate.not(AnyRef::isNull);
 
     /**
-     * Gets a JSON value that the given name maps to.<br>
+     * Gets a JSON value that the given name maps to. <br>
      * <br>
      * Note that this method distinguishes between a non-existing mapping (empty {@code Optional}) and a mapping to a
      * JSON {@code null} literal ({@code Optional} containing a {@link NullRef}).
@@ -25,7 +28,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
     public abstract Optional<AnyRef> tryGetAny(String name);
 
     /**
-     * Gets a JSON value that the given name maps to.<br>
+     * Gets a JSON value that the given name maps to. <br>
      * <br>
      * Note that this method distinguishes between a non-existing mapping (empty {@code Optional}) and a mapping to a
      * JSON {@code null} literal ({@code Optional} containing a {@link NullRef}).
@@ -44,7 +47,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Boolean that the given name maps to.<br>
+     * Gets a JSON Boolean that the given name maps to. <br>
      * <br>
      * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
@@ -67,7 +70,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Number that the given name maps to.<br>
+     * Gets a JSON Number that the given name maps to. <br>
      * <br>
      * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
@@ -84,7 +87,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON String that the given name maps to.<br>
+     * Gets a JSON String that the given name maps to. <br>
      * <br>
      * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
@@ -101,7 +104,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Object that the given name maps to.<br>
+     * Gets a JSON Object that the given name maps to. <br>
      * <br>
      * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
@@ -118,7 +121,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Array that the given name maps to.<br>
+     * Gets a JSON Array that the given name maps to. <br>
      * <br>
      * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
@@ -135,7 +138,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Array that the given name maps to.<br>
+     * Gets a JSON Array that the given name maps to. <br>
      * <br>
      * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
@@ -148,7 +151,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @throws TypeMismatchException if the given name is mapped to a value that is neither an array nor a {@code null} literal
      */
-    public final <E extends JsonNode> Optional<ArrayRef<E>> tryGetArray(Class<E> elementClass, String name)
+    public final <E extends TypedRef> Optional<ArrayRef<E>> tryGetArray(Class<E> elementClass, String name)
     {
         return tryGetTangibleValue(name, anyRef -> anyRef.asArray(elementClass));
     }
@@ -425,7 +428,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      * @throws MissingElementException if the given name is not mapped to a value
      * @throws TypeMismatchException if the given name is mapped to a value that is not a boolean, e.g. a {@code null} literal
      */
-    public final <E extends JsonNode> ArrayRef<E> obtainArray(Class<E> elementClass, String name)
+    public final <E extends TypedRef> ArrayRef<E> obtainArray(Class<E> elementClass, String name)
     {
         return obtainAny(name).asArray(elementClass);
     }
@@ -445,7 +448,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
      * @throws TypeMismatchException if the last name is mapped to a value that is not an array, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
-    public final <E extends JsonNode> ArrayRef<E> obtainArray(
+    public final <E extends TypedRef> ArrayRef<E> obtainArray(
         Class<E> elementClass,
         String firstLevel,
         String... moreLevels)
