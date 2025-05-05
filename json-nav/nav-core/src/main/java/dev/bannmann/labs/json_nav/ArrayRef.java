@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import com.google.errorprone.annotations.Immutable;
 
 @Immutable
-public abstract non-sealed class ArrayRef<T extends JsonNode> implements Iterable<T>, JsonNode
+public abstract non-sealed class ArrayRef<T extends TypedRef> extends TypedRef implements Iterable<T>
 {
     public abstract boolean isEmpty();
 

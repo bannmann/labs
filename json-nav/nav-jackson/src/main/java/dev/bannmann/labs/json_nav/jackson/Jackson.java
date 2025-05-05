@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.Constants;
-import dev.bannmann.labs.json_nav.JsonNode;
 import dev.bannmann.labs.json_nav.TypeMismatchException;
+import dev.bannmann.labs.json_nav.TypedRef;
 
 @UtilityClass
 class Jackson
@@ -18,7 +18,7 @@ class Jackson
     {
         return switch (target.getNodeType())
         {
-            case ARRAY -> new JacksonArray<>(castOrReject(target, ArrayNode.class), JsonNode.class);
+            case ARRAY -> new JacksonArray<>(castOrReject(target, ArrayNode.class), TypedRef.class);
             case OBJECT -> new JacksonObject(castOrReject(target, ObjectNode.class));
             case STRING -> new JacksonString(castOrReject(target, TextNode.class));
             case NUMBER -> new JacksonNumber(castOrReject(target, NumericNode.class));

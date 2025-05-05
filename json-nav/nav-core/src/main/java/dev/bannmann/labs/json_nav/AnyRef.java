@@ -40,7 +40,7 @@ public interface AnyRef
         throw new TypeMismatchException();
     }
 
-    default <E extends JsonNode> ArrayRef<E> asArray(Class<E> elementClass)
+    default <E extends TypedRef> ArrayRef<E> asArray(Class<E> elementClass)
     {
         throw new TypeMismatchException();
     }

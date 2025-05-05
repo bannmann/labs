@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 
 import com.google.errorprone.annotations.Immutable;
+import dev.bannmann.labs.annotations.ImplementationNote;
 
 @UtilityClass
 public class Constants
@@ -66,7 +67,12 @@ public class Constants
         }
     }
 
+    @ImplementationNote("Field cannot be a `NullRef` as it needs to be usable in places where `AnyRef` is required")
     public static final NullRefImpl NULL = new NullRefImpl();
+
+    @ImplementationNote("Field cannot be a `BooleanRef` as it needs to be usable in places where `AnyRef` is required")
     public static final BooleanRefImpl TRUE = new BooleanRefImpl(Boolean.TRUE);
+
+    @ImplementationNote("Field cannot be a `BooleanRef` as it needs to be usable in places where `AnyRef` is required")
     public static final BooleanRefImpl FALSE = new BooleanRefImpl(Boolean.FALSE);
 }

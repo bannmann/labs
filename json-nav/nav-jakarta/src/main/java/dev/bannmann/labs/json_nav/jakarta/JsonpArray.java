@@ -12,14 +12,14 @@ import com.google.errorprone.annotations.Immutable;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
-import dev.bannmann.labs.json_nav.JsonNode;
+import dev.bannmann.labs.json_nav.TypedRef;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
 @Immutable
 @EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
-class JsonpArray<T extends JsonNode> extends ArrayRef<T> implements AnyRef
+class JsonpArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("jakarta.json values *are* immutable")
@@ -34,7 +34,7 @@ class JsonpArray<T extends JsonNode> extends ArrayRef<T> implements AnyRef
     }
 
     @Override
-    public <E extends JsonNode> ArrayRef<E> asArray(Class<E> elementClass)
+    public <E extends TypedRef> ArrayRef<E> asArray(Class<E> elementClass)
     {
         return new JsonpArray<>(target, elementClass);
     }

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import com.google.errorprone.annotations.Immutable;
 
 @Immutable
-public abstract non-sealed class NumberRef implements JsonNode
+public abstract non-sealed class NumberRef extends TypedRef
 {
     public abstract Value<Integer> intoInteger();
 

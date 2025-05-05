@@ -16,11 +16,11 @@ import com.google.errorprone.annotations.Immutable;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
-import dev.bannmann.labs.json_nav.JsonNode;
+import dev.bannmann.labs.json_nav.TypedRef;
 
 @Immutable
 @EqualsAndHashCode(callSuper = false)
-final class JacksonArray<T extends JsonNode> extends ArrayRef<T> implements AnyRef
+final class JacksonArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
 {
     @SuppressWarnings("Immutable")
     @SuppressWarningsRationale("Jackson nodes are mutable, but we store a deep copy")
@@ -41,7 +41,7 @@ final class JacksonArray<T extends JsonNode> extends ArrayRef<T> implements AnyR
     }
 
     @Override
-    public <E extends JsonNode> ArrayRef<E> asArray(Class<E> elementClass)
+    public <E extends TypedRef> ArrayRef<E> asArray(Class<E> elementClass)
     {
         return new JacksonArray<>(target, elementClass);
     }

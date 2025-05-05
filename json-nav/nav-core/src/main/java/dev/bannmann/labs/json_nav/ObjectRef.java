@@ -8,7 +8,7 @@ import com.google.errorprone.annotations.Immutable;
 import com.google.errorprone.annotations.InlineMe;
 
 @Immutable
-public abstract non-sealed class ObjectRef implements JsonNode
+public abstract non-sealed class ObjectRef extends TypedRef
 {
     private static final Predicate<AnyRef> EXCLUDE_NULL_REFS = Predicate.not(AnyRef::isNull);
 
