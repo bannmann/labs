@@ -5,7 +5,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.google.errorprone.annotations.Immutable;
-import com.google.errorprone.annotations.InlineMe;
 
 /**
  * Represents a JSON object.
@@ -26,25 +25,6 @@ public abstract non-sealed class ObjectRef extends TypedRef
      * @return an {@code Optional} containing a ref to the JSON value that the given name maps to (which may be a {@link NullRef}), or an empty {@code Optional} if there is no such mapping.
      */
     public abstract Optional<AnyRef> tryGetAny(String name);
-
-    /**
-     * Gets a JSON value that the given name maps to. <br>
-     * <br>
-     * Note that this method distinguishes between a non-existing mapping (empty {@code Optional}) and a mapping to a
-     * JSON {@code null} literal ({@code Optional} containing a {@link NullRef}).
-     *
-     * @param name the name of the desired property.
-     *
-     * @return an {@code Optional} containing a ref to the JSON value that the given name maps to (which may be a {@link NullRef}), or an empty {@code Optional} if there is no such mapping.
-     *
-     * @deprecated This method was renamed. Use {@link #tryGetAny(String)} instead
-     */
-    @InlineMe(replacement = "this.tryGetAny(name)")
-    @Deprecated(forRemoval = true)
-    public final Optional<AnyRef> tryGet(String name)
-    {
-        return tryGetAny(name);
-    }
 
     /**
      * Gets a JSON Boolean that the given name maps to. <br>
@@ -164,50 +144,10 @@ public abstract non-sealed class ObjectRef extends TypedRef
      * @return the new ref, never {@code null}. Note, however, that the ref returned may be a {@link NullRef}.
      *
      * @throws MissingElementException if the given name is not mapped to a value
-     *
-     * @deprecated This method was renamed. Use {@link #obtainAny(String)} instead
-     */
-    @InlineMe(replacement = "this.obtainAny(name)")
-    @Deprecated(forRemoval = true)
-    public final AnyRef obtain(String name)
-    {
-        return obtainAny(name);
-    }
-
-    /**
-     * Navigates to the given property name.
-     *
-     * @param name the property name
-     *
-     * @return the new ref, never {@code null}. Note, however, that the ref returned may be a {@link NullRef}.
-     *
-     * @throws MissingElementException if the given name is not mapped to a value
      */
     public final AnyRef obtainAny(String name)
     {
         return tryGetAny(name).orElseThrow(MissingElementException::new);
-    }
-
-    /**
-     * Navigates to a property of a nested object. <br>
-     * <br>
-     * Calling {@code obtain("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtain("c")}.
-     *
-     * @param firstLevel the property name on the first level
-     * @param moreLevels property names to use on subsequent levels
-     *
-     * @return the new ref, never {@code null}. Note, however, that the ref returned may be a {@link NullRef}.
-     *
-     * @throws MissingElementException if any of the names given is not mapped to a value
-     * @throws TypeMismatchException if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
-     *
-     * @deprecated This method was renamed. Use {@link #obtainAny(String, String...)} instead
-     */
-    @InlineMe(replacement = "this.obtainAny(firstLevel, moreLevels)")
-    @Deprecated(forRemoval = true)
-    public final AnyRef obtain(String firstLevel, String... moreLevels)
-    {
-        return obtainAny(firstLevel, moreLevels);
     }
 
     /**
