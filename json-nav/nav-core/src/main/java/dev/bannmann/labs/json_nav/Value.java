@@ -3,6 +3,11 @@ package dev.bannmann.labs.json_nav;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * Contains a value retrieved or mapped from a JSON value.
+ *
+ * @param <T> the type of the contained value
+ */
 public interface Value<T>
 {
     T read();

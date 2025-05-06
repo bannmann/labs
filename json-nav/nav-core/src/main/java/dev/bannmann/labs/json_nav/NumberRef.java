@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 
 import com.google.errorprone.annotations.Immutable;
 
+/**
+ * Represents a JSON number.
+ */
 @Immutable
-public abstract non-sealed class NumberRef implements JsonNode
+public abstract non-sealed class NumberRef extends TypedRef
 {
     public abstract Value<Integer> intoInteger();
 

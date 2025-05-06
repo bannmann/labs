@@ -6,8 +6,8 @@ import javax.json.JsonObject;
 import lombok.NonNull;
 
 import dev.bannmann.labs.json_nav.ArrayRef;
-import dev.bannmann.labs.json_nav.JsonNode;
 import dev.bannmann.labs.json_nav.ObjectRef;
+import dev.bannmann.labs.json_nav.TypedRef;
 
 public class JsonNav
 {
@@ -17,7 +17,7 @@ public class JsonNav
             .asObject();
     }
 
-    public <E extends JsonNode> ArrayRef<E> wrap(@NonNull JsonArray source, @NonNull Class<E> elementClass)
+    public <E extends TypedRef> ArrayRef<E> wrap(@NonNull JsonArray source, @NonNull Class<E> elementClass)
     {
         return Jsonp.wrap(source)
             .asArray(elementClass);

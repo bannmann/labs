@@ -2,6 +2,17 @@ package dev.bannmann.labs.json_nav;
 
 import com.google.errorprone.annotations.Immutable;
 
+/**
+ * Represents a JSON value whose type is not known to the compiler. <br>
+ * <br>
+ * Its runtime type can be determined via the various {@code isFoo()} methods. Alternatively, use {@code instanceof}
+ * checks with the {@code FooRef} classes from this package - the non-public implementation classes always implement
+ * one of them.<br>
+ * <br>
+ * Consequently, an AnyRef could be turned into {@code FooRef} using a regular type cast. However, using the
+ * {@code asFoo()} methods is generally preferable, particularly when dealing with arrays (due to the ability to specify
+ * the ref type of its elements).
+ */
 @Immutable
 public interface AnyRef
 {
@@ -40,7 +51,7 @@ public interface AnyRef
         throw new TypeMismatchException();
     }
 
-    default <E extends JsonNode> ArrayRef<E> asArray(Class<E> elementClass)
+    default <E extends TypedRef> ArrayRef<E> asArray(Class<E> elementClass)
     {
         throw new TypeMismatchException();
     }
