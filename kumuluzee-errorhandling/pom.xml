@@ -4,7 +4,7 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
-        <version>0.32-SNAPSHOT</version>
+        <version>0.32</version>
     </parent>
 
     <artifactId>kumuluzee-errorhandling</artifactId>
