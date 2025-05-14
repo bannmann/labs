@@ -406,4 +406,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
         T input = value.read();
         return mapper.apply(input);
     }
+
+    public final <R> R map(Function<ObjectRef, R> function)
+    {
+        return function.apply(this);
+    }
 }
