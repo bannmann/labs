@@ -9,6 +9,8 @@
 
     <artifactId>kumuluzee-errorhandling</artifactId>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+
     <properties>
         <kumuluzee.version>3.12.1</kumuluzee.version>
     </properties>

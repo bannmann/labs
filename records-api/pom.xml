@@ -9,6 +9,9 @@
     </parent>
 
     <artifactId>records-api</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+
     <properties>
         <hsqldb.version>2.6.1</hsqldb.version>
         <jdbc.password>unittest</jdbc.password>

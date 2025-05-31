@@ -13,6 +13,10 @@
     <version>0.34-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description/>
+    <url>https://github.com/bannmann/labs</url>
+
     <modules>
         <module>anansi-postgres</module>
         <module>annotations</module>

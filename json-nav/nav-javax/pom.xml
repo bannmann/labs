@@ -10,6 +10,8 @@
 
     <artifactId>nav-javax</artifactId>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+
     <dependencies>
         <dependency>
             <groupId>dev.bannmann.labs.json-nav</groupId>

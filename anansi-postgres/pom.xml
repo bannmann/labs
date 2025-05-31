@@ -10,6 +10,9 @@
 
     <artifactId>anansi-postgres</artifactId>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <url>https://github.com/bannmann/labs</url>
+
     <dependencies>
         <dependency>
             <groupId>dev.bannmann.anansi</groupId>
