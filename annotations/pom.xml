@@ -5,10 +5,12 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
-        <version>0.33</version>
+        <version>0.34</version>
     </parent>
 
     <artifactId>annotations</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
 
     <dependencies>
         <dependency>

@@ -5,10 +5,13 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
-        <version>0.33</version>
+        <version>0.34</version>
     </parent>
 
     <artifactId>records-api</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+
     <properties>
         <hsqldb.version>2.6.1</hsqldb.version>
         <jdbc.password>unittest</jdbc.password>

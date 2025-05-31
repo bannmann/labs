@@ -5,13 +5,17 @@
     <parent>
         <groupId>dev.bannmann</groupId>
         <artifactId>base</artifactId>
-        <version>1.9</version>
+        <version>1.12</version>
     </parent>
 
     <groupId>dev.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.33</version>
+    <version>0.34</version>
     <packaging>pom</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Utilities for Java development</description>
+    <url>https://github.com/bannmann/labs</url>
 
     <modules>
         <module>anansi-postgres</module>
