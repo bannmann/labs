@@ -16,6 +16,7 @@
 
     <modules>
         <module>nav-core</module>
+        <module>nav-gson</module>
         <module>nav-jackson</module>
         <module>nav-jakarta</module>
         <module>nav-javax</module>
