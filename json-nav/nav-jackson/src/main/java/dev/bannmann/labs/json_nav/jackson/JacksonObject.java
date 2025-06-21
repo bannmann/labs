@@ -47,7 +47,7 @@ class JacksonObject extends ObjectRef implements AnyRef
         }
 
         // We have a mapping, but it may be a JSON null literal
-        return Optional.of(Jackson.wrap(jsonNode));
+        return Optional.of(JacksonAdapter.wrap(jsonNode));
     }
 
     @Override

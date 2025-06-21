@@ -61,9 +61,20 @@ public interface AnyRef
         return asArray(ObjectRef.class);
     }
 
+    /**
+     * @see #readString()
+     */
     default StringRef asString()
     {
         throw new TypeMismatchException();
+    }
+
+    /**
+     * @see #asString()
+     */
+    default String readString()
+    {
+        return asString().read();
     }
 
     default NumberRef asNumber()
@@ -71,9 +82,20 @@ public interface AnyRef
         throw new TypeMismatchException();
     }
 
+    /**
+     * @see #readBoolean()
+     */
     default BooleanRef asBoolean()
     {
         throw new TypeMismatchException();
+    }
+
+    /**
+     * @see #asBoolean()
+     */
+    default boolean readBoolean()
+    {
+        return asBoolean().read();
     }
 
     default NullRef asNull()

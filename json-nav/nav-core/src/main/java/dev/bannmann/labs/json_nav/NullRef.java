@@ -6,6 +6,6 @@ import com.google.errorprone.annotations.Immutable;
  * Represents JSON null.
  */
 @Immutable
-public abstract sealed class NullRef extends TypedRef permits Constants.NullRefImpl
+public abstract non-sealed class NullRef extends TypedRef
 {
 }

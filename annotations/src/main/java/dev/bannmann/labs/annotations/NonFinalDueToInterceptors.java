@@ -5,12 +5,12 @@ import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class that is meant to be final, but cannot due to proxies.
+ * Annotates a class that is meant to be final, but cannot due to the use of interceptors.
  *
  * @see DisallowSubclasses
  */
 @Target(TYPE)
 @Implies(DisallowSubclasses.class)
-public @interface NonFinalDueToProxies
+public @interface NonFinalDueToInterceptors
 {
 }

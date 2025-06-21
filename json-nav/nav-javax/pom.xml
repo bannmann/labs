@@ -5,12 +5,13 @@
     <parent>
         <groupId>dev.bannmann.labs.json-nav</groupId>
         <artifactId>json-nav-parent</artifactId>
-        <version>0.34</version>
+        <version>0.35</version>
     </parent>
 
     <artifactId>nav-javax</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
+    <description>API to elegantly navigate JSON structures and extract data. This artifact provides the adapter for JSR-374 JSON Processing.</description>
 
     <dependencies>
         <dependency>

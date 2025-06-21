@@ -1,26 +1,27 @@
-package dev.bannmann.labs.json_nav.javax;
+package dev.bannmann.labs.json_nav.gson;
 
 import java.util.Optional;
 
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 
 import com.google.errorprone.annotations.Immutable;
+import com.google.gson.JsonObject;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ObjectRef;
 
 @Immutable
 @EqualsAndHashCode(callSuper = false)
-@RequiredArgsConstructor
-class JsonpObject extends ObjectRef implements AnyRef
+class GsonObject extends ObjectRef implements AnyRef
 {
     @SuppressWarnings("Immutable")
-    @SuppressWarningsRationale("javax.json values *are* immutable")
+    @SuppressWarningsRationale("Gson elements are mutable, but we store a deep copy")
     private final JsonObject target;
+
+    GsonObject(JsonObject target)
+    {
+        this.target = target.deepCopy();
+    }
 
     @Override
     public boolean isObject()
@@ -37,15 +38,15 @@ class JsonpObject extends ObjectRef implements AnyRef
     @Override
     public Optional<AnyRef> tryGetAny(String name)
     {
-        JsonValue jsonValue = target.get(name);
-        if (jsonValue == null)
+        var jsonElement = target.get(name);
+        if (jsonElement == null)
         {
             // We have no mapping
             return Optional.empty();
         }
 
         // We have a mapping, but it may be a JSON null literal
-        return Optional.of(JsonpAdapter.wrap(jsonValue));
+        return Optional.of(GsonAdapter.wrap(jsonElement));
     }
 
     @Override

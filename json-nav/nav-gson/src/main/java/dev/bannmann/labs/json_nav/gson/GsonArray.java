@@ -1,17 +1,17 @@
-package dev.bannmann.labs.json_nav.javax;
+package dev.bannmann.labs.json_nav.gson;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
-
-import javax.json.JsonArray;
-import javax.json.JsonValue;
+import java.util.stream.StreamSupport;
 
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 
 import com.google.common.collect.Lists;
 import com.google.errorprone.annotations.Immutable;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
@@ -19,14 +19,19 @@ import dev.bannmann.labs.json_nav.TypedRef;
 
 @Immutable
 @EqualsAndHashCode(callSuper = false)
-@RequiredArgsConstructor
-class JsonpArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
+final class GsonArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
 {
     @SuppressWarnings("Immutable")
-    @SuppressWarningsRationale("javax.json values *are* immutable")
+    @SuppressWarningsRationale("Gson elements are mutable, but we store a deep copy")
     private final JsonArray target;
 
     private final Class<T> elementClass;
+
+    GsonArray(JsonArray target, Class<T> elementClass)
+    {
+        this.target = target.deepCopy();
+        this.elementClass = elementClass;
+    }
 
     @Override
     public boolean isArray()
@@ -37,7 +42,7 @@ class JsonpArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
     @Override
     public <E extends TypedRef> ArrayRef<E> asArray(Class<E> elementClass)
     {
-        return new JsonpArray<>(target, elementClass);
+        return new GsonArray<>(target, elementClass);
     }
 
     @Override
@@ -49,24 +54,25 @@ class JsonpArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
     @Override
     public Stream<T> stream()
     {
-        return target.stream()
+        return StreamSupport.stream(target.spliterator(), false)
             .map(this::wrapElement);
     }
 
-    private T wrapElement(JsonValue input)
+    private T wrapElement(JsonElement input)
     {
-        return elementClass.cast(JsonpAdapter.wrap(input));
+        return elementClass.cast(GsonAdapter.wrap(input));
     }
 
     @Override
     public List<T> toList()
     {
-        return Lists.transform(target.getValuesAs(JsonValue.class), this::wrapElement);
+        return Lists.transform(Collections.unmodifiableList(target.asList()), this::wrapElement);
     }
 
     @Override
     public Iterator<T> iterator()
     {
+        // We cannot use target.iterator() as it supports remove()
         return toList().iterator();
     }
 

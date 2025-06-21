@@ -1,16 +1,16 @@
-package dev.bannmann.labs.json_nav.jakarta;
+package dev.bannmann.labs.json_nav.javax;
+
+import javax.json.JsonNumber;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import lombok.experimental.UtilityClass;
 
 import dev.bannmann.labs.json_nav.AnyRef;
-import dev.bannmann.labs.json_nav.Constants;
 import dev.bannmann.labs.json_nav.TypedRef;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 @UtilityClass
-class Jsonp
+class JsonpAdapter
 {
     static AnyRef wrap(JsonValue target)
     {

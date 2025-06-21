@@ -10,7 +10,7 @@
 
     <groupId>dev.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.34</version>
+    <version>0.35</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -32,6 +32,7 @@
     </scm>
 
     <properties>
+        <base.central.deploymentName>labs ${project.version}</base.central.deploymentName>
         <base.toolchains.jdk>17</base.toolchains.jdk>
         <error_prone.version>2.37.0</error_prone.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/javadoc-input</javadoc.sources.directory>

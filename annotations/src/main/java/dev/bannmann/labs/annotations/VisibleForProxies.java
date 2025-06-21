@@ -10,8 +10,11 @@ import java.lang.annotation.Target;
  * <br>
  * Note: the name of this annotation intentionally mimics Guava's
  * {@link com.google.common.annotations.VisibleForTesting}.
+ *
+ * @see DisallowOutsideUse
  */
-@Target({ CONSTRUCTOR })
+@Target(CONSTRUCTOR)
+@Implies(DisallowOutsideUse.class)
 public @interface VisibleForProxies
 {
 }

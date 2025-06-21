@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs</artifactId>
-        <version>0.34</version>
+        <version>0.35</version>
     </parent>
 
     <groupId>dev.bannmann.labs.json-nav</groupId>
@@ -16,6 +16,7 @@
 
     <modules>
         <module>nav-core</module>
+        <module>nav-gson</module>
         <module>nav-jackson</module>
         <module>nav-jakarta</module>
         <module>nav-javax</module>

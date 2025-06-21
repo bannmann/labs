@@ -6,6 +6,6 @@ import com.google.errorprone.annotations.Immutable;
  * Represents a JSON boolean.
  */
 @Immutable
-public abstract sealed class BooleanRef extends TypedRef implements Value<Boolean> permits Constants.BooleanRefImpl
+public abstract non-sealed class BooleanRef extends TypedRef implements Value<Boolean>
 {
 }
