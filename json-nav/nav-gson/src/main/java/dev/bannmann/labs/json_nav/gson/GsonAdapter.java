@@ -8,7 +8,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.bannmann.labs.json_nav.AnyRef;
-import dev.bannmann.labs.json_nav.Constants;
 import dev.bannmann.labs.json_nav.TypedRef;
 
 @UtilityClass

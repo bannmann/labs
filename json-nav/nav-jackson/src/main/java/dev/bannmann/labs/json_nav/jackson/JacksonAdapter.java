@@ -7,12 +7,11 @@ import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import dev.bannmann.labs.json_nav.AnyRef;
-import dev.bannmann.labs.json_nav.Constants;
 import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.TypedRef;
 
 @UtilityClass
-class Jackson
+class JacksonAdapter
 {
     static AnyRef wrap(com.fasterxml.jackson.databind.JsonNode target)
     {

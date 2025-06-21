@@ -60,7 +60,7 @@ final class JacksonArray<T extends TypedRef> extends ArrayRef<T> implements AnyR
 
     private T wrapElement(com.fasterxml.jackson.databind.JsonNode input)
     {
-        return elementClass.cast(Jackson.wrap(input));
+        return elementClass.cast(JacksonAdapter.wrap(input));
     }
 
     @Override

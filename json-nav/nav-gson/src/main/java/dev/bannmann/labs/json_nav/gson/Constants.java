@@ -1,4 +1,4 @@
-package dev.bannmann.labs.json_nav;
+package dev.bannmann.labs.json_nav.gson;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -7,9 +7,12 @@ import lombok.experimental.UtilityClass;
 
 import com.google.errorprone.annotations.Immutable;
 import dev.bannmann.labs.annotations.ImplementationNote;
+import dev.bannmann.labs.json_nav.AnyRef;
+import dev.bannmann.labs.json_nav.BooleanRef;
+import dev.bannmann.labs.json_nav.NullRef;
 
 @UtilityClass
-public class Constants
+class Constants
 {
     @Immutable
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -38,7 +41,7 @@ public class Constants
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class BooleanRefImpl extends BooleanRef implements AnyRef
     {
-        private final Boolean value;
+        private final boolean value;
 
         @Override
         public boolean isBoolean()
@@ -61,9 +64,7 @@ public class Constants
         @Override
         public String getRawJson()
         {
-            return Boolean.TRUE.equals(value)
-                ? "true"
-                : "false";
+            return String.valueOf(value);
         }
     }
 
@@ -71,8 +72,8 @@ public class Constants
     public static final NullRefImpl NULL = new NullRefImpl();
 
     @ImplementationNote("Field cannot be a `BooleanRef` as it needs to be usable in places where `AnyRef` is required")
-    public static final BooleanRefImpl TRUE = new BooleanRefImpl(Boolean.TRUE);
+    public static final BooleanRefImpl TRUE = new BooleanRefImpl(true);
 
     @ImplementationNote("Field cannot be a `BooleanRef` as it needs to be usable in places where `AnyRef` is required")
-    public static final BooleanRefImpl FALSE = new BooleanRefImpl(Boolean.FALSE);
+    public static final BooleanRefImpl FALSE = new BooleanRefImpl(false);
 }

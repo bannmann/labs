@@ -12,13 +12,13 @@ public class JsonNav
 {
     public ObjectRef wrap(@NonNull ObjectNode source)
     {
-        return Jackson.wrap(source)
+        return JacksonAdapter.wrap(source)
             .asObject();
     }
 
     public <E extends TypedRef> ArrayRef<E> wrap(@NonNull ArrayNode source, @NonNull Class<E> elementClass)
     {
-        return Jackson.wrap(source)
+        return JacksonAdapter.wrap(source)
             .asArray(elementClass);
     }
 }

@@ -45,7 +45,7 @@ class JsonpObject extends ObjectRef implements AnyRef
         }
 
         // We have a mapping, but it may be a JSON null literal
-        return Optional.of(Jsonp.wrap(jsonValue));
+        return Optional.of(JsonpAdapter.wrap(jsonValue));
     }
 
     @Override

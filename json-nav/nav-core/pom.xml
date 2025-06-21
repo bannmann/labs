@@ -11,6 +11,7 @@
     <artifactId>nav-core</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
+    <description>API to elegantly navigate JSON structures and extract data</description>
 
     <dependencies>
         <dependency>

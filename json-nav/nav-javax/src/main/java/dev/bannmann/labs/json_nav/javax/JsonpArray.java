@@ -55,7 +55,7 @@ class JsonpArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
 
     private T wrapElement(JsonValue input)
     {
-        return elementClass.cast(Jsonp.wrap(input));
+        return elementClass.cast(JsonpAdapter.wrap(input));
     }
 
     @Override
