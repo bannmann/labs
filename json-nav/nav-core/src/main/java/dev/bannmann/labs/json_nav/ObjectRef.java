@@ -396,15 +396,90 @@ public abstract non-sealed class ObjectRef extends TypedRef
         return obtainAny(firstLevel, moreLevels).asArray(elementClass);
     }
 
-    public final <V extends Value<T>, T, R> R obtainMapped(
+    /**
+     * Reads the value of a string property. <br>
+     * <br>
+     * This is equivalent to calling {@code obtainAny(name).readString()}.
+     *
+     * @param name the property name
+     *
+     * @return the string value, never {@code null}.
+     *
+     * @throws MissingElementException if the given name is not mapped to a value
+     * @throws TypeMismatchException if the given name is mapped to a value that is not a string, e.g. a {@code null} literal
+     */
+    public final String readString(String name)
+    {
+        return obtainAny(name).readString();
+    }
+
+    /**
+     * Reads the value of a string property of a nested object. <br>
+     * <br>
+     * Calling {@code readString("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainAny("c").readString()}.
+     *
+     * @param firstLevel the property name on the first level
+     * @param moreLevels property names to use on subsequent levels
+     *
+     * @return the string value, never {@code null}.
+     *
+     * @throws MissingElementException if any of the names given is not mapped to a value
+     * @throws TypeMismatchException if any name except the last one is mapped to a value that is not an object, or if the last name is not mapped to a string, e.g. a {@code null} literal
+     */
+    public final String readString(String firstLevel, String... moreLevels)
+    {
+        return obtainAny(firstLevel, moreLevels).readString();
+    }
+
+    /**
+     * Reads the value of a boolean property. <br>
+     * <br>
+     * This is equivalent to calling {@code obtainAny(name).readBoolean()}.
+     *
+     * @param name the property name
+     *
+     * @return the boolean value
+     *
+     * @throws MissingElementException if the given name is not mapped to a value
+     * @throws TypeMismatchException if the given name is mapped to a value that is not a boolean, e.g. a {@code null} literal
+     */
+    public final boolean readBoolean(String name)
+    {
+        return obtainAny(name).readBoolean();
+    }
+
+    /**
+     * Reads the value of a boolean property of a nested object. <br>
+     * <br>
+     * Calling {@code readString("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainAny("c").readBoolean()}.
+     *
+     * @param firstLevel the property name on the first level
+     * @param moreLevels property names to use on subsequent levels
+     *
+     * @return the boolean value
+     *
+     * @throws MissingElementException if any of the names given is not mapped to a value
+     * @throws TypeMismatchException if any name except the last one is mapped to a value that is not an object, or if the last name is not mapped to a boolean, e.g. a {@code null} literal
+     */
+    public final boolean readBoolean(String firstLevel, String... moreLevels)
+    {
+        return obtainAny(firstLevel, moreLevels).readBoolean();
+    }
+
+    public final <V extends Value<T>, T, R> R readAnyMapped(
         String name,
         Function<AnyRef, V> valueGetter,
         Function<T, R> mapper)
     {
-        AnyRef anyRef = obtainAny(name);
+        var anyRef = obtainAny(name);
         V value = valueGetter.apply(anyRef);
         T input = value.read();
         return mapper.apply(input);
+    }
+
+    public final <R> R readStringMapped(String name, Function<String, R> mapper)
+    {
+        return readAnyMapped(name, AnyRef::asString, mapper);
     }
 
     public final <R> R map(Function<ObjectRef, R> function)

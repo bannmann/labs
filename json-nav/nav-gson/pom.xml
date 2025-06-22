@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.bannmann.labs.json-nav</groupId>
         <artifactId>json-nav-parent</artifactId>
-        <version>0.35</version>
+        <version>0.36</version>
     </parent>
 
     <artifactId>nav-gson</artifactId>
@@ -25,5 +25,23 @@
             <artifactId>nav-core</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <offlineLinks>
+                            <offlineLink>
+                                <url>https://javadoc.io/doc/${project.groupId}/nav-core/${project.version}/</url>
+                                <location>${project.basedir}/../nav-core/target/reports/apidocs/</location>
+                            </offlineLink>
+                        </offlineLinks>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
