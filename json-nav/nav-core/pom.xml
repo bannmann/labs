@@ -24,4 +24,22 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <offlineLinks>
+                            <offlineLink>
+                                <url>https://javadoc.io/doc/${project.groupId}/nav-core/${project.version}/</url>
+                                <location>${project.basedir}/../nav-core/target/reports/apidocs/</location>
+                            </offlineLink>
+                        </offlineLinks>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
 </project>

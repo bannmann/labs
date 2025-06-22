@@ -146,6 +146,7 @@
                     <configuration>
                         <sourcepath>${javadoc.sources.directory}</sourcepath>
                         <doclint>none</doclint>
+                        <detectOfflineLinks>false</detectOfflineLinks>
                     </configuration>
                 </plugin>
                 <plugin>
