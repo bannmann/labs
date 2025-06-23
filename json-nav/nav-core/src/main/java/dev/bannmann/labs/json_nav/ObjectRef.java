@@ -486,4 +486,38 @@ public abstract non-sealed class ObjectRef extends TypedRef
     {
         return function.apply(this);
     }
+
+    /**
+     * Gets the string that the given name maps to. <br>
+     * <br>
+     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * distinction is required, use {@link #tryGetAny(String)} instead.
+     *
+     * @param name the name of the desired property.
+     *
+     * @return an {@code Optional} containing the string that the given name maps to, or an empty {@code Optional}
+     *
+     * @throws TypeMismatchException if the given name is mapped to a value that is neither a string nor a {@code null} literal
+     */
+    public final Optional<String> tryReadString(String name)
+    {
+        return tryGetTangibleValue(name, AnyRef::asString).map(Value::read);
+    }
+
+    /**
+     * Gets the boolean that the given name maps to. <br>
+     * <br>
+     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * distinction is required, use {@link #tryGetAny(String)} instead.
+     *
+     * @param name the name of the desired property.
+     *
+     * @return an {@code Optional} containing the boolean that the given name maps to, or an empty {@code Optional}
+     *
+     * @throws TypeMismatchException if the given name is mapped to a value that is neither a boolean nor a {@code null} literal
+     */
+    public final Optional<Boolean> tryReadBoolean(String name)
+    {
+        return tryGetTangibleValue(name, AnyRef::asBoolean).map(Value::read);
+    }
 }
