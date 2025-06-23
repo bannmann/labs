@@ -41,7 +41,7 @@ class JacksonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Integer> intoInteger()
     {
-        if (!target.isIntegralNumber() && !target.canConvertToInt())
+        if (!target.isIntegralNumber() || !target.canConvertToInt())
         {
             throw new TypeMismatchException();
         }
@@ -51,7 +51,7 @@ class JacksonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Long> intoLong()
     {
-        if (!target.isIntegralNumber() && !target.canConvertToLong())
+        if (!target.isIntegralNumber() || !target.canConvertToLong())
         {
             throw new TypeMismatchException();
         }
@@ -82,7 +82,7 @@ class JacksonNumber extends NumberRef implements AnyRef
          *
          * Let's play it safe by rejecting values that would require a BigInteger (i.e. not fit into a long).
          */
-        if (target.isIntegralNumber() && !target.canConvertToLong())
+        if (!target.canConvertToLong())
         {
             throw new TypeMismatchException();
         }
