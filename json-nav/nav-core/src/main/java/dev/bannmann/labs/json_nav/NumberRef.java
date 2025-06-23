@@ -1,6 +1,7 @@
 package dev.bannmann.labs.json_nav;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -23,6 +24,12 @@ public abstract non-sealed class NumberRef extends TypedRef
     public abstract Value<Long> intoLong();
 
     /**
+     * @throws TypeMismatchException if the number is not a valid short
+     * @see #readShort()
+     */
+    public abstract Value<Short> intoShort();
+
+    /**
      * @throws TypeMismatchException if the number is not a valid double
      * @see #readDouble()
      */
@@ -33,6 +40,12 @@ public abstract non-sealed class NumberRef extends TypedRef
      * @see #readBigDecimal()
      */
     public abstract Value<BigDecimal> intoBigDecimal();
+
+    /**
+     * @throws TypeMismatchException if the number is not a valid BigInteger
+     * @see #readBigInteger()
+     */
+    public abstract Value<BigInteger> intoBigInteger();
 
     /**
      * @throws TypeMismatchException if the number is not a valid integer
@@ -53,6 +66,15 @@ public abstract non-sealed class NumberRef extends TypedRef
     }
 
     /**
+     * @throws TypeMismatchException if the number is not a valid short
+     * @see #intoShort()
+     */
+    public short readShort()
+    {
+        return intoShort().read();
+    }
+
+    /**
      * @throws TypeMismatchException if the number is not a valid double
      * @see #intoDouble()
      */
@@ -68,5 +90,14 @@ public abstract non-sealed class NumberRef extends TypedRef
     public BigDecimal readBigDecimal()
     {
         return intoBigDecimal().read();
+    }
+
+    /**
+     * @throws TypeMismatchException if the number is not a valid BigInteger
+     * @see #intoBigInteger()
+     */
+    public BigInteger readBigInteger()
+    {
+        return intoBigInteger().read();
     }
 }

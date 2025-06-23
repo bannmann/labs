@@ -1,6 +1,7 @@
 package dev.bannmann.labs.json_nav.gson;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Supplier;
 
 import lombok.EqualsAndHashCode;
@@ -45,15 +46,18 @@ class GsonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Integer> intoInteger()
     {
-        return intoValue(target::getAsInt);
+        return wrap(target::getAsInt);
     }
 
-    private <T> Value<T> intoValue(Supplier<T> supplier)
+    /**
+     * Retrieves and checks the value immediately instead of delaying that until the lambda is called.
+     */
+    private <T> Value<T> wrap(Supplier<T> supplier)
     {
         try
         {
-            T value = supplier.get();
-            return () -> value;
+            T result = supplier.get();
+            return () -> result;
         }
         catch (NumberFormatException e)
         {
@@ -64,19 +68,31 @@ class GsonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Long> intoLong()
     {
-        return intoValue(target::getAsLong);
+        return wrap(target::getAsLong);
+    }
+
+    @Override
+    public Value<Short> intoShort()
+    {
+        return wrap(target::getAsShort);
     }
 
     @Override
     public Value<Double> intoDouble()
     {
-        return intoValue(target::getAsDouble);
+        return wrap(target::getAsDouble);
     }
 
     @Override
     public Value<BigDecimal> intoBigDecimal()
     {
-        return intoValue(target::getAsBigDecimal);
+        return wrap(target::getAsBigDecimal);
+    }
+
+    @Override
+    public Value<BigInteger> intoBigInteger()
+    {
+        return wrap(target::getAsBigInteger);
     }
 
     @Override

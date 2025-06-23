@@ -1,6 +1,7 @@
 package dev.bannmann.labs.json_nav.jackson;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import lombok.EqualsAndHashCode;
 
@@ -58,6 +59,21 @@ class JacksonNumber extends NumberRef implements AnyRef
     }
 
     @Override
+    public Value<Short> intoShort()
+    {
+        if (!target.isIntegralNumber() || !target.canConvertToInt())
+        {
+            throw new TypeMismatchException();
+        }
+        if (target.intValue() < Short.MIN_VALUE || target.intValue() > Short.MAX_VALUE)
+        {
+            throw new TypeMismatchException("Value is out of range");
+        }
+        short result = target.shortValue();
+        return () -> result;
+    }
+
+    @Override
     public Value<Double> intoDouble()
     {
         /*
@@ -77,6 +93,12 @@ class JacksonNumber extends NumberRef implements AnyRef
     public Value<BigDecimal> intoBigDecimal()
     {
         return target::decimalValue;
+    }
+
+    @Override
+    public Value<BigInteger> intoBigInteger()
+    {
+        return target::bigIntegerValue;
     }
 
     @Override
