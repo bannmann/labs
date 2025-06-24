@@ -52,15 +52,6 @@ public interface Value<T>
     }
 
     /**
-     * @deprecated Method renamed to {@link #mapToOptional(Function)}.
-     */
-    @Deprecated(forRemoval = true)
-    default <R> Optional<R> retrieveOptionalValueVia(Function<T, Optional<R>> mapper)
-    {
-        return mapToOptional(mapper);
-    }
-
-    /**
      * Calls a mapper that may or may not produce a value. <br>
      * <br>
      * If you do not need an {@link Optional}, you can instead use {@link #map(Function)}.
