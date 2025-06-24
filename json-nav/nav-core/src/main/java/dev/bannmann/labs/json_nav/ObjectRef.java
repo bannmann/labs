@@ -206,7 +206,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not a boolean, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final BooleanRef obtainBoolean(String firstLevel, String... moreLevels)
@@ -241,7 +241,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not a number, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final NumberRef obtainNumber(String firstLevel, String... moreLevels)
@@ -276,7 +276,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not a string, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final StringRef obtainString(String firstLevel, String... moreLevels)
@@ -311,7 +311,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if any of the names given is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final ObjectRef obtainObject(String firstLevel, String... moreLevels)
@@ -346,7 +346,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not an array, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final ArrayRef<ObjectRef> obtainArrayOfObjects(String firstLevel, String... moreLevels)
@@ -385,7 +385,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not an array, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final <E extends TypedRef> ArrayRef<E> obtainArray(
@@ -485,5 +485,39 @@ public abstract non-sealed class ObjectRef extends TypedRef
     public final <R> R map(Function<ObjectRef, R> function)
     {
         return function.apply(this);
+    }
+
+    /**
+     * Gets the string that the given name maps to. <br>
+     * <br>
+     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * distinction is required, use {@link #tryGetAny(String)} instead.
+     *
+     * @param name the name of the desired property.
+     *
+     * @return an {@code Optional} containing the string that the given name maps to, or an empty {@code Optional}
+     *
+     * @throws TypeMismatchException if the given name is mapped to a value that is neither a string nor a {@code null} literal
+     */
+    public final Optional<String> tryReadString(String name)
+    {
+        return tryGetTangibleValue(name, AnyRef::asString).map(Value::read);
+    }
+
+    /**
+     * Gets the boolean that the given name maps to. <br>
+     * <br>
+     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * distinction is required, use {@link #tryGetAny(String)} instead.
+     *
+     * @param name the name of the desired property.
+     *
+     * @return an {@code Optional} containing the boolean that the given name maps to, or an empty {@code Optional}
+     *
+     * @throws TypeMismatchException if the given name is mapped to a value that is neither a boolean nor a {@code null} literal
+     */
+    public final Optional<Boolean> tryReadBoolean(String name)
+    {
+        return tryGetTangibleValue(name, AnyRef::asBoolean).map(Value::read);
     }
 }

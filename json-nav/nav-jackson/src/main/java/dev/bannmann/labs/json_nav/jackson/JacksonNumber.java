@@ -1,6 +1,7 @@
 package dev.bannmann.labs.json_nav.jackson;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import lombok.EqualsAndHashCode;
 
@@ -40,7 +41,7 @@ class JacksonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Integer> intoInteger()
     {
-        if (!target.isIntegralNumber() && !target.canConvertToInt())
+        if (!target.isIntegralNumber() || !target.canConvertToInt())
         {
             throw new TypeMismatchException();
         }
@@ -50,11 +51,26 @@ class JacksonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Long> intoLong()
     {
-        if (!target.isIntegralNumber() && !target.canConvertToLong())
+        if (!target.isIntegralNumber() || !target.canConvertToLong())
         {
             throw new TypeMismatchException();
         }
         return target::longValue;
+    }
+
+    @Override
+    public Value<Short> intoShort()
+    {
+        if (!target.isIntegralNumber() || !target.canConvertToInt())
+        {
+            throw new TypeMismatchException();
+        }
+        if (target.intValue() < Short.MIN_VALUE || target.intValue() > Short.MAX_VALUE)
+        {
+            throw new TypeMismatchException("Value is out of range");
+        }
+        short result = target.shortValue();
+        return () -> result;
     }
 
     @Override
@@ -66,17 +82,34 @@ class JacksonNumber extends NumberRef implements AnyRef
          *
          * Let's play it safe by rejecting values that would require a BigInteger (i.e. not fit into a long).
          */
-        if (target.isIntegralNumber() && !target.canConvertToLong())
+        if (!target.canConvertToLong())
         {
             throw new TypeMismatchException();
         }
-        return target::doubleValue;
+
+        double result = target.doubleValue();
+        if (target.decimalValue()
+                .compareTo(BigDecimal.valueOf(result)) != 0)
+        {
+            throw new TypeMismatchException();
+        }
+        return () -> result;
     }
 
     @Override
     public Value<BigDecimal> intoBigDecimal()
     {
         return target::decimalValue;
+    }
+
+    @Override
+    public Value<BigInteger> intoBigInteger()
+    {
+        if (!target.isIntegralNumber())
+        {
+            throw new TypeMismatchException();
+        }
+        return target::bigIntegerValue;
     }
 
     @Override

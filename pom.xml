@@ -10,7 +10,7 @@
 
     <groupId>dev.bannmann.labs</groupId>
     <artifactId>labs</artifactId>
-    <version>0.36</version>
+    <version>0.37</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -36,18 +36,23 @@
         <base.toolchains.jdk>17</base.toolchains.jdk>
         <error_prone.version>2.37.0</error_prone.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/javadoc-input</javadoc.sources.directory>
-        <jooq.version>3.18.4</jooq.version>
+        <jooq.version>3.18.31</jooq.version>
+        <lombok.core.version>1.18.38</lombok.core.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <mockito-core.version>5.18.0</mockito-core.version>
         <nullaway.version>0.11.0</nullaway.version>
+        <testng.version>7.11.0</testng.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.18.3</version>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.19.1</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.errorprone</groupId>
@@ -90,6 +95,12 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>dev.bannmann.labs.json-nav</groupId>
+                <artifactId>nav-tests</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>jakarta.inject</groupId>
                 <artifactId>jakarta.inject-api</artifactId>
                 <version>1.0.3</version>
@@ -118,7 +129,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jooq</groupId>
-                <artifactId>jooq-parent</artifactId>
+                <artifactId>jooq-bom</artifactId>
                 <version>${jooq.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -131,7 +142,7 @@
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
                 <artifactId>metainf-services</artifactId>
-                <version>1.8</version>
+                <version>1.11</version>
                 <scope>provided</scope>
             </dependency>
         </dependencies>

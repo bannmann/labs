@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.bannmann.labs.json-nav</groupId>
         <artifactId>json-nav-parent</artifactId>
-        <version>0.36</version>
+        <version>0.37</version>
     </parent>
 
     <artifactId>nav-jakarta</artifactId>
@@ -19,9 +19,19 @@
             <artifactId>nav-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>dev.bannmann.labs.json-nav</groupId>
+            <artifactId>nav-tests</artifactId>
+        </dependency>
+        <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <version>1.1.7</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

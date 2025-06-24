@@ -36,6 +36,9 @@ Compared to other APIs, JsonNav provides these advantages:
 - Your code for retrieving and mapping values can be compact and readable, yet powerful
 - The fluent API only offers methods that make sense at that point, e.g. once `asString()` is called, `asNumber()` is no longer available.
 - Makes use of `java.util.Optional`
+- Strict handling of type mismatches, for example:
+  - Reading a floating point value as an `int` throws an exception instead of performing coercion
+  - Reading a string like `"17"` value as a number throws an exception instead of parsing the value
 - Increased robustness due to _not_ implementing the `Map` interface
 - Fully null-marked with JSpecify annotations
 - All references are immutable
