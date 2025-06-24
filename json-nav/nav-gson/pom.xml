@@ -24,6 +24,10 @@
             <groupId>dev.bannmann.labs.json-nav</groupId>
             <artifactId>nav-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>dev.bannmann.labs.json-nav</groupId>
+            <artifactId>nav-tests</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

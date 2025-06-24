@@ -86,7 +86,14 @@ class JacksonNumber extends NumberRef implements AnyRef
         {
             throw new TypeMismatchException();
         }
-        return target::doubleValue;
+
+        double result = target.doubleValue();
+        if (target.decimalValue()
+                .compareTo(BigDecimal.valueOf(result)) != 0)
+        {
+            throw new TypeMismatchException();
+        }
+        return () -> result;
     }
 
     @Override
@@ -98,6 +105,10 @@ class JacksonNumber extends NumberRef implements AnyRef
     @Override
     public Value<BigInteger> intoBigInteger()
     {
+        if (!target.isIntegralNumber())
+        {
+            throw new TypeMismatchException();
+        }
         return target::bigIntegerValue;
     }
 

@@ -46,7 +46,15 @@ class GsonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Integer> intoInteger()
     {
-        return wrap(target::getAsInt);
+        return wrap(() -> {
+            var result = target.getAsInt();
+            if (target.getAsBigDecimal()
+                    .compareTo(BigDecimal.valueOf(result)) != 0)
+            {
+                throw new TypeMismatchException();
+            }
+            return result;
+        });
     }
 
     /**
@@ -68,19 +76,43 @@ class GsonNumber extends NumberRef implements AnyRef
     @Override
     public Value<Long> intoLong()
     {
-        return wrap(target::getAsLong);
+        return wrap(() -> {
+            var result = target.getAsLong();
+            if (target.getAsBigDecimal()
+                    .compareTo(BigDecimal.valueOf(result)) != 0)
+            {
+                throw new TypeMismatchException();
+            }
+            return result;
+        });
     }
 
     @Override
     public Value<Short> intoShort()
     {
-        return wrap(target::getAsShort);
+        return wrap(() -> {
+            var result = target.getAsShort();
+            if (target.getAsBigDecimal()
+                    .compareTo(BigDecimal.valueOf(result)) != 0)
+            {
+                throw new TypeMismatchException();
+            }
+            return result;
+        });
     }
 
     @Override
     public Value<Double> intoDouble()
     {
-        return wrap(target::getAsDouble);
+        return wrap(() -> {
+            double result = target.getAsDouble();
+            if (target.getAsBigDecimal()
+                    .compareTo(BigDecimal.valueOf(result)) != 0)
+            {
+                throw new TypeMismatchException();
+            }
+            return result;
+        });
     }
 
     @Override

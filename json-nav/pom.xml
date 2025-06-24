@@ -20,6 +20,7 @@
         <module>nav-jackson</module>
         <module>nav-jakarta</module>
         <module>nav-javax</module>
+        <module>nav-tests</module>
     </modules>
 
 </project>

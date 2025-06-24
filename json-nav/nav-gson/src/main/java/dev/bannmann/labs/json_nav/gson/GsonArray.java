@@ -15,6 +15,7 @@ import com.google.gson.JsonElement;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
+import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.TypedRef;
 
 @Immutable
@@ -60,7 +61,16 @@ final class GsonArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
 
     private T wrapElement(JsonElement input)
     {
-        return elementClass.cast(GsonAdapter.wrap(input));
+        AnyRef wrap = GsonAdapter.wrap(input);
+
+        try
+        {
+            return elementClass.cast(wrap);
+        }
+        catch (ClassCastException e)
+        {
+            throw new TypeMismatchException(e);
+        }
     }
 
     @Override

@@ -80,7 +80,15 @@ class JsonpNumber extends NumberRef implements AnyRef
     @Override
     public Value<Double> intoDouble()
     {
-        return wrap(target::doubleValue);
+        return wrap(() -> {
+            double result = target.doubleValue();
+            if (target.bigDecimalValue()
+                    .compareTo(BigDecimal.valueOf(result)) != 0)
+            {
+                throw new TypeMismatchException();
+            }
+            return result;
+        });
     }
 
     @Override
@@ -92,7 +100,15 @@ class JsonpNumber extends NumberRef implements AnyRef
     @Override
     public Value<BigInteger> intoBigInteger()
     {
-        return wrap(target::bigIntegerValue);
+        return wrap(() -> {
+            BigDecimal bigDecimal = target.bigDecimalValue();
+            if (bigDecimal.stripTrailingZeros()
+                    .scale() > 0)
+            {
+                throw new TypeMismatchException();
+            }
+            return bigDecimal.toBigInteger();
+        });
     }
 
     @Override

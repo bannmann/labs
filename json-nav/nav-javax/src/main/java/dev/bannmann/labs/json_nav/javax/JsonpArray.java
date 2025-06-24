@@ -15,6 +15,7 @@ import com.google.errorprone.annotations.Immutable;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
+import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.TypedRef;
 
 @Immutable
@@ -55,7 +56,16 @@ class JsonpArray<T extends TypedRef> extends ArrayRef<T> implements AnyRef
 
     private T wrapElement(JsonValue input)
     {
-        return elementClass.cast(JsonpAdapter.wrap(input));
+        AnyRef wrap = JsonpAdapter.wrap(input);
+
+        try
+        {
+            return elementClass.cast(wrap);
+        }
+        catch (ClassCastException e)
+        {
+            throw new TypeMismatchException(e);
+        }
     }
 
     @Override

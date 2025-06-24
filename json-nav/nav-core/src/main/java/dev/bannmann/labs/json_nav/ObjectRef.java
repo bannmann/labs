@@ -206,7 +206,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not a boolean, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final BooleanRef obtainBoolean(String firstLevel, String... moreLevels)
@@ -241,7 +241,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not a number, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final NumberRef obtainNumber(String firstLevel, String... moreLevels)
@@ -276,7 +276,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not a string, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final StringRef obtainString(String firstLevel, String... moreLevels)
@@ -311,7 +311,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if any of the names given is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final ObjectRef obtainObject(String firstLevel, String... moreLevels)
@@ -346,7 +346,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not an array, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final ArrayRef<ObjectRef> obtainArrayOfObjects(String firstLevel, String... moreLevels)
@@ -385,7 +385,7 @@ public abstract non-sealed class ObjectRef extends TypedRef
      *
      * @return the new ref, never {@code null}.
      *
-     * @throws MissingElementException if any of the names given is not mapped to a value, or to a {@code null} literal
+     * @throws MissingElementException if any of the names given is not mapped to a value
      * @throws TypeMismatchException if the last name is mapped to a value that is not an array, or if any name except the last one is mapped to a value that is not an object, e.g. a {@code null} literal
      */
     public final <E extends TypedRef> ArrayRef<E> obtainArray(

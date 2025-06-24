@@ -16,6 +16,7 @@ import com.google.errorprone.annotations.Immutable;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.json_nav.AnyRef;
 import dev.bannmann.labs.json_nav.ArrayRef;
+import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.TypedRef;
 
 @Immutable
@@ -60,7 +61,16 @@ final class JacksonArray<T extends TypedRef> extends ArrayRef<T> implements AnyR
 
     private T wrapElement(com.fasterxml.jackson.databind.JsonNode input)
     {
-        return elementClass.cast(JacksonAdapter.wrap(input));
+        AnyRef wrap = JacksonAdapter.wrap(input);
+
+        try
+        {
+            return elementClass.cast(wrap);
+        }
+        catch (ClassCastException e)
+        {
+            throw new TypeMismatchException(e);
+        }
     }
 
     @Override

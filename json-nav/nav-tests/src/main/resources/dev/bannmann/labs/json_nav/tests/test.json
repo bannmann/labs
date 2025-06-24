@@ -1,0 +1,39 @@
+{
+    "name": "Chell",
+    "piUseful": 3.14159265358979323846,
+    "piRoughly": 3.14159,
+    "rubiksCube": 43252003274489856000,
+    "brainNeurons": 86000000000,
+    "count": 7,
+    "samplingFrequency": 44100,
+    "weekCount": 20871,
+    "nothingness": null,
+    "enabled": true,
+    "verbose": false,
+    "alpha": {
+        "beta": {
+            "gamma": {
+                "targetString": "foo",
+                "targetNumber": 1337,
+                "targetArray": [
+                    {}
+                ]
+            },
+            "nothingness": null
+        }
+    },
+    "planets": [
+        {
+            "name": "Earth"
+        },
+        {
+            "name": "Mars"
+        }
+    ],
+    "numbers": [
+        23,
+        42,
+        1337
+    ],
+    "silverBullets": []
+}
