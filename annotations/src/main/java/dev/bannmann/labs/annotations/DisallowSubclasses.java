@@ -2,6 +2,7 @@ package dev.bannmann.labs.annotations;
 
 import static java.lang.annotation.ElementType.TYPE;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Target;
 
 /**
@@ -10,6 +11,7 @@ import java.lang.annotation.Target;
  * @see NonFinalDueToInterceptors
  * @see NonFinalDueToProxies
  */
+@Documented
 @Target(TYPE)
 public @interface DisallowSubclasses
 {
