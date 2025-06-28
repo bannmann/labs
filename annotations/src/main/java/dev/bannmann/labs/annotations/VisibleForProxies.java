@@ -2,6 +2,7 @@ package dev.bannmann.labs.annotations;
 
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Target;
 
 /**
@@ -13,6 +14,7 @@ import java.lang.annotation.Target;
  *
  * @see DisallowOutsideUse
  */
+@Documented
 @Target(CONSTRUCTOR)
 @Implies(DisallowOutsideUse.class)
 public @interface VisibleForProxies
