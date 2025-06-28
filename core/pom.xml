@@ -15,6 +15,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.uber.nullaway</groupId>
+            <artifactId>nullaway</artifactId>
+        </dependency>
+        <dependency>
             <groupId>dev.bannmann.labs</groupId>
             <artifactId>annotations</artifactId>
         </dependency>
@@ -25,6 +29,10 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kohsuke.metainf-services</groupId>
+            <artifactId>metainf-services</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

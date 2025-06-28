@@ -6,19 +6,21 @@ import java.util.stream.Stream;
 
 import lombok.experimental.UtilityClass;
 
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
+import dev.bannmann.labs.annotations.ImplementationNote;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
-import dev.bannmann.labs.annotations.UpstreamCandidate;
 
 /**
- * Provides helper methods to succinctly deal with null values.
+ * Provides helper methods to succinctly deal with null values (NullAway friendly version).
  *
- * @see NullSafeLegacy
+ * @see NullSafe
  */
-@UpstreamCandidate("Mizool")
 @UtilityClass
-public class NullSafe
+@NullUnmarked
+@ImplementationNote("This class is kept in sync with NullSafe. NullAway friendliness is achieved via `NullAwayInfo`.")
+public class NullSafeLegacy
 {
     @SuppressWarnings("NullAway")
     @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
