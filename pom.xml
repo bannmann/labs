@@ -25,6 +25,7 @@
         <module>kumuluzee-errorhandling</module>
         <module>parent</module>
         <module>records-api</module>
+        <module>watchdog-maven-plugin</module>
     </modules>
 
     <scm>
@@ -62,6 +63,11 @@
             <dependency>
                 <groupId>dev.bannmann.labs</groupId>
                 <artifactId>records-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.bannmann.labs</groupId>
+                <artifactId>watchdog-maven-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
