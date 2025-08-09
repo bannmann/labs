@@ -8,7 +8,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -64,7 +63,7 @@ public class PostgresIncidentStore implements IncidentStore
         return map.entrySet()
             .stream()
             .map(stringObjectEntry -> getDataRow(incident, stringObjectEntry))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private Row3<String, String, String> getDataRow(Incident incident, Map.Entry<String, Object> entry)

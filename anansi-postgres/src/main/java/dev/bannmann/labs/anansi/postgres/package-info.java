@@ -1,4 +1,4 @@
-@NullUnmarked
+@NullMarked
 package dev.bannmann.labs.anansi.postgres;
 
-import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.NullMarked;

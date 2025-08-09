@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import org.jspecify.annotations.Nullable;
+
 import com.github.mizool.core.converter.EnumConverter;
 import com.github.mizool.core.converter.IdentifierConverter;
 import dev.bannmann.anansi.core.Incident;
@@ -21,19 +23,13 @@ class IncidentRecordConverter
 
     public IncidentRecord fromPojo(Incident pojo)
     {
-        IncidentRecord result = null;
-
-        if (pojo != null)
-        {
-            result = new IncidentRecord();
-            result.setId(identifierConverter.fromPojo(pojo.getId()));
-            result.setTimestamp(pojo.getTimestamp());
-            result.setFingerprintId(pojo.getFingerprint());
-            result.setSeverity(enumConverter.fromPojo(pojo.getSeverity()));
-            result.setThrowableDetails(createThrowableDetailsReport(pojo.getThrowableDetails()));
-            result.setBuild(pojo.getApplicationBuildInfo());
-        }
-
+        IncidentRecord result = new IncidentRecord();
+        result.setId(identifierConverter.fromPojo(pojo.getId()));
+        result.setTimestamp(pojo.getTimestamp());
+        result.setFingerprintId(pojo.getFingerprint());
+        result.setSeverity(enumConverter.fromPojo(pojo.getSeverity()));
+        result.setThrowableDetails(createThrowableDetailsReport(pojo.getThrowableDetails()));
+        result.setBuild(pojo.getApplicationBuildInfo());
         return result;
     }
 
@@ -47,19 +43,7 @@ class IncidentRecordConverter
         ThrowableData previous = null;
         for (ThrowableData current : throwableDetails)
         {
-            if (!result.isEmpty())
-            {
-                result.append("\n\n");
-            }
-
-            result.append(current.getThrowableClassName());
-            result.append(" at ");
-            result.append(current.getFrameData());
-            if (isNewMessage(previous, current))
-            {
-                result.append(":\n");
-                result.append(current.getThrowableMessage());
-            }
+            append(current, result, previous);
 
             previous = current;
         }
@@ -67,11 +51,28 @@ class IncidentRecordConverter
         return result.toString();
     }
 
+    private void append(ThrowableData current, StringBuilder target, @Nullable ThrowableData previous)
+    {
+        if (!target.isEmpty())
+        {
+            target.append("\n\n");
+        }
+
+        target.append(current.getThrowableClassName());
+        target.append(" at ");
+        target.append(current.getFrameData());
+        if (isNewMessage(previous, current))
+        {
+            target.append(":\n");
+            target.append(current.getThrowableMessage());
+        }
+    }
+
     /**
      * @return whether current message is non-null and equals neither the previous one nor a trivial
      * "causeClass: causeMessage" (with causeMessage being non-null) or "causeClass" (if causeMessage is null)
      */
-    private boolean isNewMessage(ThrowableData previous, ThrowableData current)
+    private boolean isNewMessage(@Nullable ThrowableData previous, ThrowableData current)
     {
         if (previous == null)
         {
