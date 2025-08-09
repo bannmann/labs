@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs-bom</artifactId>
-        <version>0.40</version>
+        <version>0.41-SNAPSHOT</version>
     </parent>
     <artifactId>labs-parent</artifactId>
     <packaging>pom</packaging>
