@@ -19,6 +19,11 @@ import dev.bannmann.labs.annotations.SuppressWarningsRationale;
  */
 public interface Value<T>
 {
+    /**
+     * Reads the contained value.
+     *
+     * @return the contained value, never {@code null}
+     */
     T read();
 
     /**

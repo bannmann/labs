@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>dev.bannmann.labs</groupId>
+        <artifactId>labs-parent</artifactId>
+        <version>0.40</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>watchdog-maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+
+    <properties>
+        <maven-all.version>3.9.11</maven-all.version>
+        <maven-core.version>${maven-all.version}</maven-core.version>
+        <maven-plugin-api.version>${maven-all.version}</maven-plugin-api.version>
+        <maven-plugin-tools.version>3.15.1</maven-plugin-tools.version>
+        <maven-slf4j-provider.version>${maven-all.version}</maven-slf4j-provider.version>
+        <org.eclipse.sisu.version>0.9.0.M3</org.eclipse.sisu.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>dev.bannmann.labs</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${maven-core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${maven-plugin-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-slf4j-provider</artifactId>
+            <version>${maven-slf4j-provider.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>${maven-plugin-tools.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.sisu</groupId>
+            <artifactId>org.eclipse.sisu.plexus</artifactId>
+            <version>${org.eclipse.sisu.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>${maven-plugin-tools.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.sisu</groupId>
+                <artifactId>sisu-maven-plugin</artifactId>
+                <version>${org.eclipse.sisu.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-index</id>
+                        <goals>
+                            <goal>main-index</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

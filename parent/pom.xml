@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.bannmann.labs</groupId>
         <artifactId>labs-bom</artifactId>
-        <version>0.39</version>
+        <version>0.40</version>
     </parent>
     <artifactId>labs-parent</artifactId>
     <packaging>pom</packaging>
@@ -67,6 +67,11 @@
                 <version>1.1.4</version>
             </dependency>
             <dependency>
+                <groupId>net.jcip</groupId>
+                <artifactId>jcip-annotations</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apiguardian</groupId>
                 <artifactId>apiguardian-api</artifactId>
                 <version>1.1.2</version>
@@ -97,6 +102,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <pluginManagement>

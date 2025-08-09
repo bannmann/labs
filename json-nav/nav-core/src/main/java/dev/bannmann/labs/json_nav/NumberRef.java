@@ -1,7 +1,11 @@
 package dev.bannmann.labs.json_nav;
 
+import static lombok.AccessLevel.PROTECTED;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import lombok.NoArgsConstructor;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -9,6 +13,7 @@ import com.google.errorprone.annotations.Immutable;
  * Represents a JSON number.
  */
 @Immutable
+@NoArgsConstructor(access = PROTECTED)
 public abstract non-sealed class NumberRef extends TypedRef
 {
     /**

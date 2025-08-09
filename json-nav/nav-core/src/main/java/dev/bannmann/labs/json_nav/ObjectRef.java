@@ -1,8 +1,12 @@
 package dev.bannmann.labs.json_nav;
 
+import static lombok.AccessLevel.PROTECTED;
+
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import lombok.NoArgsConstructor;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -10,6 +14,7 @@ import com.google.errorprone.annotations.Immutable;
  * Represents a JSON object.
  */
 @Immutable
+@NoArgsConstructor(access = PROTECTED)
 public abstract non-sealed class ObjectRef extends TypedRef
 {
     private static final Predicate<AnyRef> EXCLUDE_NULL_REFS = Predicate.not(AnyRef::isNull);

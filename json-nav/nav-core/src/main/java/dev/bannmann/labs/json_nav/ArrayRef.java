@@ -1,9 +1,13 @@
 package dev.bannmann.labs.json_nav;
 
+import static lombok.AccessLevel.PROTECTED;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import lombok.NoArgsConstructor;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -13,6 +17,7 @@ import com.google.errorprone.annotations.Immutable;
  * @param <T> the ref type of the array's elements
  */
 @Immutable
+@NoArgsConstructor(access = PROTECTED)
 public abstract non-sealed class ArrayRef<T extends TypedRef> extends TypedRef implements Iterable<T>
 {
     public abstract boolean isEmpty();
