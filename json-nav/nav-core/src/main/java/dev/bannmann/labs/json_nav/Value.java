@@ -10,10 +10,10 @@ import com.github.mizool.core.exception.CodeInconsistencyException;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 
 /**
- * Contains a value retrieved or mapped from a JSON value. <br>
- * <br>
- * This type exists to facilitate call chains that map values. It can be considered a counterpart of {@link Optional},
- * but unlike that class, {@code Value} is intended for values that can never be {@code null}.
+ * Contains a value retrieved or mapped from a JSON value.
+ *
+ * <p>This type exists to facilitate call chains that map values. It can be considered a counterpart of
+ * {@link Optional}, but unlike that class, {@code Value} is intended for values that can never be {@code null}.
  *
  * @param <T> the type of the contained value
  */
@@ -57,9 +57,9 @@ public interface Value<T>
     }
 
     /**
-     * Calls a mapper that may or may not produce a value. <br>
-     * <br>
-     * If you do not need an {@link Optional}, you can instead use {@link #map(Function)}.
+     * Calls a mapper that may or may not produce a value.
+     *
+     * <p>If you do not need an {@link Optional}, you can instead use {@link #map(Function)}.
      *
      * @throws IllegalArgumentException if the given mapper returns {@code null}
      */
@@ -93,9 +93,9 @@ public interface Value<T>
     }
 
     /**
-     * Gets an {@code Optional} for the contained value if it matches the given predicate. <br>
-     * <br>
-     * Equivalent to calling {@code toOptional().filter(predicate)}.
+     * Gets an {@code Optional} for the contained value if it matches the given predicate.
+     *
+     * <p>Equivalent to calling {@code toOptional().filter(predicate)}.
      *
      * @param predicate the predicate to apply to the contained value
      *

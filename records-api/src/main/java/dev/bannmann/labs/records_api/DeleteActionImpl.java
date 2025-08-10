@@ -30,9 +30,9 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
     private Condition primaryKeyCondition;
 
     /**
-     * Non-PK conditions which must hold for the deletion to happen. <br>
-     * <br>
-     * The condition is added as-is to the {@code WHERE} clause. If no rows are deleted, the negated version of this
+     * Non-PK conditions which must hold for the deletion to happen.
+     *
+     * <p>The condition is added as-is to the {@code WHERE} clause. If no rows are deleted, the negated version of this
      * condition is used in a {@code SELECT} to distinguish "object not found" from "permission denied".
      */
     private Condition deletionPermittedCondition;

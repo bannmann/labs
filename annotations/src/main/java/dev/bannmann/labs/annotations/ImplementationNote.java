@@ -14,10 +14,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Holds a comment that does not belong in javadoc. <br>
- * <br>
- * Unlike a single line comment, this annotation can be placed outside class members without IDEs or linters complaining
- * about (or even removing) the "dangling" comment.
+ * Holds a comment that does not belong in javadoc.
+ *
+ * <p>Unlike a single line comment, this annotation can be placed outside class members without IDEs or linters
+ * complaining about (or even removing) the "dangling" comment.
  */
 @Target({ TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE, MODULE })
 @Retention(SOURCE)

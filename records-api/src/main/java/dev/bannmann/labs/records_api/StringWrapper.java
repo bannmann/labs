@@ -8,13 +8,14 @@ import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.annotations.UpstreamCandidate;
 
 /**
- * Simplifies implementing wrapper classes to avoid "stringly typed" APIs. <br>
- * <br>
- * Instances never contain {@code null} and are immutable. Use {@link #toString()} or {@link CharSequence} methods to
- * access their contents.<br>
- * <br>
+ * Simplifies implementing wrapper classes to avoid "stringly typed" APIs.
+ *
+ * <p>Instances never contain {@code null} and are immutable. Use {@link #toString()} or {@link CharSequence} methods to
+ * access their contents.
+ *
  * <h3>Usage example</h3>
- * <pre>{@code public final class Label extends StringWrapper
+ * <pre>
+ * public final class Label extends StringWrapper
  * {
  *     public Label(String contents)
  *     {

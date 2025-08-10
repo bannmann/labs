@@ -14,10 +14,10 @@ import dev.bannmann.labs.annotations.UpstreamCandidate;
 public class MapExtras
 {
     /**
-     * Gets the value to which the given key is mapped, if existing. <br>
-     * <br>
-     * Unlike {@link Map#get(Object)}, with this method the compiler verifies the type of the key argument. Also, as it
-     * returns an {@link Optional}, calling code can use chained method calls instead of separate {@code if} blocks.
+     * Gets the value to which the given key is mapped, if existing.
+     *
+     * <p>Unlike {@link Map#get(Object)}, with this method the compiler verifies the type of the key argument. Also, as
+     * it returns an {@link Optional}, calling code can use chained method calls instead of separate {@code if} blocks.
      *
      * @return a present {@link Optional} if the given map contains a non-{@code null} value for the given {@code key}.
      */
@@ -39,9 +39,9 @@ public class MapExtras
     }
 
     /**
-     * Gets the value to which the given key is mapped or throws an exception. <br>
-     * <br>
-     * Unlike {@link Map#get(Object)}, with this method the compiler verifies type of the key argument.
+     * Gets the value to which the given key is mapped or throws an exception.
+     *
+     * <p>Unlike {@link Map#get(Object)}, with this method the compiler verifies type of the key argument.
      *
      * @return the non-null value for the given key
      *

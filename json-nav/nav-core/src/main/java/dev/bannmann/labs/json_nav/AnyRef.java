@@ -3,13 +3,13 @@ package dev.bannmann.labs.json_nav;
 import com.google.errorprone.annotations.Immutable;
 
 /**
- * Represents a JSON value whose type is not known to the compiler. <br>
- * <br>
- * Its runtime type can be determined via the various {@code isFoo()} methods. Alternatively, use {@code instanceof}
+ * Represents a JSON value whose type is not known to the compiler.
+ *
+ * <p>Its runtime type can be determined via the various {@code isFoo()} methods. Alternatively, use {@code instanceof}
  * checks with the {@code FooRef} classes from this package - the non-public implementation classes always implement
- * one of them.<br>
- * <br>
- * Consequently, an AnyRef could be turned into {@code FooRef} using a regular type cast. However, using the
+ * one of them.
+ *
+ * <p>Consequently, an AnyRef could be turned into {@code FooRef} using a regular type cast. However, using the
  * {@code asFoo()} methods is generally preferable, particularly when dealing with arrays (due to the ability to specify
  * the ref type of its elements).
  */

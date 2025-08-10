@@ -20,9 +20,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     private static final Predicate<AnyRef> EXCLUDE_NULL_REFS = Predicate.not(AnyRef::isNull);
 
     /**
-     * Gets a JSON value that the given name maps to. <br>
-     * <br>
-     * Note that this method distinguishes between a non-existing mapping (empty {@code Optional}) and a mapping to a
+     * Gets a JSON value that the given name maps to.
+     *
+     * <p>Note that this method distinguishes between a non-existing mapping (empty {@code Optional}) and a mapping to a
      * JSON {@code null} literal ({@code Optional} containing a {@link NullRef}).
      *
      * @param name the name of the desired property.
@@ -32,9 +32,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     public abstract Optional<AnyRef> tryGetAny(String name);
 
     /**
-     * Gets a JSON Boolean that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets a JSON Boolean that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param name the name of the desired property.
@@ -55,9 +55,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Number that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets a JSON Number that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param name the name of the desired property.
@@ -72,9 +72,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON String that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets a JSON String that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param name the name of the desired property.
@@ -89,9 +89,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Object that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets a JSON Object that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param name the name of the desired property.
@@ -106,9 +106,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Array that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets a JSON Array that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param name the name of the desired property.
@@ -123,9 +123,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets a JSON Array that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets a JSON Array that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param <E> the type of array elements
@@ -156,9 +156,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a property of a nested object. <br>
-     * <br>
-     * Calling {@code obtainAny("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainAny("c")}.
+     * Navigates to a property of a nested object.
+     *
+     * <p>Calling {@code obtainAny("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainAny("c")}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -185,9 +185,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a boolean property. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).asBoolean()}.
+     * Navigates to a boolean property.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).asBoolean()}.
      *
      * @param name the property name
      *
@@ -202,9 +202,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a boolean property of a nested object. <br>
-     * <br>
-     * Calling {@code obtainBoolean("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainBoolean("c")}.
+     * Navigates to a boolean property of a nested object.
+     *
+     * <p>Calling {@code obtainBoolean("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainBoolean("c")}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -220,9 +220,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a number property. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).asNumber()}.
+     * Navigates to a number property.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).asNumber()}.
      *
      * @param name the property name
      *
@@ -237,9 +237,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a number property of a nested object. <br>
-     * <br>
-     * Calling {@code obtainNumber("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainNumber("c")}.
+     * Navigates to a number property of a nested object.
+     *
+     * <p>Calling {@code obtainNumber("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainNumber("c")}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -255,9 +255,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a string property. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).asString()}.
+     * Navigates to a string property.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).asString()}.
      *
      * @param name the property name
      *
@@ -272,9 +272,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a string property of a nested object. <br>
-     * <br>
-     * Calling {@code obtainString("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainString("c")}.
+     * Navigates to a string property of a nested object.
+     *
+     * <p>Calling {@code obtainString("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainString("c")}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -290,9 +290,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a nested object. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).asObject()}.
+     * Navigates to a nested object.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).asObject()}.
      *
      * @param name the property name
      *
@@ -307,9 +307,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a deeply nested object. <br>
-     * <br>
-     * Calling {@code obtainObject("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainObject("c")}.
+     * Navigates to a deeply nested object.
+     *
+     * <p>Calling {@code obtainObject("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainObject("c")}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -325,9 +325,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to a property that is an array of objects. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).asArrayOfObjects()}.
+     * Navigates to a property that is an array of objects.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).asArrayOfObjects()}.
      *
      * @param name the property name
      *
@@ -342,9 +342,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to an object array property of a nested object. <br>
-     * <br>
-     * Calling {@code obtainArrayOfObjects("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainArrayOfObjects("c")}.
+     * Navigates to an object array property of a nested object.
+     *
+     * <p>Calling {@code obtainArrayOfObjects("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainArrayOfObjects("c")}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -360,9 +360,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to an array property. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).asArray(elementClass)}.
+     * Navigates to an array property.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).asArray(elementClass)}.
      *
      * @param <E> the type of array elements
      * @param elementClass the class to use for the array elements
@@ -379,9 +379,10 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Navigates to an array property of a nested object. <br>
-     * <br>
-     * Calling {@code obtainArray(StringRef.class, "a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainArray(StringRef.class, "c")}.
+     * Navigates to an array property of a nested object.
+     *
+     * <p>Calling {@code obtainArray(StringRef.class, "a", "b", "c")} is equivalent to
+     * {@code obtainObject("a").obtainObject("b").obtainArray(StringRef.class, "c")}.
      *
      * @param <E> the type of array elements
      * @param elementClass the class to use for the array elements
@@ -402,9 +403,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Reads the value of a string property. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).readString()}.
+     * Reads the value of a string property.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).readString()}.
      *
      * @param name the property name
      *
@@ -419,9 +420,10 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Reads the value of a string property of a nested object. <br>
-     * <br>
-     * Calling {@code readString("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainAny("c").readString()}.
+     * Reads the value of a string property of a nested object.
+     *
+     * <p>Calling {@code readString("a", "b", "c")} is equivalent to
+     * {@code obtainObject("a").obtainObject("b").obtainAny("c").readString()}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -437,9 +439,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Reads the value of a boolean property. <br>
-     * <br>
-     * This is equivalent to calling {@code obtainAny(name).readBoolean()}.
+     * Reads the value of a boolean property.
+     *
+     * <p>This is equivalent to calling {@code obtainAny(name).readBoolean()}.
      *
      * @param name the property name
      *
@@ -454,9 +456,10 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Reads the value of a boolean property of a nested object. <br>
-     * <br>
-     * Calling {@code readString("a", "b", "c")} is equivalent to {@code obtainObject("a").obtainObject("b").obtainAny("c").readBoolean()}.
+     * Reads the value of a boolean property of a nested object.
+     *
+     * <p>Calling {@code readString("a", "b", "c")} is equivalent to
+     * {@code obtainObject("a").obtainObject("b").obtainAny("c").readBoolean()}.
      *
      * @param firstLevel the property name on the first level
      * @param moreLevels property names to use on subsequent levels
@@ -493,9 +496,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets the string that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets the string that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param name the name of the desired property.
@@ -510,9 +513,9 @@ public abstract non-sealed class ObjectRef extends TypedRef
     }
 
     /**
-     * Gets the boolean that the given name maps to. <br>
-     * <br>
-     * This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
+     * Gets the boolean that the given name maps to.
+     *
+     * <p>This method does not distinguish between missing mappings and mappings to JSON {@code null} literals. If that
      * distinction is required, use {@link #tryGetAny(String)} instead.
      *
      * @param name the name of the desired property.

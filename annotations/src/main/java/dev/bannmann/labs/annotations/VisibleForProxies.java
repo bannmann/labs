@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * Annotates a constructor that exists only to make the class proxyable for CDI. Any non-private constructor is
- * sufficient, e.g. package-private. <br>
- * <br>
- * Note: the name of this annotation intentionally mimics Guava's
- * {@link com.google.common.annotations.VisibleForTesting}.
+ * sufficient, e.g. package-private.
+ *
+ * <p>Note: the name of this annotation intentionally mimics Guava's
+ * {@code com.google.common.annotations.VisibleForTesting}.
  *
  * @see DisallowOutsideUse
  */

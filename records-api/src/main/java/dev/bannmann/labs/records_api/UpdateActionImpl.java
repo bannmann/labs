@@ -70,9 +70,10 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     private R newRecord;
 
     /**
-     * Non-PK conditions which must hold for the update to pass. <br> Each condition is added as-is to the {@code WHERE}
-     * clause. If the update does not affect any rows, the negated version of each condition is used in a {@code SELECT}
-     * to distinguish different {@link CheckReason} types.
+     * Non-PK conditions which must hold for the update to pass.
+     *
+     * <p>Each condition is added as-is to the {@code WHERE} clause. If the update does not affect any rows, the negated
+     * version of each condition is used in a {@code SELECT} to distinguish different {@link CheckReason} types.
      */
     private final List<Check> checks = new ArrayList<>();
 
@@ -106,18 +107,18 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Enables collision detection for the given integer field (based on the pojo's value), then increases it. <br>
-     * <br>
-     * Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
-     * TableField) postdetect} collision check.<br>
-     * <br>
-     * If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
-     * collision check is performed.<br>
-     * <br>
-     * Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless
-     * of whether the collision was detected before or after contacting the database.<br>
-     * <br>
-     * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
+     * Enables collision detection for the given integer field (based on the pojo's value), then increases it.
+     *
+     * <p>Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
+     * TableField) postdetect} collision check.
+     *
+     * <p>If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
+     * collision check is performed.
+     *
+     * <p>Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless
+     * of whether the collision was detected before or after contacting the database.
+     *
+     * <p>Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
      * states by adding {@code NOT NULL} clauses to the respective column DDL.
      *
      * @param field the field to use for collision detection and to increase
@@ -172,15 +173,16 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Adds a check for collision detection or field verification. <br>
-     * <br>
-     * The negated version of the condition is used in the {@code UPDATE ... WHERE} clause together with the primary
-     * key.<br>
-     * <br>
-     * If the update did not change a row, another database round trip is made to determine which, if any, of the checks
-     * were the cause for the failed update. In that case, the corresponding {@link CheckReason#getExceptionBuilder()
-     * exception builder} is invoked. The exception includes the field/check name. If none of the checks caused the
-     * update to fail, the primary key was incorrect and an {@link ObjectNotFoundException} is thrown.
+     * Adds a check for collision detection or field verification.
+     *
+     * <p>The negated version of the condition is used in the {@code UPDATE ... WHERE} clause together with the primary
+     * key.
+     *
+     * <p>If the update did not change a row, another database round trip is made to determine which, if any, of the
+     * checks were the cause for the failed update. In that case, the corresponding
+     * {@link CheckReason#getExceptionBuilder() exception builder} is invoked. The exception includes the field/check
+     * name. If none of the checks caused the update to fail, the primary key was incorrect and an
+     * {@link ObjectNotFoundException} is thrown.
      */
     private void internalAddCheck(Check check)
     {
@@ -204,18 +206,18 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Enables collision detection for the given field (based on the pojo's value), then randomizes it. <br>
-     * <br>
+     * Enables collision detection for the given field (based on the pojo's value), then randomizes it.
+     *
      * Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
-     * TableField) postdetect} collision check.<br>
-     * <br>
-     * If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
-     * collision check is performed.<br>
-     * <br>
-     * Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless of
-     * whether the collision was detected before or after contacting the database.<br>
-     * <br>
-     * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
+     * TableField) postdetect} collision check.
+     *
+     * <p>If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
+     * collision check is performed.
+     *
+     * <p>Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless of
+     * whether the collision was detected before or after contacting the database.
+     *
+     * <p>Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
      * states by adding {@code NOT NULL} clauses to the respective column DDL.
      *
      * @param field the field to use for collision detection and to randomize
@@ -229,18 +231,18 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Enables collision detection for the given field (based on the pojo's value), then refreshes it. <br>
-     * <br>
-     * Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
-     * TableField) postdetect} collision check.<br>
-     * <br>
-     * If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
-     * collision check is performed.<br>
-     * <br>
-     * Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless
-     * of whether the collision was detected before or after contacting the database.<br>
-     * <br>
-     * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
+     * Enables collision detection for the given field (based on the pojo's value), then refreshes it.
+     *
+     * <p>Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
+     * TableField) postdetect} collision check.
+     *
+     * <p>If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
+     * collision check is performed.
+     *
+     * <p>Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless
+     * of whether the collision was detected before or after contacting the database.
+     *
+     * <p>Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
      * states by adding {@code NOT NULL} clauses to the respective column DDL.
      *
      * @param field the field to use for collision detection and to refresh
@@ -459,16 +461,16 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Enables collision detection based on the given condition. <br>
-     * <br>
-     * The negated version of the given condition is used in the {@code UPDATE ... WHERE} clause together with the
-     * primary key.<br>
-     * <br>
-     * If the update did not change a row, another database round trip is made to distinguish the 'collision' from the
+     * Enables collision detection based on the given condition.
+     *
+     * <p>The negated version of the given condition is used in the {@code UPDATE ... WHERE} clause together with the
+     * primary key.
+     *
+     * <p>If the update did not change a row, another database round trip is made to distinguish the 'collision' from the
      * 'invalid primary key' case. If there was a collision, a {@link ConflictingEntityException} will be thrown
-     * indicating which field was the cause. Otherwise, an {@link ObjectNotFoundException} is thrown.<br>
-     * <br>
-     * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
+     * indicating which field was the cause. Otherwise, an {@link ObjectNotFoundException} is thrown.
+     *
+     * <p>Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
      * states by adding {@code NOT NULL} clauses to the respective column DDL.
      *
      * @param collisionOccurred the condition which evaluates to true if a collision occurred
@@ -484,9 +486,9 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     /**
      * Enables collision detection by comparing the values of the given field in the given new and existing records
      * before contacting the database. Also enables {@linkplain #postdetectCollisionIf(Condition, TableField) late
-     * collision detection (postdetect)}.<br>
-     * <br>
-     * Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
+     * collision detection (postdetect)}.
+     *
+     * <p>Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
      * states by adding {@code NOT NULL} clauses to the respective column DDL.
      */
     @Override
@@ -530,19 +532,19 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     }
 
     /**
-     * Verifies that the update will not change the value of the given field. <br>
-     * <br>
-     * Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
+     * Verifies that the update will not change the value of the given field.
+     *
+     * <p>Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
      * TableField) postdetect collision checks} to the {@code UPDATE} statement. However, unlike with collision checks,
      * {@code null} is supported and treated as any other value, allowing e.g. store operation A to treat a field as
-     * readonly that may or may not have been set yet by store operation B.<br>
-     * <br>
-     * In addition, if an existing pojo has been given, it is used for an additional comparison before contacting the
-     * database.<br>
-     * <br>
-     * Updates which attempt to change the field value will result in a {@link ReadonlyFieldException} stating that the
-     * field is readonly. This is the case regardless of whether the change was detected before or after contacting the
+     * readonly that may or may not have been set yet by store operation B.
+     *
+     * <p>In addition, if an existing pojo has been given, it is used for an additional comparison before contacting the
      * database.
+     *
+     * <p>Updates which attempt to change the field value will result in a {@link ReadonlyFieldException} stating that
+     * the field is readonly. This is the case regardless of whether the change was detected before or after contacting
+     * the database.
      *
      * @param field the field to check
      */
