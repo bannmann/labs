@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jooq.Condition;
@@ -13,21 +14,26 @@ import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
+import org.jspecify.annotations.NullMarked;
 
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.PermissionDeniedException;
 import com.github.mizool.core.exception.StoreLayerException;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
+import dev.bannmann.labs.core.Box;
 
+@RequiredArgsConstructor
 @Slf4j
-@SuppressWarnings("java:S6213")
+@SuppressWarnings("java:S2638")
+@SuppressWarningsRationale(
+    "The Silverchain-generated interface is not @NullMarked yet, so Sonar flags our use of lombok @NonNull on many parameters as a contract change.")
+@NullMarked
 class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction<P, R>
 {
-    private final DSLContext context;
-
-    private Table<R> table;
-    private RecordConverter<P, R> converter;
-    private Condition primaryKeyCondition;
+    private final Box<Table<R>> tableBox = new Box<>();
+    private final Box<RecordConverter<P, R>> converterBox = new Box<>();
+    private final Box<Condition> primaryKeyConditionBox = new Box<>();
 
     /**
      * Non-PK conditions which must hold for the deletion to happen.
@@ -35,12 +41,9 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
      * <p>The condition is added as-is to the {@code WHERE} clause. If no rows are deleted, the negated version of this
      * condition is used in a {@code SELECT} to distinguish "object not found" from "permission denied".
      */
-    private Condition deletionPermittedCondition;
+    private final Box<Condition> deletionPermittedConditionBox = new Box<>();
 
-    public DeleteActionImpl(DSLContext context)
-    {
-        this.context = context;
-    }
+    private final DSLContext context;
 
     @Override
     public void delete()
@@ -51,7 +54,7 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
     @Override
     public void denyUnless(@NonNull Condition condition)
     {
-        deletionPermittedCondition = condition;
+        deletionPermittedConditionBox.set(condition);
     }
 
     @Override
@@ -64,7 +67,7 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
     public void fromIdentifiable(
         @NonNull Table<R> table, @NonNull Class<? extends RecordConverter<P, R>> converterClass)
     {
-        this.table = table;
+        tableBox.set(table);
 
         // Note: the converterClass argument only exists for type safety further down the chain
     }
@@ -72,18 +75,21 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
     @Override
     public void fromIdentifiable(@NonNull Table<R> table, @NonNull RecordConverter<P, R> converter)
     {
-        this.table = table;
-        this.converter = converter;
+        tableBox.set(table);
+        converterBox.set(converter);
     }
 
     private Condition getCombinedCondition()
     {
-        Condition result = this.primaryKeyCondition;
-        if (deletionPermittedCondition != null)
+        Condition first = primaryKeyConditionBox.get();
+
+        Condition second = deletionPermittedConditionBox.getOrNull();
+        if (second != null)
         {
-            result = result.and(deletionPermittedCondition);
+            return first.and(second);
         }
-        return result;
+
+        return first;
     }
 
     @Override
@@ -100,12 +106,17 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
         }
         catch (DataAccessException e)
         {
-            throw new StoreLayerException("Error deleting from " + table.getName(), e);
+            throw new StoreLayerException("Error deleting from " +
+                                          tableBox.get()
+                                              .getName(), e);
         }
     }
 
     private void throwPermissionDeniedIfPrimaryKeyExists()
     {
+        var table = tableBox.get();
+        var primaryKeyCondition = primaryKeyConditionBox.get();
+
         if (context.fetchExists(DSL.selectFrom(table)
             .where(primaryKeyCondition)))
         {
@@ -116,6 +127,8 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
     @Override
     public boolean tryExecute()
     {
+        var table = tableBox.get();
+
         return internalExecute(() -> {
             int rowsDeleted = context.deleteFrom(table)
                 .where(getCombinedCondition())
@@ -137,6 +150,9 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
     @Override
     public Optional<P> tryExecuteAndConvert()
     {
+        var table = tableBox.get();
+        var converter = converterBox.get();
+
         return internalExecute(() -> {
             Optional<P> result = context.deleteFrom(table)
                 .where(getCombinedCondition())
@@ -162,7 +178,8 @@ class DeleteActionImpl<P, R extends UpdatableRecord<R>> implements IDeleteAction
     @Override
     public void withId(@NonNull Identifier<P> id)
     {
+        var table = tableBox.get();
         TableField<R, String> idField = Tables.obtainSingleStringPrimaryKeyField(table);
-        primaryKeyCondition = idField.eq(id.getValue());
+        primaryKeyConditionBox.set(idField.eq(id.getValue()));
     }
 }

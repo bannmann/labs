@@ -28,10 +28,11 @@ import dev.bannmann.labs.json_nav.TypeMismatchException;
 import dev.bannmann.labs.json_nav.UnexpectedElementException;
 import dev.bannmann.labs.json_nav.Value;
 
-@SuppressWarnings({ "java:S2950", "java:S1192" })
+@SuppressWarnings({ "java:S2950", "java:S1192", "java:S5612" })
 @SuppressWarningsRationale(name = "java:S2950", value = "This is not really production code, so assertions are okay.")
 @SuppressWarningsRationale(name = "java:S1192",
     value = "Repeated string literals are okay for tests and therefore also for test helper classes like this.")
+@SuppressWarningsRationale(name = "java:S5612", value = "assertSoftly() with longer lambda expressions is fine.")
 public abstract class AbstractAdapterTest
 {
     private static String loadTestSource()

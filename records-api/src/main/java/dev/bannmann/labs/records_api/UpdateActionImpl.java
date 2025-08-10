@@ -1,5 +1,6 @@
 package dev.bannmann.labs.records_api;
 
+import static dev.bannmann.labs.core.NullSafeLegacy.tryGet;
 import static org.jooq.impl.DSL.inline;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Key;
 import org.jooq.Name;
 import org.jooq.Record2;
 import org.jooq.Select;
@@ -31,6 +33,8 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.SQLDataType;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
@@ -41,10 +45,16 @@ import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.ReadonlyFieldException;
 import com.github.mizool.core.exception.StoreLayerException;
-import com.github.mizool.core.validation.Nullable;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
+import dev.bannmann.labs.core.Box;
 
 @Slf4j
-@SuppressWarnings("java:S6213")
+@SuppressWarnings({ "java:S6213", "java:S2638" })
+@SuppressWarningsRationale(name = "java:S6213", value = "The parameter name 'record' is perfectly fine here.")
+@SuppressWarningsRationale(name = "java:S2638",
+    value = "The Silverchain-generated interface is not @NullMarked yet, so Sonar flags our use of lombok @NonNull on many parameters as a contract change.")
+//@SuppressWarnings()
+@NullMarked
 class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction<P, R>
 {
     private static <R extends UpdatableRecord<R>> void normalizeEmail(R record, TableField<R, String> field)
@@ -58,16 +68,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         record.set(field, adjuster.apply(record.get(field)));
     }
 
-    private final DSLContext context;
-    private final Lazy<OffsetDateTime> now;
-    private final Map<Name, Object> assignments = new HashMap<>();
-
-    private Table<R> table;
-    private Condition primaryKeyCondition;
-    private Function<P, R> convertFromPojo;
-    private Function<R, P> presetConvertToPojo;
-    private R existingRecord;
-    private R newRecord;
+    private final Map<Name, @Nullable Object> assignments = new HashMap<>();
 
     /**
      * Non-PK conditions which must hold for the update to pass.
@@ -76,6 +77,16 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
      * version of each condition is used in a {@code SELECT} to distinguish different {@link CheckReason} types.
      */
     private final List<Check> checks = new ArrayList<>();
+
+    private final Box<Table<R>> tableBox = new Box<>();
+    private final Box<Condition> primaryKeyConditionBox = new Box<>();
+    private final Box<Function<P, R>> convertFromPojoBox = new Box<>();
+    private final Box<Function<R, P>> presetConvertToPojoBox = new Box<>();
+    private final Box<R> existingRecordBox = new Box<>();
+    private final Box<R> newRecordBox = new Box<>();
+
+    private final DSLContext context;
+    private final Lazy<OffsetDateTime> now;
 
     public UpdateActionImpl(DSLContext context, StoreClock storeClock)
     {
@@ -88,7 +99,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public <F> void adjusting(@NonNull TableField<R, F> field, @NonNull UnaryOperator<F> adjuster)
     {
-        adjust(newRecord, field, adjuster);
+        adjust(newRecordBox.get(), field, adjuster);
     }
 
     /**
@@ -98,12 +109,17 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void andExistingPojo(@NonNull P existingPojo)
     {
-        existingRecord = convertFromPojo.apply(existingPojo);
-        if (!newRecord.key()
+        R existingRecord = convertFromPojoBox.get()
+            .apply(existingPojo);
+
+        if (!newRecordBox.get()
+            .key()
             .equals(existingRecord.key()))
         {
             throw new InvalidPrimaryKeyException("Primary key mismatch");
         }
+
+        existingRecordBox.set(existingRecord);
     }
 
     /**
@@ -144,7 +160,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private void performCollisionDetection(TableField<R, ?> field)
     {
-        if (existingRecord != null)
+        if (existingRecordBox.isSet())
         {
             // comparing update: add predetect AND postdetect check
             predetectCollisionOn(field);
@@ -156,10 +172,13 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         }
     }
 
+    @SuppressWarnings("ConstantValue")
+    @SuppressWarningsRationale("IntelliJ thinks jOOQ Record.get() never returns null")
     private <V> void addCollisionCheck(TableField<R, V> field)
     {
         // Represents the old state the client started with; the new one that we are going to write is generated later.
-        V valueGivenByClient = newRecord.get(field);
+        V valueGivenByClient = newRecordBox.get()
+            .get(field);
 
         if (valueGivenByClient == null)
         {
@@ -194,28 +213,30 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         BigDecimal original = getBigDecimal(field);
         BigDecimal modified = original.add(BigDecimal.ONE);
 
-        newRecord.set(field,
+        newRecordBox.get()
+            .set(field,
             field.getDataType()
                 .convert(modified));
     }
 
     private <N extends Number> BigDecimal getBigDecimal(TableField<R, N> field)
     {
-        N value = newRecord.getValue(field);
+        N value = newRecordBox.get()
+            .getValue(field);
         return new BigDecimal(value.longValue());
     }
 
     /**
      * Enables collision detection for the given field (based on the pojo's value), then randomizes it.
      *
-     * Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
+     * <p>Invoking this method adds a {@code WHERE} condition similar to {@linkplain #postdetectCollisionIf(Condition,
      * TableField) postdetect} collision check.
      *
      * <p>If an existing pojo has been given, an additional {@linkplain #predetectCollisionOn(TableField) predetect}
      * collision check is performed.
      *
-     * <p>Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless of
-     * whether the collision was detected before or after contacting the database.
+     * <p>Updates with a value mismatch will result in a {@link ConflictingEntityException}. This is the case regardless
+     * of whether the collision was detected before or after contacting the database.
      *
      * <p>Note that fields which are used for collision checks do not support {@code null}. Make sure to avoid illegal
      * states by adding {@code NOT NULL} clauses to the respective column DDL.
@@ -227,7 +248,8 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public <U> void checkAndRandomize(@NonNull TableField<R, U> field, @NonNull Supplier<U> randomSupplier)
     {
         performCollisionDetection(field);
-        newRecord.set(field, randomSupplier.get());
+        newRecordBox.get()
+            .set(field, randomSupplier.get());
     }
 
     /**
@@ -251,18 +273,23 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public void checkAndRefresh(@NonNull TableField<R, OffsetDateTime> field)
     {
         performCollisionDetection(field);
-        newRecord.set(field, now.get());
+        newRecordBox.get()
+            .set(field, now.get());
     }
 
     private Update<R> createStatement()
     {
+        var table = tableBox.get();
         var tableStep = context.update(table);
         var valuesStep = addValuesToSet(tableStep);
         return valuesStep.where(getCombinedCondition());
     }
 
+    @SuppressWarnings("DataFlowIssue")
+    @SuppressWarningsRationale("IntelliJ thinks var newRecord is not nullable")
     private UpdateSetMoreStep<R> addValuesToSet(UpdateSetFirstStep<R> tableStep)
     {
+        var newRecord = newRecordBox.getOrNull();
         if (newRecord != null)
         {
             return tableStep.set(newRecord);
@@ -275,7 +302,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private Condition getCombinedCondition()
     {
-        Condition result = this.primaryKeyCondition;
+        Condition result = primaryKeyConditionBox.get();
         for (Check check : checks)
         {
             result = result.and(check.getSuccessCondition());
@@ -283,6 +310,8 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         return result;
     }
 
+    @SuppressWarnings("java:S3864")
+    @SuppressWarningsRationale("Should the stream impl optimize away our peek() call, no harm is done.")
     private RuntimeException createException()
     {
         Function<RecordKey, RuntimeException> exceptionBuilder = checks.stream()
@@ -307,6 +336,9 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         Field<String> label = inlineVarchar(128,
             check.getLabel()
                 .toString());
+        var table = tableBox.get();
+        var primaryKeyCondition = primaryKeyConditionBox.get();
+
         return context.select(violationType, label)
             .from(table)
             .where(primaryKeyCondition.and(check.getFailureCondition()));
@@ -333,12 +365,15 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private RecordKey getRecordKey()
     {
+        var table = tableBox.get();
+        var primaryKeyCondition = primaryKeyConditionBox.get();
         return new RecordKey(String.format("%s{%s}", table.getName(), primaryKeyCondition));
     }
 
     @Override
     public P executeAndConvert()
     {
+        Function<R, P> presetConvertToPojo = presetConvertToPojoBox.get();
         return executeAndConvertVia(presetConvertToPojo);
     }
 
@@ -346,6 +381,8 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
     {
         internalExecute();
+
+        R newRecord = newRecordBox.get();
         return toPojo.apply(newRecord);
     }
 
@@ -361,6 +398,8 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         }
         catch (DataAccessException e)
         {
+            var table = tableBox.get();
+
             Constraints.findFieldOfViolatedForeignKey(e, table)
                 .ifPresent(referencingField -> {
                     throw new EntityReferenceException(referencingField, e);
@@ -379,16 +418,17 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void fromNewPojo(@NonNull P newPojo)
     {
-        newRecord = convertFromPojo.apply(newPojo);
-        primaryKeyCondition = obtainPrimaryKeyCondition(newRecord);
+        var convertFromPojo = convertFromPojoBox.get();
+        R newRecord = convertFromPojo.apply(newPojo);
+        newRecordBox.set(newRecord);
+        primaryKeyConditionBox.set(obtainPrimaryKeyCondition(newRecord));
     }
 
     private Condition obtainPrimaryKeyCondition(@NonNull R newRecord)
     {
         Condition result = null;
 
-        for (TableField<R, ?> keyField : table.getPrimaryKey()
-            .getFields())
+        for (TableField<R, ?> keyField : obtainPrimaryKeyFields())
         {
             Condition condition = toCondition(keyField, newRecord);
             result = result == null
@@ -399,9 +439,23 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         if (result == null)
         {
             // jOOQ says all UpdatableRecords have a non-null primary key, but let's be paranoid here.
-            throw new CodeInconsistencyException(String.format("Table %s has no primary key",
+            throw new CodeInconsistencyException(String.format("Record for %s has no primary key",
                 newRecord.getTable()
                     .getUnqualifiedName()));
+        }
+
+        return result;
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @SuppressWarningsRationale("IntelliJ thinks Key::getFields may cause an NPE")
+    private List<TableField<R, ?>> obtainPrimaryKeyFields()
+    {
+        var result = tryGet(tableBox.get(), Table::getPrimaryKey, Key::getFields);
+        if (result == null || result.isEmpty())
+        {
+            // Such a table should have been rejected earlier
+            throw new CodeInconsistencyException();
         }
 
         return result;
@@ -424,7 +478,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
         putAssignment(field, field.plus(1));
     }
 
-    private void putAssignment(TableField<R, ?> field, Object value)
+    private void putAssignment(TableField<R, ?> field, @Nullable Object value)
     {
         verifyNotPrimaryKey(field);
         assignments.put(field.getQualifiedName(), value);
@@ -432,8 +486,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private void verifyNotPrimaryKey(TableField<R, ?> field)
     {
-        if (table.getPrimaryKey()
-            .getFields()
+        if (obtainPrimaryKeyFields()
             .contains(field))
         {
             throw new IllegalArgumentException("Cannot alter primary key field " + field.getUnqualifiedName());
@@ -443,6 +496,7 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void normalizingEmail(@NonNull TableField<R, String> field)
     {
+        var newRecord = newRecordBox.get();
         normalizeEmail(newRecord, field);
     }
 
@@ -507,6 +561,8 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private boolean isFieldValueChanged(TableField<R, ?> field)
     {
+        var newRecord = newRecordBox.get();
+        var existingRecord = existingRecordBox.get();
         return !Objects.equals(newRecord.get(field), existingRecord.get(field));
     }
 
@@ -528,7 +584,19 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void update(@NonNull Table<R> table)
     {
-        this.table = table;
+        verifyTableHasPrimaryKey(table);
+        tableBox.set(table);
+    }
+
+    private void verifyTableHasPrimaryKey(Table<R> table)
+    {
+        var primaryKey = table.getPrimaryKey();
+        if (primaryKey == null ||
+            primaryKey.getFields()
+                .isEmpty())
+        {
+            throw new IllegalArgumentException("Table has no primary key");
+        }
     }
 
     /**
@@ -564,27 +632,30 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
 
     private <V> void addUnchangedCheck(TableField<R, V> field)
     {
+        var newRecord = newRecordBox.get();
         V newValue = newRecord.get(field);
         Condition hasChange = createChangeDetectionCondition(field, newValue);
         internalAddCheck(new Check(hasChange, CheckReason.VERIFY_UNCHANGED, field));
     }
 
-    private <V> Condition createChangeDetectionCondition(TableField<R, V> field, V newValue)
+    @SuppressWarnings("java:S2583")
+    @SuppressWarningsRationale("Sonar thinks newValue is not nullable")
+    private <V extends @Nullable Object> Condition createChangeDetectionCondition(TableField<R, V> field, V newValue)
     {
-        if (newValue == null)
-        {
-            return field.isNotNull();
-        }
-        else
+        if (newValue != null)
         {
             return field.isNull()
                 .or(field.notEqual(newValue));
+        }
+        else
+        {
+            return field.isNotNull();
         }
     }
 
     private boolean isComparingUpdate()
     {
-        return existingRecord != null;
+        return existingRecordBox.isSet();
     }
 
     @Override
@@ -600,15 +671,16 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public <I> void withPrimaryKey(@NonNull Identifier<I> id, @NonNull Class<I> identifiableClass)
     {
+        var table = tableBox.get();
         TableField<R, String> idField = Tables.obtainSingleStringPrimaryKeyField(table);
-        primaryKeyCondition = idField.eq(id.getValue());
+        primaryKeyConditionBox.set(idField.eq(id.getValue()));
     }
 
     @Override
     public void withRecordConvertedUsing(@NonNull RecordConverter<P, R> converter)
     {
         withRecordConvertedVia(converter::fromPojo);
-        presetConvertToPojo = converter::toPojo;
+        presetConvertToPojoBox.set(converter::toPojo);
     }
 
     /**
@@ -617,6 +689,6 @@ class UpdateActionImpl<P, R extends UpdatableRecord<R>> implements IUpdateAction
     @Override
     public void withRecordConvertedVia(@NonNull Function<P, R> fromPojo)
     {
-        convertFromPojo = fromPojo;
+        convertFromPojoBox.set(fromPojo);
     }
 }

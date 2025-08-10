@@ -11,6 +11,8 @@ import org.apache.maven.execution.MojoExecutionListener;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
+
 @Named
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
@@ -27,9 +29,7 @@ final class WatchdogListener implements MojoExecutionListener
             var mojo = event.getMojo();
             Log currentLog = mojo.getLog();
 
-            if (!currentLog.getClass()
-                .getName()
-                .equals(CustomMavenPluginLog.class.getName()))
+            if (needsReplacing(currentLog))
             {
                 var newLog = new CustomMavenPluginLog(currentLog, logTracker);
                 mojo.setLog(newLog);
@@ -42,6 +42,15 @@ final class WatchdogListener implements MojoExecutionListener
         {
             logFailure(e);
         }
+    }
+
+    @SuppressWarnings("java:S1872")
+    @SuppressWarningsRationale("Mojos come from different class loaders, so we have to compare classes by name")
+    private boolean needsReplacing(Log currentLog)
+    {
+        return !currentLog.getClass()
+            .getName()
+            .equals(CustomMavenPluginLog.class.getName());
     }
 
     private void logFailure(RuntimeException e)
