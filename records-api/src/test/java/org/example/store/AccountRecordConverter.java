@@ -10,6 +10,7 @@ import org.example.tables.records.AccountRecord;
 
 import com.github.mizool.core.converter.IdentifierConverter;
 import com.google.common.annotations.VisibleForTesting;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 import dev.bannmann.labs.records_api.RecordConverter;
 
 @VisibleForTesting
@@ -37,6 +38,7 @@ public class AccountRecordConverter implements RecordConverter<Account, AccountR
     }
 
     @SuppressWarnings("java:S6213")
+    @SuppressWarningsRationale("The parameter name 'record' is perfectly fine here.")
     public Account toPojo(AccountRecord record)
     {
         Account result = null;

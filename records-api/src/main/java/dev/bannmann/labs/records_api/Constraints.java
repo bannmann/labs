@@ -10,18 +10,20 @@ import org.jooq.Field;
 import org.jooq.Key;
 import org.jooq.Table;
 import org.jooq.exception.DataAccessException;
+import org.jspecify.annotations.NullMarked;
 
 import com.google.common.base.Throwables;
 
 @UtilityClass
+@NullMarked
 class Constraints
 {
-    public Optional<String> findFieldOfViolatedForeignKey(DataAccessException e, Table<?> table)
+    public static Optional<String> findFieldOfViolatedForeignKey(DataAccessException e, Table<?> table)
     {
         return findFieldOfViolatedKey(e, table.getReferences());
     }
 
-    private Optional<String> findFieldOfViolatedKey(DataAccessException e, List<? extends Key<?>> keys)
+    private static Optional<String> findFieldOfViolatedKey(DataAccessException e, List<? extends Key<?>> keys)
     {
         String rootCauseMessage = Throwables.getRootCause(e)
             .getMessage();
@@ -39,7 +41,7 @@ class Constraints
         return Optional.empty();
     }
 
-    public Optional<String> findFieldOfViolatedUniqueOrPrimaryKey(DataAccessException e, Table<?> table)
+    public static Optional<String> findFieldOfViolatedUniqueOrPrimaryKey(DataAccessException e, Table<?> table)
     {
         return findFieldOfViolatedKey(e, table.getKeys());
     }

@@ -5,16 +5,21 @@ import lombok.Value;
 
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Value
-class Check
+@NullMarked
+final class Check
 {
-    @NonNull Condition failureCondition;
+    Condition failureCondition;
 
-    @NonNull CheckReason reason;
+    CheckReason reason;
 
+    @Nullable
     Field<?> field;
 
+    @Nullable
     String name;
 
     public Check(@NonNull Condition failureCondition, @NonNull CheckReason reason, @NonNull Field<?> field)
@@ -22,7 +27,7 @@ class Check
         this.failureCondition = failureCondition;
         this.reason = reason;
         this.field = field;
-        this.name = null;
+        name = null;
     }
 
     public Check(@NonNull Condition failureCondition, @NonNull CheckReason reason, @NonNull String name)
@@ -30,7 +35,7 @@ class Check
         this.failureCondition = failureCondition;
         this.reason = reason;
         this.name = name;
-        this.field = null;
+        field = null;
     }
 
     public Condition getSuccessCondition()

@@ -21,6 +21,7 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
 import org.jooq.exception.DataAccessException;
+import org.jspecify.annotations.NullMarked;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
@@ -29,20 +30,25 @@ import com.github.mizool.core.exception.ConflictingEntityException;
 import com.github.mizool.core.exception.GeneratedFieldOverrideException;
 import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.StoreLayerException;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 
 @Slf4j
 @SuppressWarnings("java:S6213")
+@SuppressWarningsRationale("The parameter name 'record' is perfectly fine here.")
+@NullMarked
 class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction<P, R>
 {
     private static class RecordHolder<R extends UpdatableRecord<R>>
     {
-        private final List<R> records;
-        private boolean ignoreDuplicateKey;
         private final Set<TableField<R, ?>> excludedFields = new HashSet<>();
+
+        private final List<R> records;
+
+        private boolean ignoreDuplicateKey;
 
         public RecordHolder(@NonNull R record)
         {
-            this.records = List.of(record);
+            records = List.of(record);
         }
 
         public RecordHolder(@NonNull List<R> records)
@@ -66,7 +72,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
         {
             verifySingleRecordMode();
 
-            R record = records.get(0);
+            R record = records.getFirst();
 
             Map<String, Object> values = getInsertableValues(record);
 
@@ -133,7 +139,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
 
         public Table<R> getTable()
         {
-            return records.get(0)
+            return records.getFirst()
                 .getTable();
         }
 

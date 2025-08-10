@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.example.business.Account;
 
-import com.github.mizool.core.exception.ReadonlyFieldException;
 import com.google.common.annotations.VisibleForTesting;
 import dev.bannmann.labs.records_api.Records;
 

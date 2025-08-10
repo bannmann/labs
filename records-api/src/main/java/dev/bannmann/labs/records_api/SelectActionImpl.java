@@ -116,7 +116,7 @@ public class SelectActionImpl<P extends Identifiable<P>, R extends Record> imple
     @Override
     public void orderBy(OrderField<?>... field)
     {
-        this.orderByFields = field;
+        orderByFields = field;
     }
 
     @Override
