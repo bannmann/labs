@@ -23,6 +23,7 @@
         <mockito-core.version>5.18.0</mockito-core.version>
         <nullaway.version>0.11.0</nullaway.version>
         <testng.version>7.11.0</testng.version>
+        <watchdog-plugin.published-version-to-use>0.40</watchdog-plugin.published-version-to-use>
     </properties>
 
     <dependencyManagement>
@@ -115,6 +116,36 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>dev.bannmann.labs</groupId>
+                    <artifactId>watchdog-maven-plugin</artifactId>
+                    <version>${watchdog-plugin.published-version-to-use}</version>
+                    <extensions>true</extensions>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>watch</goal>
+                            </goals>
+                            <configuration>
+                                <exclusions>
+                                    <exclusion>
+                                        <artifactId>maven-javadoc-plugin</artifactId>
+                                    </exclusion>
+                                    <exclusion>
+                                        <artifactId>lombok-maven-plugin</artifactId>
+                                        <messagePattern>Skipping Delombok; no source to process.</messagePattern>
+                                    </exclusion>
+                                </exclusions>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <showDeprecation>true</showDeprecation>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
@@ -132,6 +163,10 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>dev.bannmann.labs</groupId>
+                <artifactId>watchdog-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -161,7 +196,6 @@
                                     </goals>
                                     <phase>test</phase>
                                     <configuration>
-                                        <failOnWarning>true</failOnWarning>
                                         <compilerArgs>
                                             <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
                                             <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
