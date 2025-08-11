@@ -20,10 +20,10 @@ import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 @UtilityClass
 @NullUnmarked
 @ImplementationNote("This class is kept in sync with NullSafe. NullAway friendliness is achieved via `NullAwayInfo`.")
+@SuppressWarnings("java:S2583")
+@SuppressWarningsRationale("Sonar mistakenly thinks many `if` branches are unreachable")
 public class NullSafeLegacy
 {
-    @SuppressWarnings("NullAway")
-    @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
     public static <A extends @Nullable Object, R extends @Nullable Object> R tryGet(A a, Function<A, R> getter1)
     {
         if (a == null)
@@ -34,8 +34,6 @@ public class NullSafeLegacy
         return getter1.apply(a);
     }
 
-    @SuppressWarnings("NullAway")
-    @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
     public static <A extends @Nullable Object, B extends @Nullable Object, R extends @Nullable Object> R tryGet(
         A a,
         Function<A, B> getter1,
@@ -50,8 +48,6 @@ public class NullSafeLegacy
         return getter2.apply(b);
     }
 
-    @SuppressWarnings("NullAway")
-    @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
     public static <A extends @Nullable Object, B extends @Nullable Object, C extends @Nullable Object, R extends @Nullable Object> R tryGet(
         A a,
         Function<A, B> getter1,
@@ -67,8 +63,6 @@ public class NullSafeLegacy
         return getter3.apply(c);
     }
 
-    @SuppressWarnings("NullAway")
-    @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
     public static <A extends @Nullable Object, B extends @Nullable Object, C extends @Nullable Object, D extends @Nullable Object, R extends @Nullable Object> R tryGet(
         A a,
         Function<A, B> getter1,
@@ -85,8 +79,6 @@ public class NullSafeLegacy
         return getter4.apply(d);
     }
 
-    @SuppressWarnings("NullAway")
-    @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
     public static <A extends @Nullable Object, B extends @Nullable Object, C extends @Nullable Object, D extends @Nullable Object, E extends @Nullable Object, R extends @Nullable Object> R tryGet(
         A a,
         Function<A, B> getter1,
@@ -104,8 +96,6 @@ public class NullSafeLegacy
         return getter5.apply(e);
     }
 
-    @SuppressWarnings("NullAway")
-    @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
     public static <A extends @Nullable Object, B extends @Nullable Object, C extends @Nullable Object, D extends @Nullable Object, E extends @Nullable Object, F extends @Nullable Object, R extends @Nullable Object> R tryGet(
         A a,
         Function<A, B> getter1,
@@ -151,8 +141,8 @@ public class NullSafeLegacy
      * @return the first non-null argument, or {@code null} if all arguments are null
      */
     @SafeVarargs
-    @SuppressWarnings("NullAway")
-    @SuppressWarningsRationale(name = "NullAway", value = "NullAway does not yet observe @Nullable on generic types")
+    @SuppressWarnings("java:S2589")
+    @SuppressWarningsRationale("Sonar thinks `t1 != null` is always true")
     public static <T extends @Nullable Object> T coalesce(T t1, T t2, T... t)
     {
         if (t1 != null)
