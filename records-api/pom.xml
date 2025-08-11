@@ -63,6 +63,11 @@
             <artifactId>core</artifactId>
         </dependency>
         <dependency>
+            <groupId>dev.bannmann.mandor</groupId>
+            <artifactId>core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>jakarta.inject</groupId>
             <artifactId>jakarta.inject-api</artifactId>
         </dependency>
@@ -77,8 +82,6 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
-        </dependency>
-        <dependency>
         </dependency>
     </dependencies>
 

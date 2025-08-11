@@ -27,15 +27,18 @@ class Constraints
     {
         String rootCauseMessage = Throwables.getRootCause(e)
             .getMessage();
-        for (var key : keys)
+        if (rootCauseMessage != null)
         {
-            if (rootCauseMessage.contains(key.getName()))
+            for (var key : keys)
             {
-                // We return only a string because many constraints only consist of one column.
-                return Optional.of(key.getFields()
-                    .stream()
-                    .map(Field::getName)
-                    .collect(Collectors.joining("+")));
+                if (rootCauseMessage.contains(key.getName()))
+                {
+                    // We return only a string because many constraints only consist of one column.
+                    return Optional.of(key.getFields()
+                        .stream()
+                        .map(Field::getName)
+                        .collect(Collectors.joining("+")));
+                }
             }
         }
         return Optional.empty();

@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ import org.jooq.TableField;
 import org.jooq.UpdatableRecord;
 import org.jooq.exception.DataAccessException;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
@@ -31,10 +31,13 @@ import com.github.mizool.core.exception.GeneratedFieldOverrideException;
 import com.github.mizool.core.exception.InvalidPrimaryKeyException;
 import com.github.mizool.core.exception.StoreLayerException;
 import dev.bannmann.labs.annotations.SuppressWarningsRationale;
+import dev.bannmann.labs.core.Box;
 
 @Slf4j
-@SuppressWarnings("java:S6213")
-@SuppressWarningsRationale("The parameter name 'record' is perfectly fine here.")
+@SuppressWarnings({ "java:S6213", "java:S2638" })
+@SuppressWarningsRationale(name = "java:S6213", value = "The parameter name 'record' is perfectly fine here.")
+@SuppressWarningsRationale(name = "java:S2638",
+    value = "The Silverchain-generated interface is not @NullMarked yet, so Sonar flags our use of lombok @NonNull on many parameters as a contract change.")
 @NullMarked
 class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction<P, R>
 {
@@ -68,7 +71,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
             }
         }
 
-        public R executeSingle(DSLContext context)
+        public @Nullable R executeSingle(DSLContext context)
         {
             verifySingleRecordMode();
 
@@ -155,12 +158,13 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
         }
     }
 
+    private final Box<Function<P, R>> convertFromPojoBox = new Box<>();
+    private final Box<Function<R, P>> presetConvertToPojoBox = new Box<>();
+    private final Box<RecordHolder<R>> recordHolderBox = new Box<>();
+
     private final DSLContext context;
     private final Lazy<OffsetDateTime> now;
 
-    private Function<P, R> convertFromPojo;
-    private Function<R, P> presetConvertToPojo;
-    private RecordHolder<R> recordHolder;
     private boolean usePresetId;
 
     public InsertActionImpl(DSLContext context, StoreClock storeClock)
@@ -174,27 +178,34 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public <F> void adjusting(@NonNull TableField<R, F> field, @NonNull UnaryOperator<F> adjuster)
     {
-        recordHolder.apply(record -> record.set(field, adjuster.apply(record.get(field))));
+        recordHolderBox.get()
+            .apply(record -> record.set(field, adjuster.apply(record.get(field))));
     }
 
     @Override
-    public P executeAndConvert()
+    public @Nullable P executeAndConvert()
     {
-        return executeAndConvertVia(presetConvertToPojo);
+        return executeAndConvertVia(presetConvertToPojoBox.get());
     }
 
     @Override
-    public P executeAndConvertVia(@NonNull Function<R, P> toPojo)
+    public @Nullable P executeAndConvertVia(@NonNull Function<R, P> toPojo)
     {
         R resultRecord = executeSingle();
+        if (resultRecord == null)
+        {
+            return null;
+        }
+
         return toPojo.apply(resultRecord);
     }
 
-    private R executeSingle()
+    private @Nullable R executeSingle()
     {
         try
         {
-            return recordHolder.executeSingle(context);
+            return recordHolderBox.get()
+                .executeSingle(context);
         }
         catch (DataAccessException e)
         {
@@ -204,7 +215,8 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
 
     private RuntimeException convertException(DataAccessException e)
     {
-        Table<R> table = recordHolder.getTable();
+        var recordHolder = recordHolderBox.get();
+        var table = recordHolder.getTable();
 
         Optional<String> fieldOfViolatedForeignKey = Constraints.findFieldOfViolatedForeignKey(e, table);
         if (fieldOfViolatedForeignKey.isPresent())
@@ -227,17 +239,19 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void fromPojo(@NonNull P pojo)
     {
-        R record = convertFromPojo.apply(pojo);
-        recordHolder = new RecordHolder<>(record);
+        R record = convertFromPojoBox.get()
+            .apply(pojo);
+        recordHolderBox.set(new RecordHolder<>(record));
     }
 
     @Override
     public void fromPojos(List<P> pojos)
     {
+        var convertFromPojo = convertFromPojoBox.get();
         List<R> records = pojos.stream()
-            .map(pojo -> convertFromPojo.apply(pojo))
-            .collect(Collectors.toList());
-        recordHolder = new RecordHolder<>(records);
+            .map(convertFromPojo)
+            .toList();
+        recordHolderBox.set(new RecordHolder<>(records));
     }
 
     @Override
@@ -262,6 +276,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void generating(@NonNull TableField<R, OffsetDateTime> field)
     {
+        var recordHolder = recordHolderBox.get();
         recordHolder.apply(record -> {
             verifyFieldIsNull(field, record, GeneratedFieldOverrideException::new);
             record.set(field, now.get());
@@ -292,6 +307,7 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void keepGeneratedDefault(TableField<R, ?> field)
     {
+        var recordHolder = recordHolderBox.get();
         recordHolder.excludeField(field);
         recordHolder.apply(record -> {
             verifyFieldIsNull(field, record, GeneratedFieldOverrideException::new);
@@ -310,7 +326,8 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void onDuplicateKeyIgnore()
     {
-        recordHolder.onDuplicateKeyIgnore();
+        recordHolderBox.get()
+            .onDuplicateKeyIgnore();
     }
 
     /**
@@ -321,7 +338,8 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     @Override
     public void requireNull(TableField<R, ?> field)
     {
-        recordHolder.apply(record -> verifyFieldIsNull(field, record, FieldExclusionException::new));
+        recordHolderBox.get()
+            .apply(record -> verifyFieldIsNull(field, record, FieldExclusionException::new));
     }
 
     @Override
@@ -329,7 +347,8 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     {
         try
         {
-            recordHolder.executeSingleOrBatch(context);
+            recordHolderBox.get()
+                .executeSingleOrBatch(context);
         }
         catch (DataAccessException e)
         {
@@ -341,13 +360,13 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     public void withCustomKeyedConvertedUsing(@NonNull RecordConverter<P, R> converter)
     {
         withCustomKeyedConvertedVia(converter::fromPojo);
-        presetConvertToPojo = converter::toPojo;
+        presetConvertToPojoBox.set(converter::toPojo);
     }
 
     @Override
     public void withCustomKeyedConvertedVia(@NonNull Function<P, R> fromPojo)
     {
-        convertFromPojo = fromPojo.compose(this::checkNonIdentifiable);
+        convertFromPojoBox.set(fromPojo.compose(this::checkNonIdentifiable));
     }
 
     private P checkNonIdentifiable(P pojo)
@@ -363,13 +382,13 @@ class InsertActionImpl<P, R extends UpdatableRecord<R>> implements IInsertAction
     public void withIdentifiableConvertedUsing(@NonNull RecordConverter<P, R> converter)
     {
         withIdentifiableConvertedVia(converter::fromPojo);
-        presetConvertToPojo = converter::toPojo;
+        presetConvertToPojoBox.set(converter::toPojo);
     }
 
     @Override
     public void withIdentifiableConvertedVia(@NonNull Function<P, R> fromPojo)
     {
-        convertFromPojo = pojo -> checkAndConvertIdentifiable(pojo, fromPojo);
+        convertFromPojoBox.set(pojo -> checkAndConvertIdentifiable(pojo, fromPojo));
     }
 
     private R checkAndConvertIdentifiable(P pojo, Function<P, R> convertFromPojo)

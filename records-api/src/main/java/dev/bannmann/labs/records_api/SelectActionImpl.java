@@ -17,21 +17,29 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
+import org.jspecify.annotations.NullMarked;
 
 import com.github.mizool.core.Identifiable;
 import com.github.mizool.core.Identifier;
 import com.github.mizool.core.exception.StoreLayerException;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
+import dev.bannmann.labs.core.Box;
 
 @Slf4j
 @RequiredArgsConstructor
+@NullMarked
+@SuppressWarnings("java:S2638")
+@SuppressWarningsRationale(
+    "The Silverchain-generated interface is not @NullMarked yet, so Sonar flags our use of lombok @NonNull on many parameters as a contract change.")
 public class SelectActionImpl<P extends Identifiable<P>, R extends Record> implements ISelectAction<P, R>
 {
+    private final Box<Supplier<ResultQuery<R>>> resultQuerySupplierBox = new Box<>();
+    private final Box<Function<R, P>> toPojoBox = new Box<>();
+    private final Box<Table<R>> tableBox = new Box<>();
+
     private final DSLContext context;
 
-    private Supplier<ResultQuery<R>> resultQuerySupplier;
-    private Function<R, P> toPojo;
     private Condition condition = DSL.noCondition();
-    private Table<R> table;
     private OrderField<?>[] orderByFields = new OrderField[]{};
 
     @Override
@@ -43,13 +51,13 @@ public class SelectActionImpl<P extends Identifiable<P>, R extends Record> imple
     @Override
     public void convertedVia(Function<R, P> toPojo)
     {
-        this.toPojo = toPojo;
+        toPojoBox.set(toPojo);
     }
 
     @Override
     public Optional<P> fetchOptional()
     {
-        return fetchRecordOptional().map(toPojo);
+        return fetchRecordOptional().map(toPojoBox.get());
     }
 
     @Override
@@ -60,7 +68,8 @@ public class SelectActionImpl<P extends Identifiable<P>, R extends Record> imple
 
     private <T> T doFetch(Function<ResultQuery<R>, T> method)
     {
-        ResultQuery<R> resultQuery = resultQuerySupplier.get();
+        var resultQuerySupplier = resultQuerySupplierBox.get();
+        var resultQuery = resultQuerySupplier.get();
         resultQuery.attach(context.configuration());
         try
         {
@@ -87,7 +96,7 @@ public class SelectActionImpl<P extends Identifiable<P>, R extends Record> imple
     @Override
     public Stream<P> fetchStream()
     {
-        return fetchRecordStream().map(toPojo);
+        return fetchRecordStream().map(toPojoBox.get());
     }
 
     @Override
@@ -122,7 +131,7 @@ public class SelectActionImpl<P extends Identifiable<P>, R extends Record> imple
     @Override
     public void query(ResultQuery<R> resultQuery)
     {
-        resultQuerySupplier = () -> resultQuery;
+        resultQuerySupplierBox.set(() -> resultQuery);
     }
 
     @Override
@@ -131,35 +140,21 @@ public class SelectActionImpl<P extends Identifiable<P>, R extends Record> imple
         addCondition(getIdField().eq(id.getValue()));
     }
 
-    @SuppressWarnings("unchecked")
     private TableField<R, String> getIdField()
     {
-        var primaryKeyFields = table.getPrimaryKey()
-            .getFields();
-        if (primaryKeyFields.size() > 1)
-        {
-            throw new IllegalStateException("Table " + table.getUnqualifiedName() + " has a multi-column primary key");
-        }
-
-        var idField = primaryKeyFields.get(0);
-        if (!idField.getDataType()
-            .isString())
-        {
-            throw new IllegalStateException("Table " + table.getUnqualifiedName() + " has a non-string primary key");
-        }
-        return (TableField<R, String>) idField;
+        return Tables.obtainSingleStringPrimaryKeyField(tableBox.get());
     }
 
     @Override
     public void selectFrom(Table<R> table)
     {
-        this.table = table;
-        resultQuerySupplier = this::buildResultQuery;
+        tableBox.set(table);
+        resultQuerySupplierBox.set(this::buildResultQuery);
     }
 
     private ResultQuery<R> buildResultQuery()
     {
-        return DSL.selectFrom(table)
+        return DSL.selectFrom(tableBox.get())
             .where(condition)
             .orderBy(orderByFields);
     }

@@ -4,57 +4,61 @@ import java.util.List;
 
 import lombok.experimental.UtilityClass;
 
+import org.jooq.Record;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
-import org.jooq.UpdatableRecord;
 import org.jspecify.annotations.NullMarked;
 
 import com.github.mizool.core.exception.CodeInconsistencyException;
+import dev.bannmann.labs.annotations.SuppressWarningsRationale;
 
 @UtilityClass
 @NullMarked
 class Tables
 {
-    public static <R extends UpdatableRecord<?>> TableField<R, String> obtainSingleStringPrimaryKeyField(Table<R> table)
+    public static <R extends Record> TableField<R, String> obtainSingleStringPrimaryKeyField(Table<R> table)
     {
-        var keyField = obtainSingleKeyField(table);
-        if (!keyField.getType()
-            .equals(String.class))
-        {
-            throw new CodeInconsistencyException(String.format("Table %s has a non-string primary key",
-                table.getName()));
-        }
-
-        @SuppressWarnings("unchecked") TableField<R, String> stringKeyField = (TableField<R, String>) keyField;
-        return stringKeyField;
+        TableField<R, ?> keyField = obtainSingleKeyField(table);
+        return verifyAndCast(keyField, table);
     }
 
-    private static <R extends UpdatableRecord<?>> TableField<R, ?> obtainSingleKeyField(Table<R> table)
+    @SuppressWarnings("unchecked")
+    @SuppressWarningsRationale("We verify the datatype before performing the cast")
+    private static <R extends Record> TableField<R, String> verifyAndCast(TableField<R, ?> keyField, Table<R> table)
+    {
+        if (!keyField.getDataType()
+            .isString())
+        {
+            throw new CodeInconsistencyException("Table %s has a non-string primary key".formatted(table.getName()));
+        }
+
+        return (TableField<R, String>) keyField;
+    }
+
+    private static <R extends Record> TableField<R, ?> obtainSingleKeyField(Table<R> table)
     {
         var keyFields = obtainKeyFields(table);
         if (keyFields.size() > 1)
         {
-            throw new CodeInconsistencyException(String.format("Table %s has a multi-column primary key",
-                table.getName()));
+            throw new CodeInconsistencyException("Table %s has a multi-column primary key".formatted(table.getName()));
         }
 
         return keyFields.getFirst();
     }
 
-    private static <R extends UpdatableRecord<?>> List<TableField<R, ?>> obtainKeyFields(Table<R> table)
+    private static <R extends Record> List<TableField<R, ?>> obtainKeyFields(Table<R> table)
     {
         var primaryKey = obtainPrimaryKey(table);
         return primaryKey.getFields();
     }
 
-    private static <R extends UpdatableRecord<?>> UniqueKey<R> obtainPrimaryKey(Table<R> table)
+    private static <R extends Record> UniqueKey<R> obtainPrimaryKey(Table<R> table)
     {
         var result = table.getPrimaryKey();
         if (result == null)
         {
-            throw new CodeInconsistencyException(String.format("Table %s does not have a primary key",
-                table.getName()));
+            throw new CodeInconsistencyException("Table %s does not have a primary key".formatted(table.getName()));
         }
         return result;
     }

@@ -14,13 +14,13 @@
 
     <properties>
         <base.java>21</base.java>
-        <error_prone.version>2.37.0</error_prone.version>
+        <error_prone.version>2.40.0</error_prone.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/javadoc-input</javadoc.sources.directory>
         <jooq.version>3.18.31</jooq.version>
         <lombok.core.version>1.18.38</lombok.core.version>
         <mandor.version>0.9</mandor.version>
         <mockito-core.version>5.18.0</mockito-core.version>
-        <nullaway.version>0.11.0</nullaway.version>
+        <nullaway.version>0.12.8</nullaway.version>
         <testng.version>7.11.0</testng.version>
         <watchdog-plugin.published-version-to-use>0.40</watchdog-plugin.published-version-to-use>
     </properties>
@@ -112,11 +112,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.bannmann.mandor</groupId>
-            <artifactId>core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
@@ -154,6 +149,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
                         <showDeprecation>true</showDeprecation>
+                        <proc>full</proc>
                     </configuration>
                 </plugin>
                 <plugin>
